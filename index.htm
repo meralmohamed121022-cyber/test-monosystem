@@ -411,20 +411,20 @@
     from { color: var(--text-secondary); }
     to { color: var(--accent-orange); filter: drop-shadow(0 0 5px var(--accent-orange)); }
 }
-/* تنسيق زر الإسكانر العائم */
+/* استايل زر السكانر المباشر */
 .scanner-direct-btn {
     position: fixed;
-    right: 20px; /* مكانه على اليمين */
-    top: 50%; /* في منتصف الشاشة رأسياً */
+    right: 20px;
+    top: 50%;
     transform: translateY(-50%);
     width: 55px;
     height: 55px;
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 15px; /* حواف مربعة دائرية شيك */
+    border-radius: 15px;
     cursor: pointer;
-    z-index: 20001; /* أعلى من الـ Nav و الـ Menu */
+    z-index: 20001;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -440,7 +440,7 @@
 
 .scanner-direct-btn:hover {
     transform: translateY(-50%) scale(1.1);
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); /* يقلب أخضر عند التحويم */
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);
 }
 
@@ -448,7 +448,6 @@
     transform: translateY(-50%) scale(0.9);
 }
 
-/* نص صغير يظهر تحت الزرار */
 .btn-tooltip {
     font-size: 9px;
     font-weight: bold;
@@ -456,14 +455,16 @@
     margin-top: 2px;
 }
 
-/* تظبيط للموبايل عشان ميزحمش الشاشة */
+/* تعديل حجم الزرار في الموبايل */
 @media (max-width: 768px) {
     .scanner-direct-btn {
         right: 10px;
         width: 48px;
         height: 48px;
     }
-    .scanner-direct-btn i { font-size: 20px; }
+    .scanner-direct-btn i {
+        font-size: 20px;
+    }
 }
     </style>
 </head>
@@ -629,8 +630,8 @@
         </div>
     </div>
 </div>
-<!-- زر الإسكانر العائم المباشر -->
-<button class="scanner-direct-btn" onclick="openScannerDirectly()" title="فتح الإسكانر فوراً">
+<!-- زر السكانر العائم المباشر -->
+<button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
     <i class="fas fa-barcode"></i>
     <span class="btn-tooltip">Scanner</span>
 </button>
@@ -1466,16 +1467,16 @@ function startAlarmChecker() {
     }, 5000); 
 }
 function openScannerDirectly() {
-  const phNo =
-    localStorage.getItem('pharmacynumber') ||
-    localStorage.getItem('pharmacy-number') ||
-    '';
-
-  const url = new URL('offersgit.html', window.location.href);
-  if (phNo) url.searchParams.set('ph', phNo);
-  url.hash = 'scanner';
-
-  window.location.href = url.toString();
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+    }
+    
+    // استدعاء دالة فتح اللينك مع إضافة الهاش
+    setTimeout(() => {
+        openLink('offersgit.html#scanner');
+    }, 100);
 }
 </script>
 </body>
