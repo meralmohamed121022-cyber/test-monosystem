@@ -1466,18 +1466,16 @@ function startAlarmChecker() {
     }, 5000); 
 }
 function openScannerDirectly() {
-    // تشغيل الأنيميشن بتاع اللودينج لو حابب
-    const loader = document.getElementById('loadingOverlay');
-    if (loader) {
-        loader.style.display = 'flex';
-        loader.style.opacity = '1';
-    }
-    
-    // فتح ملف العروض مع الهاش الخاص بالسكانر
-    // الهاش #scanner هو اللي هيخلي الملف التاني يفهم إنه يفتح الكاميرا فوراً
-    setTimeout(() => {
-        openLink('offersgit.html#scanner');
-    }, 100);
+  const phNo =
+    localStorage.getItem('pharmacynumber') ||
+    localStorage.getItem('pharmacy-number') ||
+    '';
+
+  const url = new URL('offersgit.html', window.location.href);
+  if (phNo) url.searchParams.set('ph', phNo);
+  url.hash = 'scanner';
+
+  window.location.href = url.toString();
 }
 </script>
 </body>
