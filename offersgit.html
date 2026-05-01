@@ -45731,4 +45731,60 @@ document.getElementById('galleryContainer').addEventListener('touchmove', (e) =>
     }
 });
 document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
+// --- كود التشغيل الذكي للإسكانر من الواجهة الخارجية ---
+window.addEventListener('load', () => {
+    // 1. التحقق من وجود "الهاش" في الرابط
+    if (window.location.hash === '#scanner') {
+        console.log("🚀 Scanner Mode triggered via URL Hash");
+
+        // 2. إخفاء واجهة الدخول (البروفايل والأزرار)
+        const gatewayView = document.getElementById('gatewayView');
+        if (gatewayView) {
+            gatewayView.style.display = 'none';
+        }
+
+        // 3. إخفاء حاوية العروض الرئيسية (البانر والفلاتر)
+        const mainOffersContainer = document.getElementById('mainOffersContainer');
+        if (mainOffersContainer) {
+            mainOffersContainer.style.display = 'none';
+        }
+
+        // 4. إظهار الهيدر العلوي (لو حابب يظهر فيه كلمة HOME)
+        const fixedHeader = document.getElementById('fixedHeader');
+        if (fixedHeader) {
+            fixedHeader.style.display = 'flex';
+        }
+
+        // 5. تشغيل الإسكانر فوراً
+        // ملحوظة: بنتأكد إن دالة openBarcodeScanner موجودة وشغالة
+        if (typeof openBarcodeScanner === 'function') {
+            openBarcodeScanner();
+        } else {
+            console.error("❌ دالة openBarcodeScanner غير معرفة في هذا الملف!");
+        }
+
+        // 6. إخفاء شاشة اللودر (الصور الافتتاحية)
+        if (typeof hideInitialLoader === 'function') {
+            hideInitialLoader();
+        } else {
+            // لو الدالة مش موجودة، نخفي العنصر يدوياً
+            const loader = document.getElementById('loaderScreen');
+            if (loader) loader.style.display = 'none';
+        }
+        
+        // 7. فوكس تلقائي على مربع الإدخال اليدوي لتسهيل العمل
+        setTimeout(() => {
+            const manualInput = document.getElementById('scannerManualCode');
+            if (manualInput) manualInput.focus();
+        }, 1000);
+    }
+});
+
+// مستمع لتغير الهاش (عشان لو المستخدم ضغط على الزرار والصفحة مفتوحة أصلاً)
+window.addEventListener('hashchange', () => {
+    if (window.location.hash === '#scanner') {
+        location.reload(); // إعادة تحميل بسيطة لتطبيق الوضع النظيف
+    }
+});
+
 </script>
