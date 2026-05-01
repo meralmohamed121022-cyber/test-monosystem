@@ -5987,21 +5987,6 @@ if (infoBox) {
     infoBox.addEventListener('click', toggleInfoBox);
 }
 </script>
-// 🔥 القوة الجبرية: إخفاء الواجهة فوراً لو الرابط فيه سكانر
-if (window.location.hash === '#scanner') {
-    document.write('<style id="anti-flicker">#gatewayView, #loaderScreen { display: none !important; opacity: 0 !important; }</style>');
-}
-// 🔥 1. منع وميض الواجهة (Flicker Fix)
-if (window.location.hash === '#scanner') {
-    const style = document.createElement('style');
-    style.id = 'instantScannerFix';
-    style.innerHTML = `
-        #gatewayView, #loaderScreen, #mainOffersContainer { display: none !important; }
-        #scannerModalOverlay { display: flex !important; position: fixed !important; inset: 0 !important; z-index: 999999 !important; background: #0f172a !important; }
-        .scanner-shell { height: 100vh !important; max-width: 100% !important; border-radius: 0 !important; border: none !important; }
-    `;
-    document.head.appendChild(style);
-}
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 <script src="https://unpkg.com/html2canvas@latest/dist/html2canvas.min.js"></script>
 <script>   
@@ -36271,20 +36256,13 @@ function renderGatewayButtons() {
     const btnList = document.getElementById('buttonsList');
     if (!btnList) return;
     
-    // تصفير القائمة قبل الرسم
     btnList.innerHTML = '';
     
-    // الحصول على الوقت الحالي للمقارنة
+    // الحصول على تاريخ اليوم فقط بدون ساعات
     const now = new Date();
     const todayTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-    // التحقق هل الواجهة الحالية هي الإسكانر المباشر؟
-    const isDirectScanner = window.location.hash === '#scanner';
-
-    let autoActivePeriodId = null; // متغير جديد لحفظ ID الفترة الفعالة حالياً
-
     ALL_PERIODS_OFFERS.forEach(period => {
-        // حساب أوقات البداية والنهاية
         const start = new Date(period.start);
         const startTime = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
         
@@ -36292,92 +36270,47 @@ function renderGatewayButtons() {
         end.setHours(23, 59, 59, 999);
         const endTime = end.getTime();
 
-        let status = 'normal'; 
+        let status = 'normal'; // الحالة الافتراضية
 
-        // تحديد الحالة بناءً على التاريخ
         if (todayTime > endTime) {
-            status = 'expired'; // انتهى 🔴
+            status = 'expired'; // 🔴 انتهى
         } else if (todayTime >= startTime && todayTime <= endTime) {
-            status = 'active';  // شغال حالياً 🟢
-            autoActivePeriodId = period.id; // لقطنا الـ ID بتاع الفترة الفعالة!
+            status = 'active';  // 🟢 شغال حالياً
         }
 
-        // إنشاء عنصر الزر
         const btn = document.createElement('div');
         btn.className = 'gateway-btn';
-        
-        // الأكشن عند الضغط
         btn.onclick = () => activatePeriod(period.id);
 
-        // --- تطبيق الستايلات المباشرة (Inline) لضمان القوة ---
+        // --- تطبيق الألوان بالقوة الجبرية (Inline Styles) لضمان ظهورها ---
         if (status === 'active') {
             btn.classList.add('status-active');
-            btn.style.cssText = `
-                background: linear-gradient(135deg, #2ecc71, #27ae60);
-                color: white;
-                border-left: 6px solid #1e8449;
-                box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
-                position: relative;
-            `;
+            btn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+            btn.style.color = 'white';
+            btn.style.borderLeft = '6px solid #1e8449';
+            btn.style.boxShadow = '0 0 20px rgba(46, 204, 113, 0.5)';
         } else if (status === 'expired') {
             btn.classList.add('status-expired');
-            btn.style.cssText = `
-                background: linear-gradient(135deg, #b91c1c, #7f1d1d);
-                color: white;
-                border-left: 6px solid #450a0a;
-                opacity: 0.8;
-            `;
+            btn.style.background = 'linear-gradient(135deg, #b91c1c, #7f1d1d)';
+            btn.style.color = 'white';
+            btn.style.borderLeft = '6px solid #450a0a';
         }
 
-        // شارة الـ LIVE للفترة الحالية
         const liveBadge = (status === 'active') ? 
             `<div style="display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px;">
-                <div style="width:7px; height:7px; background:#fff; border-radius:50%; box-shadow:0 0 5px #fff; animation: pulse 1s infinite;"></div>
+                <div style="width:7px; height:7px; background:#fff; border-radius:50%; box-shadow:0 0 5px #fff;"></div>
                 <span style="font-size:10px; font-weight:900;">LIVE</span>
             </div>` : '';
 
         btn.innerHTML = `
-            <div class="btn-label" style="font-weight:800; font-family: 'Segoe UI', Tahoma, sans-serif;">
-                ${period.label.toUpperCase()}
-            </div>
+            <div class="btn-label" style="font-weight:800;">${period.label.toUpperCase()}</div>
             ${liveBadge}
         `;
         
         btnList.appendChild(btn);
     });
     
-    // --- الشغل السحري لفتح السكانر المباشر ---
-    if (isDirectScanner) {
-        // 1. نخفي واجهة Gateway
-        const gatewayView = document.getElementById('gatewayView');
-        if (gatewayView) gatewayView.style.display = 'none';
-
-        // 2. نفعل الفترة الحالية برمجياً كأن المستخدم ضغط عليها (عشان الداتا تجهز)
-        if (autoActivePeriodId) {
-            activatePeriod(autoActivePeriodId);
-        } else if (ALL_PERIODS_OFFERS.length > 0) {
-            activatePeriod(ALL_PERIODS_OFFERS[ALL_PERIODS_OFFERS.length - 1].id); // احتياطي
-        }
-
-        // 3. ننتظر لحظة بسيطة لحد ما activatePeriod تخلص رسم، وبعدين نخفيها ونفتح السكانر
-        setTimeout(() => {
-            const mainOffersContainer = document.getElementById('mainOffersContainer');
-            if (mainOffersContainer) mainOffersContainer.style.display = 'none';
-            
-            const fixedHeader = document.getElementById('fixedHeader');
-            if (fixedHeader) fixedHeader.style.display = 'none';
-            
-            const loader = document.getElementById('loaderScreen');
-            if (loader) loader.style.display = 'none';
-            
-            // نفتح المودال الأسود بتاع السكانر
-            if (typeof openBarcodeScanner === 'function') {
-                openBarcodeScanner();
-            }
-        }, 100);
-    }
-
-    console.log("🎨 Gateway Buttons Prepared (Mode: " + (isDirectScanner ? "Background" : "Visible") + ")");
+    console.log("🎨 Buttons rendered with status colors applied.");
 }
 // 3. التشغيل عند تحميل الصفحة
 applyDynamicBackgrounds();
@@ -43679,68 +43612,35 @@ console.log('🔥 Dark mode label fixer installed!');
 // ====== INITIALIZATION ======
 console.log('🎬 Initializing Mono Gateway...');
 // ✅ FIX: Run after DOM is fully ready
-document.addEventListener('DOMContentLoaded', async function () {
-    console.log('🎬 Initializing Mono System...');
+document.addEventListener('DOMContentLoaded', function () {
 
-    // 1. فحص هل الدخول مباشر لوضع السكانر؟
-    const isDirectScanner = window.location.hash === '#scanner';
-
-    if (isDirectScanner) {
-        console.log("🎯 Scanner Mode: Bypassing Gateway UI");
-        
-        // إخفاء واجهات الجاتواي والعروض فوراً
-        if(document.getElementById('gatewayView')) document.getElementById('gatewayView').style.display = 'none';
-        if(document.getElementById('mainOffersContainer')) document.getElementById('mainOffersContainer').style.display = 'none';
-        
-        // تشغيل السكانر فوراً
-        if (typeof openBarcodeScanner === 'function') {
-            openBarcodeScanner();
-        }
-
-        // إخفاء اللودر بسرعة (بعد ثانية واحدة بدل 7 ثواني)
-        setTimeout(() => {
-            const loader = document.getElementById('loaderScreen');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
-            }
-        }, 1000);
-
+    // 1. رسم البوكسات
+    if (typeof renderGatewayButtons === 'function') {
+        renderGatewayButtons();
     } else {
-        // --- الوضع الطبيعي (لو مفيش #scanner في اللينك) ---
-        
-        // 1. رسم بوكسات الجاتواي (الأزرار اللي في الصورة)
-        if (typeof renderGatewayButtons === 'function') {
-            renderGatewayButtons();
-        } else {
-            console.error('❌ renderGatewayButtons not found!');
-        }
-
-        // 2. إخفاء اللودر بعد الوقت الطبيعي
-        setTimeout(() => {
-            const loader = document.getElementById('loaderScreen');
-            if (loader) {
-                loader.style.opacity = '0';
-                loader.style.pointerEvents = 'none';
-                setTimeout(() => { loader.style.display = 'none'; }, 800);
-            }
-        }, 7000);
+        console.error('❌ renderGatewayButtons not found!');
     }
 
-    // 3. خدمات بتشتغل في الخلفية في كل الحالات (عداد وتواريخ وفلاتر)
+    // 2. إخفاء اللودر بعد 2 ثانية
+    setTimeout(() => {
+        const loader = document.getElementById('loaderScreen');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.pointerEvents = 'none';
+            setTimeout(() => { loader.style.display = 'none'; }, 800);
+        }
+    }, 7000);
+
+    // 3. عداد وتواريخ
     if (typeof updateDatesInHTML === 'function') updateDatesInHTML();
     if (typeof updateCountdown === 'function') {
         updateCountdown();
         setInterval(updateCountdown, 1000);
     }
+
+    // 4. فلاتر
     if (typeof initializeFilters === 'function') initializeFilters();
-
-    // 4. تحميل الداتا من سوبابيز (ضروري للسكانر وللعروض)
-    if (typeof fetchProductsFromSupabase === 'function') {
-        await fetchProductsFromSupabase();
-    }
 });
-
 // 2. إخفاء شاشة التحميل (Loader) بعد وقت بسيط لإظهار البوكسات
 setTimeout(() => {
     const loader = document.getElementById('loaderScreen');
@@ -45431,8 +45331,12 @@ async function closeBarcodeScanner() {
 
     const readerEl = document.getElementById('reader');
     if (readerEl) readerEl.innerHTML = "";
-}
 
+    // -- السطرين الجداد عشان نمسح الهاش --
+    if (window.location.hash.includes('scanner')) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+}
 // =====================================================
 // Print helpers
 // =====================================================
@@ -45831,77 +45735,27 @@ document.getElementById('galleryContainer').addEventListener('touchmove', (e) =>
     }
 });
 document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
-// --- كود التشغيل الذكي للإسكانر من الواجهة الخارجية ---
-window.addEventListener('load', () => {
-    // 1. التحقق من وجود "الهاش" في الرابط
-    if (window.location.hash === '#scanner') {
-        console.log("🚀 Scanner Mode triggered via URL Hash");
-
-        // 2. إخفاء واجهة الدخول (البروفايل والأزرار)
+document.addEventListener("DOMContentLoaded", () => {
+    // التأكد إذا كان الرابط يحتوي على كلمة scanner
+    if (window.location.hash.includes('scanner')) {
+        // إخفاء الواجهات اللي ملهاش لازمة وإظهار الهيدر
         const gatewayView = document.getElementById('gatewayView');
-        if (gatewayView) {
-            gatewayView.style.display = 'none';
-        }
-
-        // 3. إخفاء حاوية العروض الرئيسية (البانر والفلاتر)
-        const mainOffersContainer = document.getElementById('mainOffersContainer');
-        if (mainOffersContainer) {
-            mainOffersContainer.style.display = 'none';
-        }
-
-        // 4. إظهار الهيدر العلوي (لو حابب يظهر فيه كلمة HOME)
         const fixedHeader = document.getElementById('fixedHeader');
-        if (fixedHeader) {
-            fixedHeader.style.display = 'flex';
-        }
-
-        // 5. تشغيل الإسكانر فوراً
-        // ملحوظة: بنتأكد إن دالة openBarcodeScanner موجودة وشغالة
-        if (typeof openBarcodeScanner === 'function') {
-            openBarcodeScanner();
-        } else {
-            console.error("❌ دالة openBarcodeScanner غير معرفة في هذا الملف!");
-        }
-
-        // 6. إخفاء شاشة اللودر (الصور الافتتاحية)
-        if (typeof hideInitialLoader === 'function') {
-            hideInitialLoader();
-        } else {
-            // لو الدالة مش موجودة، نخفي العنصر يدوياً
-            const loader = document.getElementById('loaderScreen');
-            if (loader) loader.style.display = 'none';
-        }
+        const mainOffersContainer = document.getElementById('mainOffersContainer');
         
-        // 7. فوكس تلقائي على مربع الإدخال اليدوي لتسهيل العمل
-        setTimeout(() => {
-            const manualInput = document.getElementById('scannerManualCode');
-            if (manualInput) manualInput.focus();
-        }, 1000);
-    }
-});
-
-// مستمع لتغير الهاش (عشان لو المستخدم ضغط على الزرار والصفحة مفتوحة أصلاً)
-window.addEventListener('hashchange', () => {
-    if (window.location.hash === '#scanner') {
-        // بدلاً من عمل ريلود، نقوم بفتح السكانر مباشرة
-        const gatewayView = document.getElementById('gatewayView');
         if (gatewayView) gatewayView.style.display = 'none';
-        
-        const mainOffersContainer = document.getElementById('mainOffersContainer');
         if (mainOffersContainer) mainOffersContainer.style.display = 'none';
-        
-        const fixedHeader = document.getElementById('fixedHeader');
-        if (fixedHeader) fixedHeader.style.display = 'none';
-        
-        if (typeof openBarcodeScanner === 'function') {
-            openBarcodeScanner();
-        }
-        
-        const loader = document.getElementById('loaderScreen');
-        if (loader) loader.style.display = 'none';
-    } else {
-        // لو الهاش اتشال يرجع للصفحة العادية
-        location.reload();
+        if (fixedHeader) fixedHeader.style.display = 'flex';
+
+        // فتح السكانر بعد تأخير بسيط عشان الصفحة تكون حملت
+        setTimeout(() => {
+            if (typeof openBarcodeScanner === 'function') {
+                openBarcodeScanner();
+            }
+        }, 300);
     }
 });
+
+
+
 </script>
