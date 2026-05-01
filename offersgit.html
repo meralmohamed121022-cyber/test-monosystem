@@ -5987,6 +5987,10 @@ if (infoBox) {
     infoBox.addEventListener('click', toggleInfoBox);
 }
 </script>
+// 🔥 القوة الجبرية: إخفاء الواجهة فوراً لو الرابط فيه سكانر
+if (window.location.hash === '#scanner') {
+    document.write('<style id="anti-flicker">#gatewayView, #loaderScreen { display: none !important; opacity: 0 !important; }</style>');
+}
 // 🔥 1. منع وميض الواجهة (Flicker Fix)
 if (window.location.hash === '#scanner') {
     const style = document.createElement('style');
@@ -36277,6 +36281,8 @@ function renderGatewayButtons() {
     // التحقق هل الواجهة الحالية هي الإسكانر المباشر؟
     const isDirectScanner = window.location.hash === '#scanner';
 
+    let autoActivePeriodId = null; // متغير جديد لحفظ ID الفترة الفعالة حالياً
+
     ALL_PERIODS_OFFERS.forEach(period => {
         // حساب أوقات البداية والنهاية
         const start = new Date(period.start);
@@ -36293,6 +36299,7 @@ function renderGatewayButtons() {
             status = 'expired'; // انتهى 🔴
         } else if (todayTime >= startTime && todayTime <= endTime) {
             status = 'active';  // شغال حالياً 🟢
+            autoActivePeriodId = period.id; // لقطنا الـ ID بتاع الفترة الفعالة!
         }
 
         // إنشاء عنصر الزر
@@ -36339,15 +36346,39 @@ function renderGatewayButtons() {
         btnList.appendChild(btn);
     });
     
-    // لو إحنا في وضع الإسكانر، نخفي حاوية الأزرار دي تماماً عشان "النضافة"
+    // --- الشغل السحري لفتح السكانر المباشر ---
     if (isDirectScanner) {
+        // 1. نخفي واجهة Gateway
         const gatewayView = document.getElementById('gatewayView');
         if (gatewayView) gatewayView.style.display = 'none';
+
+        // 2. نفعل الفترة الحالية برمجياً كأن المستخدم ضغط عليها (عشان الداتا تجهز)
+        if (autoActivePeriodId) {
+            activatePeriod(autoActivePeriodId);
+        } else if (ALL_PERIODS_OFFERS.length > 0) {
+            activatePeriod(ALL_PERIODS_OFFERS[ALL_PERIODS_OFFERS.length - 1].id); // احتياطي
+        }
+
+        // 3. ننتظر لحظة بسيطة لحد ما activatePeriod تخلص رسم، وبعدين نخفيها ونفتح السكانر
+        setTimeout(() => {
+            const mainOffersContainer = document.getElementById('mainOffersContainer');
+            if (mainOffersContainer) mainOffersContainer.style.display = 'none';
+            
+            const fixedHeader = document.getElementById('fixedHeader');
+            if (fixedHeader) fixedHeader.style.display = 'none';
+            
+            const loader = document.getElementById('loaderScreen');
+            if (loader) loader.style.display = 'none';
+            
+            // نفتح المودال الأسود بتاع السكانر
+            if (typeof openBarcodeScanner === 'function') {
+                openBarcodeScanner();
+            }
+        }, 100);
     }
 
     console.log("🎨 Gateway Buttons Prepared (Mode: " + (isDirectScanner ? "Background" : "Visible") + ")");
 }
-
 // 3. التشغيل عند تحميل الصفحة
 applyDynamicBackgrounds();
 function saveCustomModalData() {
@@ -45852,8 +45883,25 @@ window.addEventListener('load', () => {
 // مستمع لتغير الهاش (عشان لو المستخدم ضغط على الزرار والصفحة مفتوحة أصلاً)
 window.addEventListener('hashchange', () => {
     if (window.location.hash === '#scanner') {
-        location.reload(); // إعادة تحميل بسيطة لتطبيق الوضع النظيف
+        // بدلاً من عمل ريلود، نقوم بفتح السكانر مباشرة
+        const gatewayView = document.getElementById('gatewayView');
+        if (gatewayView) gatewayView.style.display = 'none';
+        
+        const mainOffersContainer = document.getElementById('mainOffersContainer');
+        if (mainOffersContainer) mainOffersContainer.style.display = 'none';
+        
+        const fixedHeader = document.getElementById('fixedHeader');
+        if (fixedHeader) fixedHeader.style.display = 'none';
+        
+        if (typeof openBarcodeScanner === 'function') {
+            openBarcodeScanner();
+        }
+        
+        const loader = document.getElementById('loaderScreen');
+        if (loader) loader.style.display = 'none';
+    } else {
+        // لو الهاش اتشال يرجع للصفحة العادية
+        location.reload();
     }
 });
-
 </script>
