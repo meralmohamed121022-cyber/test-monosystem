@@ -45735,40 +45735,56 @@ document.getElementById('galleryContainer').addEventListener('touchmove', (e) =>
     }
 });
 document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
-// 1. الحقن الفوري: ده كود بيشتغل قبل ما المتصفح يرسم أي حاجة على الشاشة
+// 1. إخفاء كل شيء في الصفحة تماماً (اللودر، الجات واي، العروض، الهيدر) في أول جزء من الثانية
 if (window.location.hash.includes('scanner')) {
-    // بنعمل ستايل إجباري يخفي اللودر والجات واي فوراً
     const instantStyle = document.createElement('style');
+    instantStyle.id = "scannerHideStyle"; 
     instantStyle.innerHTML = `
-        #loaderScreen, #gatewayView { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; z-index: -1 !important; }
-        #fixedHeader { display: flex !important; }
-        #mainOffersContainer { display: block !important; }
-        body { overflow: auto !important; }
+        #loaderScreen, #gatewayView, #fixedHeader, #mainOffersContainer { 
+            display: none !important; 
+            opacity: 0 !important; 
+            visibility: hidden !important; 
+            pointer-events: none !important; 
+            z-index: -1 !important; 
+        }
+        body { 
+            background: #0a1628 !important; /* لون كحلي غامق بدل الأبيض */
+            overflow: hidden !important; 
+        }
     `;
     document.head.appendChild(instantStyle);
 }
 
-// 2. تشغيل السكانر بمجرد ما الصفحة تقرأ العناصر (أسرع بكتير من load)
+// 2. تشغيل السكانر وبعدين إعادة العروض والهيدر في خلفية الكاميرا بهدوء
 window.addEventListener("DOMContentLoaded", () => {
     if (window.location.hash.includes('scanner')) {
-        // تأكيد الإخفاء والظهور بالجافاسكريبت (زيادة أمان)
-        const gatewayView = document.getElementById('gatewayView');
-        const fixedHeader = document.getElementById('fixedHeader');
-        const mainOffersContainer = document.getElementById('mainOffersContainer');
-        const loader = document.getElementById('loaderScreen');
         
-        if (gatewayView) gatewayView.style.display = 'none';
-        if (fixedHeader) fixedHeader.style.display = 'flex';
-        if (mainOffersContainer) mainOffersContainer.style.display = 'block'; 
-        if (loader) loader.style.display = 'none';
-
-        // فتح السكانر بسرعة (300 ملي ثانية كافية جداً لتشغيل الكاميرا)
+        // فتح السكانر بسرعة جداً
         setTimeout(() => {
             if (typeof openBarcodeScanner === 'function') {
                 openBarcodeScanner();
             }
+            
+            // بعد 500 ملي ثانية (يعني السكانر بيكون فتح خلاص وغطى الشاشة)
+            // نشيل الاستايل الإجباري ونرجع صفحة العروض في ضهره
+            setTimeout(() => {
+                const hideStyle = document.getElementById("scannerHideStyle");
+                if (hideStyle) hideStyle.remove();
+                
+                const gatewayView = document.getElementById('gatewayView');
+                const fixedHeader = document.getElementById('fixedHeader');
+                const mainOffersContainer = document.getElementById('mainOffersContainer');
+                const loader = document.getElementById('loaderScreen');
+                
+                // نضمن إن اللودر والجات واي مختفيين، والعروض معروضة ورا السكانر
+                if (gatewayView) gatewayView.style.display = 'none';
+                if (loader) loader.style.display = 'none';
+                if (fixedHeader) fixedHeader.style.display = 'flex';
+                if (mainOffersContainer) mainOffersContainer.style.display = 'block';
+                document.body.style.overflow = 'auto'; // نرجع السكرول طبيعي
+            }, 500);
+
         }, 300);
     }
-});ش
-
+});
 </script>
