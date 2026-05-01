@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Al-Dawaa Links 💊</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            transition: background 0.3s;
+        }
+
+        body.dark {
+            background: #0a1929;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #1a3a52, #2d7a6e);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .header.hide {
+            transform: translateY(-100%);
+        }
+
+        .header-wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.8em;
+        }
+
+        .theme-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: all 0.3s;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(20deg) scale(1.1);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            align-items: start; /* السطر ده هو اللي هيمنع الكروت اللي في نفس الصف إنها تمط مع بعضها */
+        }
+
+        /* Cards */
+        .card {
+            background: linear-gradient(135deg, #1a3a52, #0d2538);
+            border-radius: 50px;
+            padding: 25px 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .card.teal {
+            background: linear-gradient(135deg, #2d7a6e, #1e5a4f);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.5em;
+        }
+
+        .arrow {
+            font-size: 1.3em;
+            transition: transform 0.3s;
+        }
+
+        .card.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Content */
+        .card-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .card.open .card-body {
+            max-height: 2000px;
+            padding-top: 20px;
+        }
+
+        /* Details */
+        .details {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            background: rgba(255,255,255,0.15);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .label {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .value {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .copy {
+            background: #3fad8f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .copy:hover {
+            background: #36956f;
+            transform: translateY(-2px);
+        }
+
+        /* QR Section */
+        .qr-box {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        body.dark .qr-box {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .qr-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a3a52;
+        }
+
+        body.dark .qr-title {
+            color: white;
+        }
+
+        .qr-code {
+            display: inline-block;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .link-btn {
+            background: linear-gradient(135deg, #3fad8f, #2d7a6e);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .link-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(63, 173, 143, 0.5);
+        }
+
+        /* Back to Top */
+        .top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2d7a6e, #3fad8f);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+
+        .top-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .top-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .top-btn::after {
+            content: '⬆';
+            color: white;
+            font-size: 1.5em;
+            display: block;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #3fad8f;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header" id="header">
+        <div class="header-wrap">
+            <h1>💊 Al-Dawaa Links</h1>
+            <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <button class="top-btn" id="topBtn" onclick="goTop()"></button>
+    <div class="toast" id="toast">✅ Copied!</div>
+
+    <script>
+        const links = [
+             {
+                name: "Mumaris Plus",
+                icon: "⚕️",
+                color: "teal",
+                url: "https://portal.scfhs.org.sa/",
+                creds: []
+            },
+          {
+    name: "tcs orders",
+    icon: "📦",
+    color: "teal",
+    url: "https://tcsorders.vercel.app/",
+    creds: []
+ },
+            {
+                name: "Insurance Check",
+                icon: "🔍",
+                color: "teal",
+                url: "https://www.chi.gov.sa/ServicesDirectory/Pages/Eservices-CheckInsurance.aspx?servicename=checkinsurance",
+                creds: []
+            },
+          
+            {
+                name: "Success Factors",
+                icon: "📊",
+                color: "navy",
+                url: "https://performancemanager5.successfactors.eu/sf/hrisworkflowapprovelink?workflowRequestId=V4-0-a1-RO4Pda6Bm_2sMquLQcz1rg3V3oVOGVzftHK93yVDdTdtYA&company=C0013527959P&username=10963&Treat-As=WEB#/login",
+                creds: []
+            },
+          
+            {
+                name: "Ronzac Flip Book",
+                icon: "📚",
+                color: "navy",
+                url: "https://heyzine.com/flip-book/aadaeb341a.html",
+                creds: []
+            },
+            {
+                name: "Private Label & Hollinz",
+                icon: "📖",
+                color: "teal",
+                url: "https://heyzine.com/flip-book/c9783b9af2.html#page/1",
+                creds: []
+            },
+           
+          
+            {
+                name: "All Regions Helpline",
+                icon: "📞",
+                color: "navy",
+                url: "https://docs.google.com/spreadsheets/d/1UEQHmIbFP-p1SQnbTTwxiPL-gPgtvFUK/edit?gid=344444652#gid=344444652",
+                creds: []
+            },
+            {
+                name: "Wasfaty Main",
+                icon: "💊",
+                color: "teal",
+                url: "https://sso.wasfaty.sa/auth/realms/master/protocol/openid-connect/auth?client_id=CPSSO&redirect_uri=https%3A%2F%2Fcp.wasfaty.sa%2F&state=4ec41df4-18dd-4028-9ded-713753884996&nonce=7a747fa4-16f5-4d70-8c3d-aba12869ba8d&response_mode=fragment&response_type=code&scope=openid",
+                creds: []
+            },
+            {
+                name: "Wasfaty Support",
+                icon: "🆘",
+                color: "navy",
+                url: "https://ul.wasfaty.sa/support",
+                creds: []
+            },
+            {
+                name: "Wasfaty Yusr",
+                icon: "🏥",
+                color: "teal",
+                url: "https://client.yusur.sa/",
+                creds: []
+            }
+           
+           
+        ];
+
+        // Build cards
+        const grid = document.getElementById('grid');
+        links.forEach((item, i) => {
+            const card = document.createElement('div');
+            card.className = `card ${item.color}`;
+            card.innerHTML = `
+                <div class="card-top">
+                    <div class="card-title">
+                        <span class="card-icon">${item.icon}</span>
+                        <span>${item.name}</span>
+                    </div>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="card-body">
+                    ${item.creds.length ? `
+                        <div class="details">
+                            ${item.creds.map(c => `
+                                <div class="detail-item">
+                                    <div class="label">${c.label}</div>
+                                    <div class="value">${c.val}</div>
+                                    <button class="copy" onclick="copy('${c.val.replace(/'/g, "\\'")}')">📋 Copy</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="qr-box">
+                        <div class="qr-title">📱 Scan QR Code</div>
+                        <div class="qr-code" id="qr${i}"></div>
+                        <button class="link-btn" onclick="openLink('${item.url}')">🔗 Open Link</button>
+                    </div>
+                </div>
+            `;
+
+            card.querySelector('.card-top').onclick = () => {
+                const isOpen = card.classList.contains('open');
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('open'));
+                if (!isOpen) {
+                    card.classList.add('open');
+                    if (item.url !== '#' && !document.querySelector(`#qr${i} canvas`)) {
+                        setTimeout(() => makeQR(i, item.url), 100);
+                    }
+                }
+            };
+
+            grid.appendChild(card);
+        });
+
+        function makeQR(id, url) {
+            new QRCode(document.getElementById('qr' + id), {
+                text: url,
+                width: 150,
+                height: 150,
+                colorDark: "#1a3a52",
+                colorLight: "#ffffff"
+            });
+        }
+
+        function copy(txt) {
+            navigator.clipboard.writeText(txt);
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function openLink(url) {
+            if (url !== '#') window.open(url, '_blank');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const btn = document.querySelector('.theme-btn');
+            btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+            localStorage.setItem('dark', document.body.classList.contains('dark'));
+        }
+
+        function goTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        let last = 0;
+        window.onscroll = () => {
+            const now = window.pageYOffset;
+            document.getElementById('header').classList.toggle('hide', now > last && now > 100);
+            document.getElementById('topBtn').classList.toggle('show', now > 400);
+            last = now;
+        };
+
+        if (localStorage.getItem('dark') === 'true') {
+            document.body.classList.add('dark');
+            document.querySelector('.theme-btn').textContent = '☀️';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>MONO SYSTEM</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
+    
+    <style>
+        /* --- GLOBAL RESET & VARS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #1a2942;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --accent-orange: #ff6b35;
+            --accent-orange-light: #ff8c42;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --nav-bg-start: #0d2137;
+            --nav-bg-end: #1a3a52;
+            --glass-bg: rgba(13, 33, 55, 0.85);
+        }
+        body.day-mode {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --text-primary: #0d2137;
+            --text-secondary: #4a5568;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(13, 33, 55, 0.1);
+            --nav-bg-start: #ffffff;
+            --nav-bg-end: #f7fafc;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            padding-bottom: 120px;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* --- USER INFO BADGE --- */
+        #userInfoBadge {
+            position: absolute; 
+            top: 20px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            background: var(--glass-bg); 
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--accent-orange); 
+            color: var(--accent-orange-light);
+            padding: 8px 20px; 
+            border-radius: 20px; 
+            font-weight: bold;
+            font-size: 14px; 
+            z-index: 25000; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: none; 
+            align-items: center; 
+            gap: 8px;
+        }
+
+        /* --- NEW STYLES FOR ALARM & LOGIN MODALS --- */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 30000;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .custom-modal-box {
+            background: var(--glass-bg); border: 1px solid var(--border-color);
+            padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
+            text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            color: var(--text-primary);
+        }
+        .custom-modal-box input, .custom-modal-box select {
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px;
+            border: 1px solid var(--accent-orange); background: rgba(255,255,255,0.1);
+            color: var(--text-primary); font-size: 16px; outline: none;
+        }
+        .custom-modal-box select option { background: var(--bg-secondary); color: white; }
+        
+        .custom-modal-box button {
+            color: white; border: none; padding: 12px 25px; border-radius: 10px; 
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px;
+        }
+        .custom-modal-box button:hover { transform: scale(1.03); }
+
+        /* --- UTILITIES --- */
+        .hidden { display: none !important; }
+
+        /* --- TOGGLE BUTTONS --- */
+        .floating-btn {
+            position: fixed; z-index: 1000; width: 50px; height: 50px;
+            border-radius: 50%; border: none; display: flex; align-items: center;
+            justify-content: center; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        .floating-btn:active { transform: scale(0.9); }
+        .mode-toggle { top: 20px; left: 20px; background: var(--accent-orange); color: white; font-size: 20px; border: 2px solid white; }
+        .logout-btn { top: 40px; right: 20px; background: #e74c3c; color: white; font-size: 20px; border: 2px solid white; }
+        .scroll-toggle { bottom: 100px; right: 20px; background: var(--nav-bg-start); color: var(--text-primary); border: 1px solid var(--border-color); }
+
+        /* IFRAME FULLSCREEN CONTAINER */
+        #iframeContainer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-primary); z-index: 21000;
+            display: none; flex-direction: column; opacity: 0;
+            transition: opacity 0.4s ease; padding-bottom: 70px;
+        }
+        #iframeContainer.show { display: flex; opacity: 1; }
+        
+        #iframeBackBtn {
+            background: transparent; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 8px; transition: 0.3s; position: relative;
+        }
+        #iframeBackBtn:active { transform: scale(0.9); }
+        .back-arrow {
+            width: 0; height: 0;
+            border-top: 14px solid transparent; border-bottom: 14px solid transparent;
+            border-right: 18px solid #4ade80; transition: 0.3s;
+            filter: drop-shadow(0 2px 8px rgba(74, 222, 128, 0.4));
+        }
+        #iframeBackBtn:hover .back-arrow { border-right-color: #22c55e; transform: translateX(-3px); }
+
+        #embeddedFrame { flex: 1; width: 100%; min-width: 100%; height: 100%; border: none; background: white; overflow-x: hidden; display: block; }
+        
+        #iframeError {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; background: var(--glass-bg);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color); border-radius: 20px;
+            padding: 40px 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none; z-index: 16000; max-width: 400px; width: 90%;
+        }
+        #iframeError.show { display: flex; flex-direction: column; align-items: center; }
+        #iframeError i { font-size: 60px; color: var(--accent-orange); margin-bottom: 20px; }
+        #iframeError h3 { font-size: 20px; margin-bottom: 10px; color: var(--text-primary); }
+        #iframeError p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* --- HOME PAGE --- */
+        #homePage { padding: 20px; padding-top: 90px; max-width: 800px; margin: 0 auto; }
+
+        /* --- BANNER CAROUSEL --- */
+        .banner-container {
+            position: relative; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 25px;
+            min-height: 220px; background: var(--bg-secondary); display: flex;
+        }
+        .banner-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .banner-slide {
+            flex: 0 0 100%; width: 100%; height: 220px; position: relative;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 25px; cursor: pointer;
+        }
+        .banner-slide::after {
+            content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+            background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.1));
+            z-index: 1;
+        }
+        .banner-content { position: relative; z-index: 2; color: white; }
+        .banner-slide h2 {
+            font-size: 24px; margin-bottom: 8px; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--accent-orange); text-shadow: 1px 1px 2px black;
+        }
+        .banner-slide p { font-size: 14px; max-width: 80%; line-height: 1.4; }
+        .banner-bg-media {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 0; pointer-events: none;
+        }
+
+        /* --- CONTENT CARDS --- */
+        .content-grid { display: flex; flex-direction: column; gap: 20px; }
+        .content-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 15px; overflow: visible;
+            backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-header h3 { color: var(--accent-orange-light); font-size: 18px; font-weight: 700; }
+        
+        .media-container {
+            position: relative; width: 100%; height: auto;
+            border-radius: 12px; overflow: hidden; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;
+        }
+        .media-container img {
+            width: 100%; height: auto; display: block;
+            object-fit: cover; border-radius: 12px; cursor: pointer;
+            user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+        }
+        .media-container video { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+        .zoom-icon {
+            position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.7);
+            color: var(--accent-orange); width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none; font-size: 16px; border: 1px solid rgba(255,255,255,0.2); z-index: 10;
+        }
+        .gallery-dots {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; z-index: 10;
+        }
+        .gallery-dot { width: 8px; height: 8px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; }
+        .gallery-dot.active { background: var(--accent-orange); transform: scale(1.2); }
+        .card-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin-top: 10px; }
+
+        /* --- LIGHTBOX --- */
+        #lightbox {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.95); z-index: 10000;
+            display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        #lightbox.show { display: flex; opacity: 1; }
+        #lightbox img {
+            max-width: 95%; max-height: 90%; border-radius: 5px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1); object-fit: contain;
+            touch-action: none; cursor: grab; transition: transform 0.1s ease-out;
+        }
+        #lightbox img:active { cursor: grabbing; }
+        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 35px; cursor: pointer; z-index: 10001; }
+
+        /* --- NAV BAR --- */
+        #bottomNav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--glass-bg); backdrop-filter: blur(20px);
+            padding: 10px 0; display: flex; justify-content: space-around;
+            border-top: 1px solid var(--border-color); z-index: 21000;
+            transition: transform 0.4s ease; padding-bottom: max(10px, env(safe-area-inset-bottom));
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+        #bottomNav.hidden { transform: translateY(100%); }
+        .nav-btn {
+            background: none; border: none; color: var(--text-secondary);
+            display: flex; flex-direction: column; align-items: center;
+            gap: 5px; cursor: pointer; transition: 0.3s;
+        }
+        .nav-btn i { font-size: 20px; opacity: 0.7; }
+        .nav-btn span { font-size: 10px; font-weight: 600; opacity: 0.7; }
+        .nav-btn.active i, .nav-btn.active span { color: var(--accent-orange); opacity: 1; }
+        .nav-btn.active i { transform: translateY(-3px); }
+
+        /* --- SECTIONS MENU --- */
+        #sectionsMenu {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) scale(0.9);
+            width: 92%; max-width: 400px; background: var(--glass-bg);
+            backdrop-filter: blur(25px); border: 1px solid var(--border-color);
+            border-radius: 24px; padding: 20px; opacity: 0; pointer-events: none;
+            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1); z-index: 22000;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: flex; flex-wrap: wrap; gap: 12px;
+            justify-content: center; max-height: 70vh; overflow-y: auto;
+        }
+        #sectionsMenu.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
+        .menu-header { width: 100%; text-align: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .menu-header span { color: var(--accent-orange); font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .section-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 8px; width: calc(50% - 6px); min-height: 110px; padding: 15px 10px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);
+            border-radius: 20px; color: var(--text-primary); cursor: pointer;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .section-btn:hover { background: rgba(255, 107, 53, 0.15); border-color: var(--accent-orange); transform: translateY(-3px); }
+        .section-btn:active { transform: scale(0.96); }
+        .section-btn i { font-size: 26px; color: var(--text-secondary); transition: 0.3s; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2)); }
+        .section-btn:hover i { color: var(--accent-orange); transform: scale(1.1); }
+        .section-btn span { font-size: 13px; font-weight: 600; text-align: center; line-height: 1.2; }
+        .section-btn.full-width { width: 100%; flex-direction: row; min-height: 65px; gap: 15px; padding: 10px 20px; }
+        
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 21500; display: none; backdrop-filter: blur(4px); transition: opacity 0.3s; }
+        #overlay.show { display: block; }
+        
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-primary); z-index: 20000;
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column; gap: 20px; transition: opacity 0.3s; opacity: 0;
+        }
+        
+        /* NEW LOADING HAND CSS */
+        .🤚 { --skin-color: #E4C560; --tap-speed: 0.6s; --tap-stagger: 0.1s; position: relative; width: 80px; height: 60px; }
+        .🤚:before { content: ''; display: block; width: 180%; height: 75%; position: absolute; top: 70%; right: 20%; background-color: black; border-radius: 40px 10px; filter: blur(10px); opacity: 0.3; }
+        .🌴 { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-color: var(--skin-color); border-radius: 10px 40px; }
+        .👍 { position: absolute; width: 120%; height: 38px; background-color: var(--skin-color); bottom: -18%; right: 1%; transform-origin: calc(100% - 20px) 20px; transform: rotate(-20deg); border-radius: 30px 20px 20px 10px; border-bottom: 2px solid rgba(0, 0, 0, 0.1); border-left: 2px solid rgba(0, 0, 0, 0.1); }
+        .👍:after { width: 20%; height: 60%; content: ''; background-color: rgba(255, 255, 255, 0.3); position: absolute; bottom: -8%; left: 5px; border-radius: 60% 10% 10% 30%; border-right: 2px solid rgba(0, 0, 0, 0.05); }
+        .👉 { position: absolute; width: 80%; height: 35px; background-color: var(--skin-color); bottom: 32%; right: 64%; transform-origin: 100% 20px; animation-duration: calc(var(--tap-speed) * 2); animation-timing-function: ease-in-out; animation-iteration-count: infinite; transform: rotate(10deg); }
+        .👉:before { content: ''; position: absolute; width: 140%; height: 30px; background-color: var(--skin-color); bottom: 8%; right: 65%; transform-origin: calc(100% - 20px) 20px; transform: rotate(-60deg); border-radius: 20px; }
+        .👉:nth-child(1) { animation-delay: 0; filter: brightness(70%); animation-name: tap-upper-1; }
+        .👉:nth-child(2) { animation-delay: var(--tap-stagger); filter: brightness(80%); animation-name: tap-upper-2; }
+        .👉:nth-child(3) { animation-delay: calc(var(--tap-stagger) * 2); filter: brightness(90%); animation-name: tap-upper-3; }
+        .👉:nth-child(4) { animation-delay: calc(var(--tap-stagger) * 3); filter: brightness(100%); animation-name: tap-upper-4; }
+        @keyframes tap-upper-1 { 0%, 50%, 100% { transform: rotate(10deg) scale(0.4); } 40% { transform: rotate(50deg) scale(0.4); } }
+        @keyframes tap-upper-2 { 0%, 50%, 100% { transform: rotate(10deg) scale(0.6); } 40% { transform: rotate(50deg) scale(0.6); } }
+        @keyframes tap-upper-3 { 0%, 50%, 100% { transform: rotate(10deg) scale(0.8); } 40% { transform: rotate(50deg) scale(0.8); } }
+        @keyframes tap-upper-4 { 0%, 50%, 100% { transform: rotate(10deg) scale(1); } 40% { transform: rotate(50deg) scale(1); } }
+
+        #floatingBackBtn {
+            position: fixed; top: 60px; left: 10px; z-index: 20000;
+            background: rgba(13, 33, 55, 0.7); backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color); width: 50px; height: 50px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.3s;
+        }
+        #floatingBackBtn:hover { transform: scale(1.1); background: var(--accent-orange); }
+        #floatingBackBtn .back-arrow { margin-right: -4px; border-right-color: #4ade80; }
+        
+        .banner-dots {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px; z-index: 10;
+        }
+        .banner-dot { width: 8px; height: 8px; background: rgba(255, 255, 255, 0.4); border-radius: 50%; transition: all 0.3s ease; cursor: pointer; }
+        .banner-dot.active { background: var(--accent-orange); width: 20px; border-radius: 10px; }
+        .logout-art {
+    background: var(--glass-bg) !important;
+    border: 1px solid var(--accent-orange) !important;
+    animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 350px !important;
+}
+
+.art-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 107, 53, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 30px;
+    color: var(--accent-orange);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+}
+
+.logout-art h2 {
+    color: var(--text-primary);
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.logout-art p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, #ff4b2b, #ff416c) !important;
+    flex: 1;
+    border-radius: 12px !important;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--border-color) !important;
+    flex: 1;
+    color: var(--text-secondary) !important;
+    border-radius: 12px !important;
+}
+
+@keyframes modalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+/* --- NEW EXPIRY BUTTON STYLES --- */
+.nav-btn.new-feature {
+    position: relative;
+}
+
+.badge-new {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4b2b;
+    color: white;
+    font-size: 8px;
+    padding: 2px 5px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    animation: pulse-red 1.5s infinite;
+    box-shadow: 0 0 10px rgba(255, 75, 43, 0.5);
+}
+
+@keyframes pulse-red {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 43, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 75, 43, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 43, 0); }
+}
+
+/* تأثير التوهج للزرار نفسه */
+.glow-effect {
+    animation: icon-glow 2s infinite alternate;
+}
+
+@keyframes icon-glow {
+    from { color: var(--text-secondary); }
+    to { color: var(--accent-orange); filter: drop-shadow(0 0 5px var(--accent-orange)); }
+}
+    </style>
+</head>
+<body>
+
+    <!-- USER INFO BADGE -->
+    <div id="userInfoBadge">
+        <i class="fas fa-user-md"></i>
+        <span id="pharmacyDisplay">Pharmacy --</span>
+    </div>
+
+    <!-- AUDIO FOR ALARM -->
+    <audio id="offerAlarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
+    <!-- LOGIN MODAL -->
+    <div id="loginOverlay" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <h2>
+                <i class="fas fa-lock" style="color:var(--accent-orange);"></i>
+                Login
+            </h2>
+            <p style="font-size: 14px; margin-top: 10px; color: var(--text-secondary);">
+                Enter your pharmacy number     
+            </p>
+            <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)">
+            <button onclick="doLogin()" style="background: var(--accent-orange);">
+                Login <i class="fas fa-sign-in-alt"></i>
+            </button>
+
+            <a 
+                href="https://wa.me/966541932559?text=Hello%20I%20need%20support"
+                target="_blank"
+                style="
+                    display: flex; align-items: center; justify-content: center; gap: 10px;
+                    width: 100%; margin-top: 12px; padding: 12px 18px; border-radius: 12px;
+                    text-decoration: none; font-size: 16px; font-weight: bold;
+                    background: linear-gradient(135deg, #25D366, #128C7E); color: white;
+                    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25);
+                    border: 1px solid rgba(255,255,255,0.15); transition: 0.3s;
+                "
+                onmouseover="this.style.transform='scale(1.02)'"
+                onmouseout="this.style.transform='scale(1)'"
+            >
+                <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
+                Contact  
+            </a>
+        </div>
+    </div>
+
+    <!-- ALARM ACTION MODAL (SNOOZE & STOP) -->
+    <div id="alarmActionModal" class="custom-modal-overlay" style="display: none;">
+        <div class="custom-modal-box" style="border: 2px solid red;">
+            <h1 style="color: red; font-size: 26px; margin-bottom: 10px;"><i class="fas fa-bell"></i> تنبيه العروض!</h1>
+            <p id="alarmOfferName" style="font-size:18px; margin-bottom:20px; color: white;"></p>
+            
+            <input type="hidden" id="currentReminderId">
+
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:10px; color:var(--accent-orange); font-weight: bold;">تأجيل التنبيه (غفوة):</label>
+                <select id="snoozeSelect">
+                    <option value="1">غفوة لمدة ساعة</option>
+                    <option value="2">غفوة لمدة ساعتين</option>
+                    <option value="custom">تحديد وقت مخصص...</option>
+                </select>
+                <input type="datetime-local" id="customSnoozeTime" style="display:none;">
+                <button onclick="snoozeAlarm()" style="background: #f39c12;"><i class="fas fa-clock"></i> تأجيل التنبيه</button>
+            </div>
+
+            <button onclick="stopAlarm()" style="background: #28a745;"><i class="fas fa-check-circle"></i> إيقاف الصوت والتنبيه</button>
+        </div>
+    </div>
+
+    <!-- IFRAME CONTAINER -->
+    <div id="iframeContainer">
+        <button id="floatingBackBtn" onclick="closeIframe()">
+            <div class="back-arrow"></div>
+        </button>
+        <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="autoplay; fullscreen" scrolling="yes" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
+        
+        <div id="iframeError">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Connection Error</h3>
+            <p>Unable to load the requested content. Please check your internet connection and try again.</p>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" onclick="closeLightbox(event)">
+        <span class="lightbox-close">&times;</span>
+        <img id="lightboxImg" src="" alt="Zoomed">
+    </div>
+
+    <!-- FLOATING BUTTONS -->
+    <button class="floating-btn mode-toggle" id="modeToggle" onclick="toggleMode()"><i class="fas fa-moon"></i></button>
+    <button class="floating-btn logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+    <button class="floating-btn scroll-toggle" id="scrollBtn" onclick="toggleNavAndScroll()"><i class="fas fa-arrow-down"></i></button>
+
+    <!-- MAIN PAGE -->
+    <div id="homePage">
+        <div class="banner-container" id="bannerContainer"></div>
+        <div class="content-grid" id="contentGrid"></div>
+    </div>
+
+    <!-- NAVIGATION -->
+<nav id="bottomNav">
+   
+    <button class="nav-btn" onclick="toggleSections()"><i class="fas fa-th-large"></i><span>Sections</span></button>
+  <button class="nav-btn new-feature" onclick="openLink('expiry.html')">
+        <span class="badge-new">New</span>
+        <i class="fas fa-calendar-check glow-effect"></i>
+        <span>Expiry</span>
+    </button>
+    <button class="nav-btn active" onclick="goHome()"><i class="fas fa-home"></i><span>Home</span></button>
+    
+    <!-- زرار Expiry Check الجديد -->
+   
+
+    <button class="nav-btn" onclick="openLink('offersgit.html')"><i class="fas fa-tags"></i><span>Offers</span></button>
+    <button class="nav-btn" onclick="openLink('dev.htm')"><i class="fas fa-user-tie"></i><span>Dev</span></button>
+</nav>
+
+    <!-- SECTIONS MENU -->
+    <div id="sectionsMenu">
+        <div class="menu-header"><span>Select Mode</span></div>
+        <button class="section-btn" onclick="window.open('https://moduty.vercel.app', '_blank')">
+            <i class="fas fa-briefcase-medical"></i><span>Duty Mode</span>
+        </button>
+        <button class="section-btn" onclick="openLink('mwazna.htm')">
+            <i class="fas fa-balance-scale"></i><span>Mwazna</span>
+        </button>
+        <button class="section-btn" onclick="openLink('.cgp.htm')">
+            <i class="fas fa-book-medical"></i><span>CGP Mode</span>
+        </button>
+        <button class="section-btn full-width" onclick="openLink('links.htm')">
+            <i class="fas fa-link"></i><span>Links & Resources Mode</span>
+        </button>
+    </div>
+
+    <div id="overlay" onclick="closeAllMenus()"></div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay">
+        <div class="🤚">
+            <div class="👉"></div>
+            <div class="👉"></div>
+            <div class="👉"></div>
+            <div class="👉"></div>
+            <div class="🌴"></div>		
+            <div class="👍"></div>
+        </div>
+        <div style="color:white; font-weight:bold; margin-top: 15px;">Loading Content...</div>
+    </div>
+<div id="logoutModal" class="custom-modal-overlay" style="display:none;">
+    <div class="custom-modal-box logout-art">
+        <div class="art-icon">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h2>Sign Out</h2>
+        <p>Are you sure you want to exit the system?</p>
+        <div class="modal-buttons">
+            <button onclick="confirmLogout()" class="btn-confirm">Sign Out</button>
+            <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
+        </div>
+    </div>
+</div>
+<!-- ============================================== -->
+<!--                   SCRIPTS                      -->
+<!-- ============================================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+"use strict";
+// تريكة تشغيل الـ Service Worker من ملف واحد
+const swCode = `
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+        self.registration.showNotification(event.data.title, {
+            body: event.data.body,
+            icon: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
+            vibrate: [200, 100, 200],
+            badge: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png'
+        });
+    }
+});
+`;
+
+if ('serviceWorker' in navigator) {
+    const blob = new Blob([swCode], { type: 'text/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl)
+        .then(() => console.log('Service Worker Active (Single File Mode)'))
+        .catch(err => console.error('SW Error:', err));
+}
+// =========================================================================
+// 1. إعدادات التنبيهات
+// =========================================================================
+const START_OFFERS = [
+    {
+        id: 'offer_alert_1',
+        title: 'CITIZEN OFFERS',
+        start_date: '2026-04-06T00:00:00' 
+    },
+    {
+        id: 'offer_alert_2',
+        title: 'CATEGORY OFFERS',
+        start_date: '2026-04-15T00:00:00'
+    },
+    {
+        id: 'offer_alert_3',
+        title: 'MONTHLY OFFERS',
+        start_date: '2026-04-25T:00:00'
+    }
+];
+
+// =========================================================================
+// 2. البانر والمحتوى
+// =========================================================================
+const LOCAL_BANNERS = [
+     {
+        id: 'banner_1',
+        title: 'owner items',
+        desc: 'RONZAC',
+        link: 'offersgit.html',
+        imageUrl: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/ronzac.jpeg',
+        videoUrl: '',
+        color: ''
+    }
+];
+
+
+
+const LOCAL_CONTENTS = [
+    {
+        id: 'content_1',
+        type: 'image',
+        title: '',
+        desc: '',
+        images: [
+
+            'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/nsaids.jpeg'
+        ],
+
+        videoUrl: ''
+    }
+
+];
+
+// =========================================================================
+// 3. Supabase
+// =========================================================================
+const supabaseUrl = 'https://uzydzvfcrlqmtondugte.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo'; 
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+let APPDATA = { banners: [], content: [] };
+let currentPharmacy = localStorage.getItem('pharmacy_number');
+let userReminders = [];
+let alarmCheckInterval;
+
+let autoSnoozeTimeout;
+let stopAudioTimeout;
+
+// =========================================================================
+// Push Notifications
+// =========================================================================
+function requestNotificationPermission() {
+    if ("Notification" in window) {
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    console.log("Notification permission granted.");
+                }
+            });
+        }
+    }
+}
+
+function showBrowserNotification(title, body) {
+    if ("Notification" in window && Notification.permission === "granted") {
+        const notification = new Notification(title, {
+            body: body,
+            icon: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
+            vibrate: [200, 100, 200]
+        });
+
+        notification.onclick = function() {
+            window.focus();
+            this.close();
+        };
+    }
+}
+
+document.getElementById('snoozeSelect').addEventListener('change', function() {
+    document.getElementById('customSnoozeTime').style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+window.addEventListener('DOMContentLoaded', async () => {
+    loadTheme();
+    checkAuth();
+});
+
+function checkAuth() {
+    const badge = document.getElementById('userInfoBadge');
+    
+    if (!currentPharmacy) {
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.querySelector('.logout-btn').style.display = 'none';
+        badge.style.display = 'none';
+    } else {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.querySelector('.logout-btn').style.display = 'flex';
+        
+        document.getElementById('pharmacyDisplay').innerText = `Pharmacy ${currentPharmacy}`;
+        badge.style.display = 'flex';
+        
+        initSystem();
+    }
+}
+
+async function doLogin() {
+    const val = document.getElementById('pharmacyInput').value.trim();
+    if(val) {
+        currentPharmacy = val;
+        localStorage.setItem('pharmacy_number', val);
+        
+        requestNotificationPermission();
+
+        try {
+            // التعديل هنا: استخدام upsert بدل insert
+            // بنبعت البيانات ونحدد إننا مش عايزين تكرار في pharmacy_number
+            await supabaseClient
+                .from('login_logs')
+                .upsert({ 
+                    pharmacy_number: currentPharmacy,
+                    login_time: new Date().toISOString() 
+                }, { 
+                    onConflict: 'pharmacy_number' 
+                });
+                
+            console.log("Login tracked or updated successfully.");
+        } catch (e) {
+            console.error("Failed to log login:", e);
+        }
+
+        checkAuth();
+    } else {
+        alert("يرجى إدخال رقم الصيدلية!");
+    }
+}
+function logout() {
+    document.getElementById('logoutModal').style.display = 'flex';
+}
+
+function closeLogoutModal() {
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
+async function confirmLogout() {
+    // Clear local data
+    localStorage.removeItem('pharmacy_number');
+    currentPharmacy = null;
+    
+    if(alarmCheckInterval) clearInterval(alarmCheckInterval);
+    userReminders = [];
+    
+    const audio = document.getElementById('offerAlarmSound');
+    if(audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+    
+    // UI Cleanup
+    document.getElementById('logoutModal').style.display = 'none';
+    document.getElementById('alarmActionModal').style.display = 'none';
+    
+    checkAuth(); 
+    console.log("Session ended by user.");
+}
+async function initSystem() {
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+    }
+
+    try {
+        APPDATA.banners = LOCAL_BANNERS;
+        APPDATA.content = LOCAL_CONTENTS;
+        renderBanners();
+        renderContent();
+        
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 300);
+        }
+
+        requestNotificationPermission();
+
+        await autoScheduleReminders();
+        await fetchReminders();
+        startAlarmChecker();
+        
+    } catch (err) {
+        console.error('System Error:', err);
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 300);
+        }
+    }
+}
+
+// ==== التعديل الجوهري هنا في الحسابات =====
+async function autoScheduleReminders() {
+    if(!currentPharmacy) return;
+    
+    for (let offer of START_OFFERS) {
+        const offerStartTime = new Date(offer.start_date);
+        
+        // التوقيتين اللي عايزينهم
+        const triggerTimes = [
+            { id: offer.id + '_30min', time: new Date(offerStartTime.getTime() - (30 * 60000)) }, // قبلها بـ 30 دقيقة
+            { id: offer.id + '_exact', time: offerStartTime } // وقت العرض بالظبط
+        ];
+        
+        for (let t of triggerTimes) {
+            const { data: existing } = await supabaseClient
+                .from('reminders')
+                .select('id')
+                .eq('pharmacy_number', currentPharmacy)
+                .eq('offer_id', t.id); // بنشيك بالـ ID الجديد المركب
+                
+            if (!existing || existing.length === 0) {
+                await supabaseClient.from('reminders').insert([{
+                    pharmacy_number: currentPharmacy,
+                    offer_id: t.id,
+                    offer_title: offer.title,
+                    trigger_time: t.time.toISOString(),
+                    status: 'pending'
+                }]);
+            }
+        }
+    }
+}
+async function fetchReminders() {
+    if(!currentPharmacy) return;
+    const { data, error } = await supabaseClient
+        .from('reminders')
+        .select('*')
+        .eq('pharmacy_number', currentPharmacy)
+        .in('status', ['pending', 'snoozed']); 
+    if(!error && data) userReminders = data;
+}
+
+// ==== التعديل الجوهري في دالة المقارنة والمراقبة =====
+
+async function stopAlarm() {
+    const idInput = document.getElementById('currentReminderId');
+    const id = idInput.value;
+    const audio = document.getElementById('offerAlarmSound');
+    
+    // 1. إيقاف كل التايمرز والصوت فوراً لمنع التداخل
+    clearTimeout(stopAudioTimeout);
+    clearTimeout(autoSnoozeTimeout);
+    
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+    
+    // 2. إخفاء المودال فوراً عشان اليوزر يحس بالاستجابة
+    document.getElementById('alarmActionModal').style.display = 'none';
+
+    if (id) {
+        try {
+            // 3. تحديث الحالة في سوبابيز لـ completed
+            const { error } = await supabaseClient
+                .from('reminders')
+                .update({ status: 'completed' }) 
+                .eq('id', id);
+                
+            if (error) throw error;
+
+            // 4. مسح التنبيه من المصفوفة المحلية فوراً
+            userReminders = userReminders.filter(r => r.id !== id);
+            
+            // 5. تصغير قيمة الـ ID المخفي لضمان عدم التكرار
+            idInput.value = "";
+            
+            console.log("Alarm stopped and status updated to completed.");
+        } catch (err) {
+            console.error("Failed to finalize alarm in database:", err);
+            // ملحوظة: حتى لو فشل تحديث السيرفر، إحنا مسحناه محلياً (Filter) 
+            // وده هيمنعه يضرب تاني طول ما الصفحة مفتوحة
+            userReminders = userReminders.filter(r => r.id !== id);
+        }
+    }
+}
+
+async function snoozeAlarm(isAuto = false) {
+    const id = document.getElementById('currentReminderId').value;
+    const snoozeVal = document.getElementById('snoozeSelect').value;
+    let newTriggerTime = new Date();
+
+    clearTimeout(stopAudioTimeout);
+    clearTimeout(autoSnoozeTimeout);
+
+    if (snoozeVal === '1') {
+        newTriggerTime.setHours(newTriggerTime.getHours() + 1);
+    } else if (snoozeVal === '2') {
+        newTriggerTime.setHours(newTriggerTime.getHours() + 2);
+    } else if (snoozeVal === 'custom') {
+        const customVal = document.getElementById('customSnoozeTime').value;
+        if (!customVal && !isAuto) {
+            alert('يرجى تحديد الوقت والتاريخ المخصص أولاً!');
+            autoSnoozeTimeout = setTimeout(() => {
+                document.getElementById('snoozeSelect').value = "1";
+                snoozeAlarm(true);
+            }, 60000);
+            return;
+        }
+        newTriggerTime = new Date(customVal);
+    }
+
+    const audio = document.getElementById('offerAlarmSound');
+    audio.pause();
+    audio.currentTime = 0;
+    document.getElementById('alarmActionModal').style.display = 'none';
+
+    if(id) {
+        await supabaseClient.from('reminders').update({ 
+            status: 'snoozed',
+            trigger_time: newTriggerTime.toISOString()
+        }).eq('id', id);
+        await fetchReminders(); 
+    }
+}
+
+// === UI RENDER LOGIC (Banners & Contents) ===
+function renderBanners() {
+    const container = document.getElementById('bannerContainer');
+    if (!APPDATA.banners || APPDATA.banners.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    let slidesHtml = '';
+    let visibleCount = 0;
+    
+    APPDATA.banners.forEach(banner => {
+        const hasImage = banner.imageUrl && banner.imageUrl.trim() !== '';
+        const hasVideo = banner.videoUrl && banner.videoUrl.trim() !== '';
+        const hasColor = banner.color && banner.color.trim() !== '';
+        
+        if (!hasImage && !hasVideo && !hasColor) return;
+        
+        let mediaHTML = '';
+        if (hasVideo) {
+            mediaHTML = `<video class="banner-bg-media" autoplay muted loop playsinline disablePictureInPicture>
+                            <source src="${banner.videoUrl}" type="video/mp4">
+                         </video>`;
+        } else if (hasImage) {
+            mediaHTML = `<img class="banner-bg-media" src="${banner.imageUrl}" alt="${banner.title}">`;
+        }
+        
+        const bgStyle = (!hasImage && !hasVideo) ? `background: ${banner.color};` : '';
+        
+        slidesHtml += `
+            <div class="banner-slide" style="${bgStyle}" onclick="openLink('${banner.link}')">
+                ${mediaHTML}
+                <div class="banner-content">
+                    <h2>${banner.title}</h2>
+                    <p>${banner.desc}</p>
+                </div>
+            </div>
+        `;
+        visibleCount++;
+    });
+
+    if (visibleCount === 0) {
+        container.style.display = 'none';
+    } else {
+        container.style.display = 'block';
+        container.innerHTML = `<div class="banner-wrapper" id="bannerWrapper">${slidesHtml}</div>
+                               <div class="banner-dots" id="bannerDots"></div>`;
+        
+        const dotsContainer = document.getElementById('bannerDots');
+        if (dotsContainer) {
+            for (let i = 0; i < visibleCount; i++) {
+                const dot = document.createElement('div');
+                dot.className = `banner-dot ${i === 0 ? 'active' : ''}`;
+                dot.onclick = (e) => { e.stopPropagation(); goToSlide(i); };
+                dotsContainer.appendChild(dot);
+            }
+        }
+        if (visibleCount > 1) {
+            startBannerRotation();
+        }
+    }
+}
+
+function renderContent() {
+    const grid = document.getElementById('contentGrid');
+    grid.innerHTML = '';
+    if (!APPDATA.content || APPDATA.content.length === 0) {
+        grid.innerHTML = `<p style="text-align:center; color:var(--text-secondary); margin-top:20px;">. .</p>`;
+        return;
+    }
+
+    APPDATA.content.forEach((item, idx) => {
+        if (item.type === 'video' && (!item.videoUrl || item.videoUrl.trim() === '')) return;
+        
+        const card = document.createElement('div');
+        card.className = 'content-card';
+        
+        let mediaHTML = '';
+        if (item.type === 'image') {
+            const imgs = item.images;
+            let imgSlides = '';
+            let dots = '';
+            if (imgs.length > 0) {
+                imgs.forEach((url, i) => {
+                    const display = i === 0 ? 'block' : 'none';
+                    imgSlides += `<img src="${url}" style="display:${display};" class="gallery-img-${idx} zoomable-img" data-card-idx="${idx}" onclick="openLightbox('${url}')">`;
+                    if(imgs.length > 1) {
+                        dots += `<div class="gallery-dot ${i===0?'active':''}" onclick="changeGallerySlide(${idx}, ${i})"></div>`;
+                    }
+                });
+                mediaHTML = `
+                    <div class="media-container">
+                        ${imgSlides}
+                        <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+                        <div class="gallery-dots" id="dots-${idx}" style="display: ${imgs.length > 1 ? 'flex' : 'none'};">
+                            ${dots}
+                        </div>
+                    </div>`;
+            }
+        } else if (item.type === 'video') {
+            mediaHTML = `
+                <div class="media-container" style="height: 220px;">
+                    <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        <source src="${item.videoUrl}" type="video/mp4">
+                    </video>
+                </div>`;
+        }
+
+        card.innerHTML = `
+            <div class="card-header"><h3>${item.title}</h3></div>
+            ${mediaHTML}
+            <p class="card-desc">${item.desc}</p>
+        `;
+        grid.appendChild(card);
+    });
+
+    setTimeout(() => {
+        const allImages = document.querySelectorAll('.zoomable-img');
+        allImages.forEach(img => { enablePinchZoomOnImage(img); });
+    }, 100);
+}
+
+function changeGallerySlide(cardIdx, imgIdx) {
+    const images = document.querySelectorAll(`.gallery-img-${cardIdx}`);
+    images.forEach(img => { img.style.display = 'none'; });
+    if(images[imgIdx]) images[imgIdx].style.display = 'block';
+    
+    const dots = document.getElementById(`dots-${cardIdx}`).children;
+    Array.from(dots).forEach(d => { d.classList.remove('active'); });
+    if(dots[imgIdx]) dots[imgIdx].classList.add('active');
+}
+
+function openLightbox(url) {
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightboxImg');
+    img.src = url;
+    enablePinchZoomOnImage(img);
+    lb.style.display = 'flex';
+    setTimeout(() => { lb.classList.add('show'); }, 10);
+}
+
+function closeLightbox(event) {
+    if (event && event.target.id !== 'lightbox' && event.target.id !== 'lightboxImg') return;
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightboxImg');
+    lb.classList.remove('show');
+    setTimeout(() => { 
+        lb.style.display = 'none'; 
+        img.style.transform = '';
+        img.style.transition = '';
+    }, 300);
+}
+
+function enablePinchZoomOnImage(imageElement) {
+    if (!imageElement) return;
+    let imageScale = 1;
+    let lastScale = 1;
+    let startData = { x: 0, y: 0, distance: 0 };
+    
+    const getDistance = (event) => {
+        return Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
+    };
+
+    imageElement.addEventListener('touchstart', (event) => {
+        if (event.touches.length === 2) {
+            event.preventDefault();
+            startData.x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+            startData.y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+            startData.distance = getDistance(event);
+            lastScale = imageScale;
+        }
+    }, { passive: false });
+
+    imageElement.addEventListener('touchmove', (event) => {
+        if (event.touches.length === 2) {
+            event.preventDefault();
+            event.stopPropagation();
+            let scale = event.scale ? event.scale : getDistance(event) / startData.distance;
+            imageScale = Math.min(Math.max(1, lastScale * scale), 5);
+            const deltaX = (event.touches[0].pageX + event.touches[1].pageX) / 2 - startData.x;
+            const deltaY = (event.touches[0].pageY + event.touches[1].pageY) / 2 - startData.y;
+            const transform = `translate(${deltaX}px, ${deltaY}px) scale(${imageScale})`;
+            imageElement.style.transform = transform;
+            imageElement.style.WebkitTransform = transform;
+            imageElement.style.zIndex = "99999";
+            imageElement.style.transition = "none";
+        }
+    }, { passive: false });
+
+    imageElement.addEventListener('touchend', (event) => {
+        if (event.touches.length < 2) {
+            if (imageScale > 1.1) {
+                setTimeout(() => {
+                    imageElement.style.transform = '';
+                    imageElement.style.WebkitTransform = '';
+                    imageElement.style.transition = 'transform 0.3s ease';
+                    imageElement.style.zIndex = "";
+                    imageScale = 1;
+                    lastScale = 1;
+                }, 100);
+            }
+        }
+    }, { passive: false });
+
+    let lastTap = 0;
+    imageElement.addEventListener('touchend', function(event) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0) {
+            event.preventDefault();
+            imageElement.style.transform = '';
+            imageElement.style.WebkitTransform = '';
+            imageElement.style.transition = 'transform 0.3s ease';
+            imageElement.style.zIndex = "";
+            imageScale = 1;
+            lastScale = 1;
+        }
+        lastTap = currentTime;
+    });
+}
+
+let currentBannerIndex = 0;
+function startBannerRotation() {
+    if (window.bannerInterval) clearInterval(window.bannerInterval);
+    window.bannerInterval = setInterval(() => {
+        const slides = document.querySelectorAll('.banner-slide');
+        currentBannerIndex = (currentBannerIndex + 1) % slides.length;
+        goToSlide(currentBannerIndex);
+    }, 2000);
+}
+
+function goToSlide(index) {
+    const wrapper = document.getElementById('bannerWrapper');
+    if (!wrapper) return;
+    currentBannerIndex = index;
+    wrapper.style.transform = `translateX(-${index * 100}%)`;
+    const dots = document.querySelectorAll('.banner-dot');
+    dots.forEach((dot, i) => { dot.classList.toggle('active', i === index); });
+}
+
+function toggleMode() {
+    document.body.classList.toggle('day-mode');
+    localStorage.setItem('theme', document.body.classList.contains('day-mode') ? 'day' : 'night');
+    document.querySelector('.mode-toggle i').className = document.body.classList.contains('day-mode') ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+function loadTheme() {
+    if (localStorage.getItem('theme') === 'day') {
+        document.body.classList.add('day-mode');
+        document.querySelector('.mode-toggle i').className = 'fas fa-sun';
+    }
+}
+
+function toggleNavAndScroll() {
+    const nav = document.getElementById('bottomNav');
+    const icon = document.querySelector('.scroll-toggle i');
+    if (!nav.classList.contains('hidden')) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        nav.classList.add('hidden');
+        icon.className = 'fas fa-arrow-up';
+    } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        nav.classList.remove('hidden');
+        icon.className = 'fas fa-arrow-down';
+    }
+}
+
+function closeAllMenus() {
+    document.getElementById('sectionsMenu').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+}
+
+function openLink(url) {
+    if (!url || url.trim() === '#') return;
+    closeAllMenus();
+
+    // 🔴 التعديل هنا: سحب رقم الصيدلية وتمريره في الرابط
+    const phNo = localStorage.getItem('pharmacy_number');
+    let finalUrl = url;
+    
+    // لو فيه رقم صيدلية، بنضيفه للرابط كـ Parameter اسمه ph
+    if (phNo) {
+        const separator = url.includes('?') ? '&' : '?';
+        finalUrl = `${url}${separator}ph=${encodeURIComponent(phNo)}`;
+    }
+
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
+            btn.classList.add('active');
+        }
+    });
+
+    const container = document.getElementById('iframeContainer');
+    const iframe = document.getElementById('embeddedFrame');
+    const errorBox = document.getElementById('iframeError');
+    const loader = document.getElementById('loadingOverlay');
+
+    errorBox.classList.remove('show');
+
+    if (loader) {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+        loader.classList.remove('hidden');
+    }
+
+    container.classList.add('show');
+
+    iframe.onload = null;
+    iframe.onerror = null;
+
+    setTimeout(() => {
+        let hasLoaded = false;
+        let loadTimeout = setTimeout(() => {
+            if (!hasLoaded) {
+                hideLoaderFast(loader);
+                errorBox.classList.add('show');
+            }
+        }, 15000);
+
+iframe.onload = function() {
+            try {
+                const frameSrc = iframe.contentWindow.location.href;
+                if (frameSrc === 'about:blank') return;
+            } catch(e) {
+                // cross-origin: يعني الصفحة اتحملت بنجاح
+            }
+            hasLoaded = true;
+            clearTimeout(loadTimeout);
+            hideLoaderFast(loader);
+
+            // 🚀 التعديل الجوهري هنا: إرسال الرقم عبر postMessage
+            // بنجيب الرقم اللي متسجل في المنصة الرئيسية
+            const phNo = localStorage.getItem('pharmacy_number');
+            
+            if (phNo) {
+                // بنستنى نص ثانية عشان نضمن إن الصفحة اللي جوه الـ iframe جاهزة تسمعنا
+                setTimeout(() => {
+                    console.log("Sending Pharmacy ID to iframe:", phNo);
+                    iframe.contentWindow.postMessage({ 
+                        type: 'LOGIN_DATA', 
+                        ph: phNo 
+                    }, '*'); // '*' تسمح بمرور الرسالة حتى لو الملفات محلياً
+                }, 500);
+            }
+        };
+        iframe.onerror = function() {
+            hasLoaded = true;
+            clearTimeout(loadTimeout);
+            hideLoaderFast(loader);
+            errorBox.classList.add('show');
+        };
+
+        // 🟢 نستخدم finalUrl اللي فيه رقم الصيدلية
+        iframe.src = finalUrl;
+    }, 50);
+}
+function hideLoaderFast(loader) {
+    if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            loader.style.display = 'none';
+        }, 150);
+    }
+}
+
+function closeIframe() {
+    document.getElementById('iframeContainer').classList.remove('show');
+    document.getElementById('iframeError').classList.remove('show');
+    setTimeout(() => { document.getElementById('embeddedFrame').src = 'about:blank'; }, 400);
+}
+
+function goHome() {
+    closeIframe();
+    closeAllMenus();
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => btn.classList.remove('active'));
+    const homeBtn = document.querySelector('.nav-btn[onclick="goHome()"]');
+    if (homeBtn) homeBtn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleSections() {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => btn.classList.remove('active'));
+    const sectionsBtn = document.querySelector('.nav-btn[onclick="toggleSections()"]');
+    if (sectionsBtn) sectionsBtn.classList.add('active');
+    document.getElementById('sectionsMenu').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+}
+function triggerAlarm(reminderObj) {
+    const audio = document.getElementById('offerAlarmSound');
+    audio.currentTime = 0;
+    audio.play().catch(e => console.log("Audio prevented:", e));
+
+    // جلب وقت العرض الأصلي وتنسيقه
+    let timeString = "";
+    let isExactlyNow = false;
+    
+    // تنظيف الـ ID للوصول للبيانات الأصلية
+    const cleanId = reminderObj.offer_id.replace('_30min', '').replace('_exact', '');
+    const originalOffer = START_OFFERS.find(o => o.id === cleanId);
+    
+    if (originalOffer) {
+        const offerTime = new Date(originalOffer.start_date);
+        timeString = " الساعة " + offerTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        const diff = Math.abs(new Date().getTime() - offerTime.getTime());
+        if (diff < 60000) { isExactlyNow = true; }
+    }
+
+    const message = isExactlyNow 
+        ? `${reminderObj.offer_title} بدأ الآن! 🔥` 
+        : `${reminderObj.offer_title}${timeString} سيبدأ خلال 30 دقيقة! ⏳`;
+
+    // 1. تحديث البوب أب الداخلي (هيفضل موجود لحد ما تضغط Stop)
+    const titleDisplay = document.getElementById('alarmOfferName');
+    titleDisplay.innerText = message;
+    document.getElementById('alarmActionModal').style.display = 'flex';
+    document.getElementById('currentReminderId').value = reminderObj.id;
+
+    // 2. إرسال الإشعار للـ Service Worker (للمتصفح بره)
+    const notifTitle = "تنبيه MONO SYSTEM";
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'SHOW_NOTIFICATION',
+            title: notifTitle,
+            body: message
+        });
+    } else {
+        showBrowserNotification(notifTitle, message);
+    }
+
+    // إيقاف الصوت بعد 20 ثانية منعاً للإزعاج
+    clearTimeout(stopAudioTimeout);
+    stopAudioTimeout = setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+    }, 20000);
+}
+
+function startAlarmChecker() {
+    if(alarmCheckInterval) clearInterval(alarmCheckInterval);
+    
+    alarmCheckInterval = setInterval(() => {
+        const nowMs = new Date().getTime();
+        
+        userReminders.forEach((rem) => {
+            const trigTimeMs = new Date(rem.trigger_time).getTime();
+            const isTooOld = (nowMs - trigTimeMs) > (60 * 60 * 1000); 
+
+            if ((rem.status === 'pending' || rem.status === 'snoozed') && nowMs >= trigTimeMs && !isTooOld) {
+                console.log(`Triggering alarm: ${rem.offer_title}`);
+                rem.status = 'firing'; // قفل التكرار محلياً
+                triggerAlarm(rem); 
+            }
+        });
+    }, 5000); 
+}
+</script>
+</body>
+</html>

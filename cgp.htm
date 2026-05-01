@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGP Medical Resources</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg1: #0a1628;
+            --bg2: #1a2940;
+            --text-main: #ffffff;
+            --card-bg1: rgba(26, 41, 64, 0.9);
+            --card-bg2: rgba(15, 25, 40, 0.9);
+            --accent: #ff8c42;
+            --accent-soft: rgba(255, 140, 66, 0.3);
+            --surface: rgba(26, 41, 64, 0.9);
+        }
+
+        body.light-mode {
+            --bg1: #f3f4f8;
+            --bg2: #ffffff;
+            --text-main: #111827;
+            --card-bg1: #ffffff;
+            --card-bg2: #f3f4f8;
+            --accent: #ff6b35;
+            --accent-soft: rgba(255, 107, 53, 0.3);
+            --surface: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        .header {
+            background: rgba(10, 22, 40, 0.95);
+            padding: 10px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            background: linear-gradient(90deg, #ff8c42 0%, #ffaa70 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: left;
+        }
+
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            border: 2px solid var(--accent-soft);
+            background: rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 1.4em;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .theme-toggle {
+            background: #f3f4f8;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px) scale(1.03);
+            box-shadow: 0 0 15px rgba(255, 140, 66, 0.5);
+        }
+
+        .search-container {
+            margin: 20px auto 10px;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
+            padding: 12px 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--accent-soft);
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .search-box {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 24px rgba(255, 140, 66, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .search-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 1.05em;
+            padding-left: 10px;
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        body.light-mode .search-box input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-icon {
+            color: var(--accent);
+            font-size: 1.3em;
+        }
+
+        .boxes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto 30px;
+        }
+
+        @media (max-width: 480px) {
+            .boxes-grid {
+                gap: 10px;
+                padding: 15px 10px 25px;
+            }
+        }
+
+        .resource-box {
+            background: linear-gradient(145deg, var(--card-bg1), var(--card-bg2));
+            border-radius: 20px;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255, 140, 66, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 140, 66, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .resource-box:hover::before {
+            left: 100%;
+        }
+
+        .resource-box:hover {
+            transform: translateY(-8px) scale(1.03);
+            border-color: var(--accent);
+            box-shadow: 0 12px 35px rgba(255, 140, 66, 0.35);
+        }
+
+        .box-icon {
+            font-size: 2.1em;
+            margin-bottom: 10px;
+            display: block;
+            text-align: center;
+        }
+
+        .box-title {
+            font-size: 0.95em;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .box-date {
+            font-size: 0.72em;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        body.light-mode .box-date {
+            color: #6b7280;
+        }
+
+        .content-page {
+            display: none;
+            padding: 30px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 140, 66, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 140, 66, 0.5);
+        }
+
+        .content-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 15px;
+        }
+
+        .content-type-box {
+            background: var(--surface);
+            border: 2px solid var(--accent-soft);
+            border-radius: 15px;
+            padding: 22px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .content-type-box:hover {
+            border-color: var(--accent);
+            transform: scale(1.04);
+            box-shadow: 0 10px 30px rgba(255, 140, 66, 0.3);
+        }
+
+        .content-type-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .content-type-title {
+            font-size: 1.1em;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .viewer-page {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .pdf-search-container {
+            max-width: 1200px;
+            margin: 15px auto 10px;
+            padding: 15px;
+            background: var(--surface);
+            border-radius: 15px;
+        }
+
+        .pdf-viewer-frame {
+            width: 100%;
+            min-height: 60vh;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            background: #1a2940;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        body.light-mode .pdf-viewer-frame {
+            background: #e5e7eb;
+        }
+
+        .pdf-page {
+            margin: 10px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(255, 140, 66, 0.3);
+            display: block;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .pdf-page.highlighted {
+            box-shadow: 0 0 0 4px #ff8c42, 0 0 25px rgba(255,140,66,0.9);
+            transform: scale(1.01);
+        }
+
+        .search-results {
+            margin-top: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            background: rgba(15, 25, 40, 0.9);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .search-result-item {
+            background: #111827;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 140, 66, 0.2);
+            transform: translateX(8px);
+        }
+
+        .result-title {
+            color: var(--accent);
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.98em;
+        }
+
+        .result-context {
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.5;
+            font-size: 0.88em;
+        }
+
+        .highlight {
+            background: #ff8c42;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #0a1628;
+            font-weight: bold;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .media-item {
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--accent-soft);
+            transition: all 0.3s ease;
+        }
+
+        .media-item:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-soft);
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--accent);
+            font-size: 1.6em;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+            z-index: 1000;
+            transition: all 0.25s ease;
+        }
+
+        body.light-mode .scroll-top-btn {
+            background: rgba(249,250,251,0.95);
+        }
+
+        .scroll-top-btn.visible {
+            display: flex;
+        }
+
+        .scroll-top-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 140, 66, 0.5);
+        }
+
+        .pdf-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .pdf-pill {
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--accent-soft);
+            background: rgba(0,0,0,0.2);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s ease;
+        }
+
+        body.light-mode .pdf-pill {
+            background: #f3f4f8;
+        }
+
+        .pdf-pill.active {
+            background: var(--accent);
+            color: #0a1628;
+            border-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .pdf-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 10px rgba(255,140,66,0.4);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(26, 41, 64, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff8c42;
+            border-radius: 5px;
+        }
+
+        body.light-mode ::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+        .team-btn {
+    padding: 8px 15px;
+    border-radius: 50px;
+    border: 2px solid var(--accent-soft);
+    background: rgba(255, 140, 66, 0.1);
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.team-btn:hover {
+    background: var(--accent);
+    color: #0a1628;
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(255, 140, 66, 0.4);
+}
+
+body.light-mode .team-btn {
+    background: #f3f4f8;
+}
+    </style>
+</head>
+<body>
+    
+    <div id="mainPage">
+       <div class="header">
+    <h1>📚 CGP Medical Resources Hub</h1>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button id="cgpTeamBtn" class="team-btn" title="CGP Team">
+            👥 CGP Team
+        </button>
+        
+        <button id="themeToggle" class="theme-toggle" title="Toggle day / night">
+            🌙
+        </button>
+    </div>
+</div>
+
+        <div class="search-container" id="searchSection">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="globalSearch"
+                    placeholder="Search titles & content (one or more words)...">
+            </div>
+            <div class="search-results" id="globalSearchResults"
+                 style="display:none; max-height:350px;"></div>
+        </div>
+
+        <div class="boxes-grid" id="boxesGrid"></div>
+    </div>
+
+    <div id="contentPage" class="content-page">
+        <button class="back-button" onclick="goToMain()">⬅ Back to Resources</button>
+        <h2 id="contentPageTitle"
+            style="color: #ff8c42; margin-bottom: 20px; font-size: 1.8em;"></h2>
+        <div class="content-types" id="contentTypes"></div>
+    </div>
+
+    <div id="viewerPage" class="viewer-page">
+        <button class="back-button" onclick="goToContent()">⬅ Back to Content</button>
+        <div class="pdf-search-container" id="pdfSearchContainer" style="display:none;">
+            <div class="search-box">
+                <span class="search-icon">🔎</span>
+                <input type="text" id="pdfSearch"
+                    placeholder="Search within this PDF (one or more words)...">
+            </div>
+            <div id="pdfList" class="pdf-list" style="display:none;"></div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+        <div id="pdfContainer" class="pdf-viewer-frame"></div>
+        <div class="media-grid" id="mediaGrid"></div>
+    </div>
+
+    <button id="scrollTopBtn" class="scroll-top-btn" title="Back to search">⬆</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.6.2/fuse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
+
+        const PLACEHOLDER_PDF =
+            "https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/ON-SITE%20Training-5.pdf";
+
+     
+        const resources = [
+            { id: 1,  title: "Allergic Rhinitis",       icon: "🤧", date: "Modified 25 Nov 2023", 
+            pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Allergic%20Rhinitis%20.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Allergic%20Rhinitis%20mindmap.pdf"]
+            , photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Allergic%20Rhinitis%20mindmap.pdf"] },
+            { id: 2,  title: "Baby Milk",               icon: "🍼", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Baby%20milk%20(2).pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Baby%20milk%20Mindmap.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Baby%20milk%20Mindmap.pdf"],  videos: [""] },
+            { id: 3,  title: "CGP Lifestyle",           icon: "💊", date: "Modified 12 Mar",      pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/CGP%20lifestyle%20(%20Healty%20food%20).pdf",   "https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Oral%20Care%20Final.pdf-7.pdf"], 
+           
+            photos: [""],  videos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Wait%20CGP%20lifestyle%20...%20.mp4"] },
+            { id: 4,  title: "Diabetes Mellitus",       icon: "🩺", date: "Modified 21 Feb 2024", pdfs: [PLACEHOLDER_PDF], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Diabetes%20Melitus%201.jpg","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Diabetes%20Melitus%202.jpg","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Diabetes%20Melitus%203.jpg","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Diabetes%20Melitus%204.jpg","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Diabetes%20Melitus%205.jpg","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Diabetes%20Melitus%206.jpg","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Diabetes%20Melitus%207.jpg"],  videos: [""] },
+            { id: 5,  title: "Drug Food Interactions",  icon: "🍽️", date: "Modified 23 Feb",     pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Drug%20Food%20Interaction.pdf"], photos: [""],  videos: [""] },
+            { id: 6,  title: "Ear Care",                icon: "👂", date: "Modified 3 Jul",       pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/CGP_Ear%20Care.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Ear%20Care_Mind%20Map.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Ear%20Care_Mind%20Map.pdf"],  videos: [""] },
+            { id: 7,  title: "Eye Care",                icon: "👁️", date: "Modified 24 May",     pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/CGP_Eye_Care_New.pdf"], photos: [""],  videos: [""] },
+            { id: 8,  title: "GIT Disorders",           icon: "🫀", date: "Modified 19 Mar 2024", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/GIT%20Disorders.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/GIT%20mindmap.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/GIT%20mindmap.pdf"],  videos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/GIT%20Disorder.mp4"] },
+            { id: 9,  title: "Hair Experts",            icon: "💇", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Hair%20experts%20.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Hair%20Experts%20Mindmap.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Hair%20Experts%20Mindmap.pdf"],  videos: ["4"] },
+            { id: 10, title: "Hyperpigmentation",       icon: "🎨", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Hyperpigmentation%20.pdf"], photos: [""], videos: [""] },
+            { id: 11, title: "Immunity Battle",         icon: "🛡️", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Immunity%20Battle.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Immunity%20Battle%20Mindmap.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Immunity%20Battle%20Mindmap.pdf"], videos: [""] },
+            { id: 12, title: "Known The New",           icon: "✨", date: "Modified 3 Jul",       pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/know.pdf"], photos: [""], videos: [""] },
+            { id: 13, title: "Mineral Supplements",     icon: "💎", date: "Modified 21 Feb 2024", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/know.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Mineral%20supplements%202.jpg","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Mineral%20supplements%203.jpg"], videos: [""] },
+            { id: 14, title: "Moisturizers & Eczema",   icon: "🧴", date: "Modified 18 Feb 2024", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Moisturizers%20%26%20Eczema.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Moisturizers%20%26%20Eczema%20Mind%20Map.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Moisturizers%20%26%20Eczema%20Mind%20Map.pdf"], videos: [""] },
+            { id: 15, title: "One Minute CGP",          icon: "⏱️", date: "Modified 11 Mar 2024", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/One%20min%202024.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/One%20min%202025.pdf"], photos: [""], videos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/One%20Min%20CGP.mp4"] },
+            { id: 16, title: "Pain Management",         icon: "💉", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Pain%20Management%20p1.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/pain%20management%20mindmap%20.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/pain%20management%20mindmap%20.pdf"], videos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Pain%20Management.mp4"] },
+            { id: 17, title: "Respiratory",             icon: "🫁", date: "Modified 17 Jan 2024", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Respiratory.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Respiratory%20mindmap.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Respiratory%20mindmap.pdf"], videos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Respiratory.mp4"] },
+            { id: 18, title: "Seasonal",                icon: "🌡️", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/CGP_Hajj%20Season.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/RAMADAN2023.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Ramadan_Guidelines2024.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Ramadan_Release_2025.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Trend%20Cases%20Feb%2023.pdf"], photos: [""], videos: [""] },
+            { id: 19, title: "Side Effects",            icon: "⚠️", date: "Modified 1 Sept",      pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/CGP_Side%20Effects_Final.pdf"], photos: [""], videos: [""] },
+            { id: 20, title: "Sunscreen",               icon: "☀️", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Sunscreen%20.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Sunscreen%20Mindmap.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/Sunscreen%20Mindmap.pdf"], videos: [""] },
+            { id: 21, title: "Weight Management",       icon: "⚖️", date: "Modified 28 Nov 2023", pdfs: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/weight%20management%20.pdf","https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/weight%20management%20Mindmap%20.pdf"], photos: ["https://pub-88455b6b9cd345f2b2051f16c3887164.r2.dev/weight%20management%20Mindmap%20.pdf"], videos: [""] }
+        ];
+        let currentResource    = null;
+        let currentContentType = null;
+        let pdfDoc             = null;
+        let pageTextContent    = [];
+        let currentPdfUrl      = null;
+
+        const pdfTextIndexByRes = {};
+        const pdfTextIndexByUrl = {};
+
+        const globalSearchInput  = document.getElementById('globalSearch');
+        const globalSearchResult = document.getElementById('globalSearchResults');
+        const scrollTopBtn       = document.getElementById('scrollTopBtn');
+        const themeToggle        = document.getElementById('themeToggle');
+
+        function renderBoxes(filteredResources = resources) {
+            const grid = document.getElementById('boxesGrid');
+            grid.innerHTML = filteredResources.map(resource => `
+                <div class="resource-box" onclick="openResource(${resource.id})">
+                    <span class="box-icon">${resource.icon}</span>
+                    <div class="box-title">${resource.title}</div>
+                    <div class="box-date">${resource.date}</div>
+                </div>
+            `).join('');
+        }
+
+        function openResource(id) {
+            currentResource = resources.find(r => r.id === id);
+            document.getElementById('mainPage').style.display   = 'none';
+            document.getElementById('contentPage').style.display = 'block';
+            document.getElementById('viewerPage').style.display  = 'none';
+            document.getElementById('contentPageTitle').textContent = currentResource.title;
+
+            const contentTypes = document.getElementById('contentTypes');
+            contentTypes.innerHTML = `
+                <div class="content-type-box" onclick="openViewer('pdf')">
+                    <div class="content-type-icon">📄</div>
+                    <div class="content-type-title">PDF Files</div>
+                </div>
+                <div class="content-type-box" onclick="openViewer('photo')">
+                    <div class="content-type-icon">📷</div>
+                    <div class="content-type-title">Photos</div>
+                </div>
+                <div class="content-type-box" onclick="openViewer('video')">
+                    <div class="content-type-icon">🎥</div>
+                    <div class="content-type-title">Videos</div>
+                </div>
+            `;
+        }
+
+        function openViewer(type) {
+            currentContentType = type;
+            document.getElementById('contentPage').style.display = 'none';
+            document.getElementById('viewerPage').style.display  = 'block';
+
+            const pdfSearchContainer = document.getElementById('pdfSearchContainer');
+            const pdfContainer       = document.getElementById('pdfContainer');
+            const mediaGrid          = document.getElementById('mediaGrid');
+            const pdfList            = document.getElementById('pdfList');
+
+            if (type === 'pdf') {
+                pdfSearchContainer.style.display = 'block';
+                pdfContainer.style.display       = 'block';
+                mediaGrid.style.display          = 'none';
+
+                document.getElementById('searchResults').innerHTML = '';
+                document.getElementById('pdfSearch').value = '';
+                pageTextContent = [];
+
+                // لو في أكتر من PDF اعمل list
+                const pdfs = currentResource.pdfs || [];
+                pdfList.innerHTML = '';
+                if (pdfs.length > 1) {
+                    pdfList.style.display = 'flex';
+                    pdfs.forEach((url, index) => {
+                        const name = decodeURIComponent(url.split('/').pop());
+                        const btn  = document.createElement('button');
+                        btn.className = 'pdf-pill' + (index === 0 ? ' active' : '');
+                        btn.textContent = `${index + 1} - ${name}`;
+                        btn.onclick = () => {
+                            document.querySelectorAll('.pdf-pill').forEach(p => p.classList.remove('active'));
+                            btn.classList.add('active');
+                            loadAndRenderPDF(url, currentResource.id);
+                        };
+                        pdfList.appendChild(btn);
+                    });
+                } else {
+                    pdfList.style.display = 'none';
+                }
+
+                // دايماً افتح أول PDF كـ default لو موجود
+                if (pdfs.length > 0) {
+                    loadAndRenderPDF(pdfs[0], currentResource.id);
+                } else {
+                    pdfContainer.innerHTML = '<div style="color:#fff; padding:20px;">No PDFs found for this resource.</div>';
+                }
+
+            } else if (type === 'photo') {
+                pdfSearchContainer.style.display = 'none';
+                pdfContainer.style.display       = 'none';
+                mediaGrid.style.display          = 'grid';
+                mediaGrid.innerHTML = (currentResource.photos || []).filter(p => p).map(photo => `
+                    <div class="media-item">
+                        <img src="${photo}" alt="Photo">
+                    </div>
+                `).join('') || '<div style="color:#fff;">No photos available.</div>';
+            } else if (type === 'video') {
+                pdfSearchContainer.style.display = 'none';
+                pdfContainer.style.display       = 'none';
+                mediaGrid.style.display          = 'grid';
+                mediaGrid.innerHTML = (currentResource.videos || []).filter(v => v).map(video => `
+                    <div class="media-item">
+                        <video controls>
+                            <source src="${video}" type="video/mp4">
+                        </video>
+                    </div>
+                `).join('') || '<div style="color:#fff;">No videos available.</div>';
+            }
+        }
+
+        function goToMain() {
+            document.getElementById('mainPage').style.display   = 'block';
+            document.getElementById('contentPage').style.display = 'none';
+            document.getElementById('viewerPage').style.display  = 'none';
+        }
+
+        function goToContent() {
+            document.getElementById('contentPage').style.display = 'block';
+            document.getElementById('viewerPage').style.display  = 'none';
+        }
+
+        const fuse = new Fuse(resources, {
+            keys: ['title'],
+            threshold: 0.4,
+            includeScore: true
+        });
+
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function debounce(fn, delay) {
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn(...args), delay);
+            };
+        }
+
+        globalSearchInput.addEventListener('input', debounce(async (e) => {
+            const query = e.target.value.trim();
+            const resultsDiv = globalSearchResult;
+
+            if (!query) {
+                renderBoxes();
+                resultsDiv.style.display = 'none';
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            const titleResults = fuse.search(query);
+            renderBoxes(titleResults.map(r => r.item));
+
+            if (query.length < 3) {
+                resultsDiv.style.display = 'none';
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML =
+                `<div class="search-result-item"><div class="result-context">Searching PDFs...</div></div>`;
+
+            await searchInAllPdfs(query, resultsDiv);
+        }, 300));
+
+        // Updated function with Proxy Fallback logic
+        async function indexPdfForResource(resource, maxPages = null, useProxy = false) {
+            const pdfs = resource.pdfs || [];
+            if (!pdfs.length) return;
+
+            // هنختار أول PDF بس للفهرسة المبدئية عشان الأداء
+            const url = pdfs[0];
+
+            if (!maxPages && pdfTextIndexByRes[resource.id]) return;
+
+            if (!maxPages && pdfTextIndexByUrl[url]) {
+                pdfTextIndexByRes[resource.id] = pdfTextIndexByUrl[url];
+                return;
+            }
+
+            let fetchUrl = url;
+            if (useProxy) {
+                // استخدام بروكسي CORS عند الفشل
+                fetchUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+            }
+
+            try {
+                const doc = await pdfjsLib.getDocument(fetchUrl).promise;
+                const pages = [];
+                const lastPage = maxPages ? Math.min(maxPages, doc.numPages) : doc.numPages;
+
+                for (let pageNum = 1; pageNum <= lastPage; pageNum++) {
+                    const page        = await doc.getPage(pageNum);
+                    const textContent = await page.getTextContent();
+                    const text        = textContent.items.map(i => i.str).join(' ');
+                    pages[pageNum - 1] = text;
+                }
+
+                if (maxPages) {
+                    pdfTextIndexByRes[resource.id] = pages;
+                } else {
+                    pdfTextIndexByUrl[url]         = pages;
+                    pdfTextIndexByRes[resource.id] = pages;
+                }
+            } catch (err) {
+                // إذا فشل التحميل العادي ولم نستخدم البروكسي بعد، نجرب البروكسي
+                if (!useProxy) {
+                    console.warn(`Indexing failed for ${resource.title}, retrying with proxy...`);
+                    await indexPdfForResource(resource, maxPages, true);
+                    return;
+                }
+                console.error("Indexing failed even with proxy:", err);
+            }
+        }
+
+        async function searchInAllPdfs(query, resultsDiv) {
+            const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+            if (!terms.length) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            resultsDiv.innerHTML = '';
+            let foundAny = false;
+            const highlightRegex = new RegExp(
+                '(' + terms.map(escapeRegExp).join('|') + ')',
+                'gi'
+            );
+
+            for (const res of resources) {
+                await indexPdfForResource(res, null);
+                const pages = pdfTextIndexByRes[res.id];
+                if (!pages) continue;
+
+                pages.forEach((pageText, idx) => {
+                    const lower = pageText.toLowerCase();
+                    if (!terms.every(t => lower.includes(t))) return;
+
+                    const SNIPPET_SIZE = 90;
+                    const snippets = [];
+
+                    terms.forEach(term => {
+                        const pos = lower.indexOf(term);
+                        if (pos === -1) return;
+
+                        let s   = pos - SNIPPET_SIZE;
+                        let eIx = pos + term.length + SNIPPET_SIZE;
+                        if (s < 0) s = 0;
+                        if (eIx > pageText.length) eIx = pageText.length;
+
+                        let snippet = pageText.substring(s, eIx);
+                        if (s !== 0) snippet = '...' + snippet;
+                        if (eIx !== pageText.length) snippet += '...';
+                        snippets.push(snippet);
+                    });
+
+                    if (!snippets.length) return;
+
+                    const combinedSnippet = snippets.join('<br><br>');
+                    const highlighted = combinedSnippet.replace(
+                        highlightRegex,
+                        m => `<span class="highlight">${m}</span>`
+                    );
+
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML =
+                        `<div class="result-title">${res.title} - Page ${idx + 1}</div>` +
+                        `<div class="result-context">${highlighted}</div>`;
+                    div.onclick = () => openPdfAtPage(res.id, idx + 1);
+                    resultsDiv.appendChild(div);
+
+                    foundAny = true;
+                });
+            }
+
+            if (!foundAny) {
+                resultsDiv.innerHTML =
+                    `<div class="search-result-item"><div class="result-context">No results found for "${query}" in all PDFs</div></div>`;
+            }
+        }
+
+        function highlightPageCanvas(pageIndex) {
+            const container = document.getElementById('pdfContainer');
+            const pages = container.children;
+            for (let i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('highlighted');
+            }
+            const target = pages[pageIndex];
+            if (target) {
+                target.classList.add('highlighted');
+                setTimeout(() => {
+                    target.classList.remove('highlighted');
+                }, 2500);
+            }
+        }
+
+        async function openPdfAtPage(resourceId, pageNumber) {
+            const res = resources.find(r => r.id === resourceId);
+            if (!res || !(res.pdfs && res.pdfs.length)) return;
+
+            currentResource = res;
+            document.getElementById('mainPage').style.display   = 'none';
+            document.getElementById('contentPage').style.display = 'none';
+            document.getElementById('viewerPage').style.display  = 'block';
+            document.getElementById('pdfSearchContainer').style.display = 'block';
+            document.getElementById('mediaGrid').style.display  = 'none';
+
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('pdfSearch').value = '';
+
+            const pdfList = document.getElementById('pdfList');
+            const pdfs = res.pdfs || [];
+            pdfList.innerHTML = '';
+
+            if (pdfs.length > 1) {
+                pdfList.style.display = 'flex';
+                pdfs.forEach((url, index) => {
+                    const name = decodeURIComponent(url.split('/').pop());
+                    const btn  = document.createElement('button');
+                    btn.className = 'pdf-pill' + (index === 0 ? ' active' : '');
+                    btn.textContent = `${index + 1} - ${name}`;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.pdf-pill').forEach(p => p.classList.remove('active'));
+                        btn.classList.add('active');
+                        loadAndRenderPDF(url, res.id).then(() => {
+                            const idx = pageNumber - 1;
+                            const pageCanvas = document.getElementById('pdfContainer').children[idx];
+                            if (pageCanvas) {
+                                pageCanvas.scrollIntoView({ behavior: 'smooth' });
+                                highlightPageCanvas(idx);
+                            }
+                        });
+                    };
+                    pdfList.appendChild(btn);
+                });
+            } else {
+                pdfList.style.display = 'none';
+            }
+
+            await loadAndRenderPDF(pdfs[0], res.id);
+
+            const index = pageNumber - 1;
+            const pageCanvas = document.getElementById('pdfContainer').children[index];
+            if (pageCanvas) {
+                pageCanvas.scrollIntoView({ behavior: 'smooth' });
+                highlightPageCanvas(index);
+            }
+        }
+
+        // Updated function with Proxy Fallback logic
+        async function loadAndRenderPDF(url, resourceId, useProxy = false) {
+            const container = document.getElementById('pdfContainer');
+            
+            // Only show loading text on first attempt
+            if (!useProxy) {
+                container.innerHTML = 'Loading PDF...';
+                pageTextContent = [];
+                currentPdfUrl = url;
+            } else {
+                container.innerHTML = 'Loading PDF (Retrying with Proxy)...';
+            }
+
+            // Determine which URL to use (Direct or Proxy)
+            let fetchUrl = url;
+            if (useProxy) {
+                // Using corsproxy.io as the fallback proxy
+                fetchUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                console.log("Attempting to load via proxy: " + fetchUrl);
+            }
+
+            try {
+                const doc = await pdfjsLib.getDocument(fetchUrl).promise;
+                pdfDoc = doc;
+                container.innerHTML = '';
+
+                const containerWidth = container.clientWidth || window.innerWidth;
+                const outputScale = window.devicePixelRatio || 1;
+
+                for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
+                    const page     = await doc.getPage(pageNum);
+                    const unscaled = page.getViewport({ scale: 1 });
+                    const scale    = containerWidth / unscaled.width;
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+
+                    canvas.style.width  = viewport.width + 'px';
+                    canvas.style.height = viewport.height + 'px';
+
+                    canvas.width  = Math.floor(viewport.width  * outputScale);
+                    canvas.height = Math.floor(viewport.height * outputScale);
+
+                    canvas.classList.add('pdf-page');
+                    container.appendChild(canvas);
+
+                    const transform = outputScale !== 1
+                        ? [outputScale, 0, 0, outputScale, 0, 0]
+                        : null;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport,
+                        transform
+                    }).promise;
+
+                    const textContent = await page.getTextContent();
+                    const text        = textContent.items.map(i => i.str).join(' ');
+                    pageTextContent[pageNum - 1] = text;
+                }
+
+                if (resourceId != null) {
+                    pdfTextIndexByRes[resourceId] = [...pageTextContent];
+                    pdfTextIndexByUrl[url]        = [...pageTextContent];
+                }
+            } catch (err) {
+                // If direct load fails, try with proxy
+                if (!useProxy) {
+                    console.warn("Direct load failed, retrying with proxy...", err);
+                    await loadAndRenderPDF(url, resourceId, true);
+                    return;
+                }
+
+                // If proxy also fails
+                container.innerHTML =
+                    '<div style="color:red; padding:20px;">Error loading PDF (Failed with Proxy too)</div>';
+                console.error(err);
+            }
+        }
+
+        const pdfSearchInput = document.getElementById('pdfSearch');
+        pdfSearchInput.addEventListener('input', debounce((e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '';
+
+            const terms = query.split(/\s+/).filter(t => t.length > 0);
+            if (!terms.length) return;
+
+            let found = false;
+            const highlightRegex = new RegExp(
+                '(' + terms.map(escapeRegExp).join('|') + ')',
+                'gi'
+            );
+
+            pageTextContent.forEach((pageText, idx) => {
+                const lower = pageText.toLowerCase();
+                if (!terms.every(t => lower.includes(t))) return;
+
+                const SNIPPET_SIZE = 90;
+                const snippets = [];
+
+                terms.forEach(term => {
+                    const pos = lower.indexOf(term);
+                    if (pos === -1) return;
+
+                    let s   = pos - SNIPPET_SIZE;
+                    let eIx = pos + term.length + SNIPPET_SIZE;
+                    if (s < 0) s = 0;
+                    if (eIx > pageText.length) eIx = pageText.length;
+
+                    let snippet = pageText.substring(s, eIx);
+                    if (s !== 0) snippet = '...' + snippet;
+                    if (eIx !== pageText.length) snippet += '...';
+                    snippets.push(snippet);
+                });
+
+                if (!snippets.length) return;
+
+                const combinedSnippet = snippets.join('<br><br>');
+                const highlighted = combinedSnippet.replace(
+                    highlightRegex,
+                    m => `<span class="highlight">${m}</span>`
+                );
+
+                const div = document.createElement('div');
+                div.className = 'search-result-item';
+                div.innerHTML =
+                    `<div class="result-title">${currentResource.title} - Page ${idx + 1}</div>` +
+                    `<div class="result-context">${highlighted}</div>`;
+                div.onclick = () => {
+                    const pageCanvas =
+                        document.getElementById('pdfContainer').children[idx];
+                    if (pageCanvas) {
+                        pageCanvas.scrollIntoView({ behavior: 'smooth' });
+                        highlightPageCanvas(idx);
+                    }
+                };
+
+                resultsDiv.appendChild(div);
+                found = true;
+            });
+
+            if (!found) {
+                resultsDiv.innerHTML =
+                    `<div class="search-result-item"><div class="result-context">No results found for "${query}"</div></div>`;
+            }
+        }, 300));
+
+        async function preIndexSomePdfs() {
+            for (const res of resources) {
+                await indexPdfForResource(res, 5);
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            document.getElementById('searchSection')
+                .scrollIntoView({ behavior: 'smooth' });
+        });
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-mode');
+                themeToggle.textContent = '☀️';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggle.textContent = '🌙';
+            }
+        }
+
+        const savedTheme = localStorage.getItem('cgpTheme') || 'dark';
+        applyTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const isLight = document.body.classList.toggle('light-mode');
+            const theme = isLight ? 'light' : 'dark';
+            localStorage.setItem('cgpTheme', theme);
+            themeToggle.textContent = isLight ? '☀️' : '🌙';
+        });
+
+        window.addEventListener('load', () => {
+            renderBoxes();
+            preIndexSomePdfs();
+        });
+        document.getElementById('cgpTeamBtn').addEventListener('click', () => {
+    window.location.href = 'team.htm'; // هنا اكتب اسم ملف الـ HTML بتاعك
+});
+    </script>
+</body>
+</html>
