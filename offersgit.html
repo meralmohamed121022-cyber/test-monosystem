@@ -5987,6 +5987,17 @@ if (infoBox) {
     infoBox.addEventListener('click', toggleInfoBox);
 }
 </script>
+// 🔥 1. منع وميض الواجهة (Flicker Fix)
+if (window.location.hash === '#scanner') {
+    const style = document.createElement('style');
+    style.id = 'instantScannerFix';
+    style.innerHTML = `
+        #gatewayView, #loaderScreen, #mainOffersContainer { display: none !important; }
+        #scannerModalOverlay { display: flex !important; position: fixed !important; inset: 0 !important; z-index: 999999 !important; background: #0f172a !important; }
+        .scanner-shell { height: 100vh !important; max-width: 100% !important; border-radius: 0 !important; border: none !important; }
+    `;
+    document.head.appendChild(style);
+}
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 <script src="https://unpkg.com/html2canvas@latest/dist/html2canvas.min.js"></script>
 <script>   
@@ -43637,35 +43648,68 @@ console.log('🔥 Dark mode label fixer installed!');
 // ====== INITIALIZATION ======
 console.log('🎬 Initializing Mono Gateway...');
 // ✅ FIX: Run after DOM is fully ready
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+    console.log('🎬 Initializing Mono System...');
 
-    // 1. رسم البوكسات
-    if (typeof renderGatewayButtons === 'function') {
-        renderGatewayButtons();
+    // 1. فحص هل الدخول مباشر لوضع السكانر؟
+    const isDirectScanner = window.location.hash === '#scanner';
+
+    if (isDirectScanner) {
+        console.log("🎯 Scanner Mode: Bypassing Gateway UI");
+        
+        // إخفاء واجهات الجاتواي والعروض فوراً
+        if(document.getElementById('gatewayView')) document.getElementById('gatewayView').style.display = 'none';
+        if(document.getElementById('mainOffersContainer')) document.getElementById('mainOffersContainer').style.display = 'none';
+        
+        // تشغيل السكانر فوراً
+        if (typeof openBarcodeScanner === 'function') {
+            openBarcodeScanner();
+        }
+
+        // إخفاء اللودر بسرعة (بعد ثانية واحدة بدل 7 ثواني)
+        setTimeout(() => {
+            const loader = document.getElementById('loaderScreen');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            }
+        }, 1000);
+
     } else {
-        console.error('❌ renderGatewayButtons not found!');
+        // --- الوضع الطبيعي (لو مفيش #scanner في اللينك) ---
+        
+        // 1. رسم بوكسات الجاتواي (الأزرار اللي في الصورة)
+        if (typeof renderGatewayButtons === 'function') {
+            renderGatewayButtons();
+        } else {
+            console.error('❌ renderGatewayButtons not found!');
+        }
+
+        // 2. إخفاء اللودر بعد الوقت الطبيعي
+        setTimeout(() => {
+            const loader = document.getElementById('loaderScreen');
+            if (loader) {
+                loader.style.opacity = '0';
+                loader.style.pointerEvents = 'none';
+                setTimeout(() => { loader.style.display = 'none'; }, 800);
+            }
+        }, 7000);
     }
 
-    // 2. إخفاء اللودر بعد 2 ثانية
-    setTimeout(() => {
-        const loader = document.getElementById('loaderScreen');
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.pointerEvents = 'none';
-            setTimeout(() => { loader.style.display = 'none'; }, 800);
-        }
-    }, 7000);
-
-    // 3. عداد وتواريخ
+    // 3. خدمات بتشتغل في الخلفية في كل الحالات (عداد وتواريخ وفلاتر)
     if (typeof updateDatesInHTML === 'function') updateDatesInHTML();
     if (typeof updateCountdown === 'function') {
         updateCountdown();
         setInterval(updateCountdown, 1000);
     }
-
-    // 4. فلاتر
     if (typeof initializeFilters === 'function') initializeFilters();
+
+    // 4. تحميل الداتا من سوبابيز (ضروري للسكانر وللعروض)
+    if (typeof fetchProductsFromSupabase === 'function') {
+        await fetchProductsFromSupabase();
+    }
 });
+
 // 2. إخفاء شاشة التحميل (Loader) بعد وقت بسيط لإظهار البوكسات
 setTimeout(() => {
     const loader = document.getElementById('loaderScreen');
