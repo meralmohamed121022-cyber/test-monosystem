@@ -36256,13 +36256,18 @@ function renderGatewayButtons() {
     const btnList = document.getElementById('buttonsList');
     if (!btnList) return;
     
+    // تصفير القائمة قبل الرسم
     btnList.innerHTML = '';
     
-    // الحصول على تاريخ اليوم فقط بدون ساعات
+    // الحصول على الوقت الحالي للمقارنة
     const now = new Date();
     const todayTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
+    // التحقق هل الواجهة الحالية هي الإسكانر المباشر؟
+    const isDirectScanner = window.location.hash === '#scanner';
+
     ALL_PERIODS_OFFERS.forEach(period => {
+        // حساب أوقات البداية والنهاية
         const start = new Date(period.start);
         const startTime = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
         
@@ -36270,48 +36275,68 @@ function renderGatewayButtons() {
         end.setHours(23, 59, 59, 999);
         const endTime = end.getTime();
 
-        let status = 'normal'; // الحالة الافتراضية
+        let status = 'normal'; 
 
+        // تحديد الحالة بناءً على التاريخ
         if (todayTime > endTime) {
-            status = 'expired'; // 🔴 انتهى
+            status = 'expired'; // انتهى 🔴
         } else if (todayTime >= startTime && todayTime <= endTime) {
-            status = 'active';  // 🟢 شغال حالياً
+            status = 'active';  // شغال حالياً 🟢
         }
 
+        // إنشاء عنصر الزر
         const btn = document.createElement('div');
         btn.className = 'gateway-btn';
+        
+        // الأكشن عند الضغط
         btn.onclick = () => activatePeriod(period.id);
 
-        // --- تطبيق الألوان بالقوة الجبرية (Inline Styles) لضمان ظهورها ---
+        // --- تطبيق الستايلات المباشرة (Inline) لضمان القوة ---
         if (status === 'active') {
             btn.classList.add('status-active');
-            btn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
-            btn.style.color = 'white';
-            btn.style.borderLeft = '6px solid #1e8449';
-            btn.style.boxShadow = '0 0 20px rgba(46, 204, 113, 0.5)';
+            btn.style.cssText = `
+                background: linear-gradient(135deg, #2ecc71, #27ae60);
+                color: white;
+                border-left: 6px solid #1e8449;
+                box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+                position: relative;
+            `;
         } else if (status === 'expired') {
             btn.classList.add('status-expired');
-            btn.style.background = 'linear-gradient(135deg, #b91c1c, #7f1d1d)';
-            btn.style.color = 'white';
-            btn.style.borderLeft = '6px solid #450a0a';
+            btn.style.cssText = `
+                background: linear-gradient(135deg, #b91c1c, #7f1d1d);
+                color: white;
+                border-left: 6px solid #450a0a;
+                opacity: 0.8;
+            `;
         }
 
+        // شارة الـ LIVE للفترة الحالية
         const liveBadge = (status === 'active') ? 
             `<div style="display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px;">
-                <div style="width:7px; height:7px; background:#fff; border-radius:50%; box-shadow:0 0 5px #fff;"></div>
+                <div style="width:7px; height:7px; background:#fff; border-radius:50%; box-shadow:0 0 5px #fff; animation: pulse 1s infinite;"></div>
                 <span style="font-size:10px; font-weight:900;">LIVE</span>
             </div>` : '';
 
         btn.innerHTML = `
-            <div class="btn-label" style="font-weight:800;">${period.label.toUpperCase()}</div>
+            <div class="btn-label" style="font-weight:800; font-family: 'Segoe UI', Tahoma, sans-serif;">
+                ${period.label.toUpperCase()}
+            </div>
             ${liveBadge}
         `;
         
         btnList.appendChild(btn);
     });
     
-    console.log("🎨 Buttons rendered with status colors applied.");
+    // لو إحنا في وضع الإسكانر، نخفي حاوية الأزرار دي تماماً عشان "النضافة"
+    if (isDirectScanner) {
+        const gatewayView = document.getElementById('gatewayView');
+        if (gatewayView) gatewayView.style.display = 'none';
+    }
+
+    console.log("🎨 Gateway Buttons Prepared (Mode: " + (isDirectScanner ? "Background" : "Visible") + ")");
 }
+
 // 3. التشغيل عند تحميل الصفحة
 applyDynamicBackgrounds();
 function saveCustomModalData() {
