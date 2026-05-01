@@ -45735,27 +45735,34 @@ document.getElementById('galleryContainer').addEventListener('touchmove', (e) =>
     }
 });
 document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
-document.addEventListener("DOMContentLoaded", () => {
-    // التأكد إذا كان الرابط يحتوي على كلمة scanner
+window.addEventListener("load", () => {
     if (window.location.hash.includes('scanner')) {
-        // إخفاء الواجهات اللي ملهاش لازمة وإظهار الهيدر
+        // 1. إخفاء واجهة البداية وإظهار الهيدر وعرض العروض
         const gatewayView = document.getElementById('gatewayView');
         const fixedHeader = document.getElementById('fixedHeader');
         const mainOffersContainer = document.getElementById('mainOffersContainer');
+        const loader = document.getElementById('loaderScreen');
         
         if (gatewayView) gatewayView.style.display = 'none';
-        if (mainOffersContainer) mainOffersContainer.style.display = 'none';
         if (fixedHeader) fixedHeader.style.display = 'flex';
+        // لازم نخلي الكونتينر block عشان المودال يظهر فوقه بشكل طبيعي
+        if (mainOffersContainer) mainOffersContainer.style.display = 'block'; 
+        
+        // 2. إخفاء اللودر لو كان موجود
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.pointerEvents = 'none';
+            setTimeout(() => { loader.style.display = 'none'; }, 500);
+        }
 
-        // فتح السكانر بعد تأخير بسيط عشان الصفحة تكون حملت
+        // 3. فتح السكانر بـ setTimeout أطول شوية عشان الكاميرا تاخد وقتها ومتهنجش
         setTimeout(() => {
             if (typeof openBarcodeScanner === 'function') {
                 openBarcodeScanner();
             }
-        }, 300);
+        }, 800);
     }
 });
-
 
 
 </script>
