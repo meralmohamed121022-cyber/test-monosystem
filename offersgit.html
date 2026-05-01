@@ -45735,9 +45735,23 @@ document.getElementById('galleryContainer').addEventListener('touchmove', (e) =>
     }
 });
 document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
-window.addEventListener("load", () => {
+// 1. الحقن الفوري: ده كود بيشتغل قبل ما المتصفح يرسم أي حاجة على الشاشة
+if (window.location.hash.includes('scanner')) {
+    // بنعمل ستايل إجباري يخفي اللودر والجات واي فوراً
+    const instantStyle = document.createElement('style');
+    instantStyle.innerHTML = `
+        #loaderScreen, #gatewayView { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; z-index: -1 !important; }
+        #fixedHeader { display: flex !important; }
+        #mainOffersContainer { display: block !important; }
+        body { overflow: auto !important; }
+    `;
+    document.head.appendChild(instantStyle);
+}
+
+// 2. تشغيل السكانر بمجرد ما الصفحة تقرأ العناصر (أسرع بكتير من load)
+window.addEventListener("DOMContentLoaded", () => {
     if (window.location.hash.includes('scanner')) {
-        // 1. إخفاء واجهة البداية وإظهار الهيدر وعرض العروض
+        // تأكيد الإخفاء والظهور بالجافاسكريبت (زيادة أمان)
         const gatewayView = document.getElementById('gatewayView');
         const fixedHeader = document.getElementById('fixedHeader');
         const mainOffersContainer = document.getElementById('mainOffersContainer');
@@ -45745,24 +45759,16 @@ window.addEventListener("load", () => {
         
         if (gatewayView) gatewayView.style.display = 'none';
         if (fixedHeader) fixedHeader.style.display = 'flex';
-        // لازم نخلي الكونتينر block عشان المودال يظهر فوقه بشكل طبيعي
         if (mainOffersContainer) mainOffersContainer.style.display = 'block'; 
-        
-        // 2. إخفاء اللودر لو كان موجود
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.pointerEvents = 'none';
-            setTimeout(() => { loader.style.display = 'none'; }, 500);
-        }
+        if (loader) loader.style.display = 'none';
 
-        // 3. فتح السكانر بـ setTimeout أطول شوية عشان الكاميرا تاخد وقتها ومتهنجش
+        // فتح السكانر بسرعة (300 ملي ثانية كافية جداً لتشغيل الكاميرا)
         setTimeout(() => {
             if (typeof openBarcodeScanner === 'function') {
                 openBarcodeScanner();
             }
-        }, 800);
+        }, 300);
     }
-});
-
+});ش
 
 </script>
