@@ -49,26 +49,25 @@
         }
 
         /* --- USER INFO BADGE --- */
-        #userInfoBadge {
-            position: absolute; 
-            top: 20px; 
-            left: 50%; 
-            transform: translateX(-50%);
-            background: var(--glass-bg); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--accent-orange); 
-            color: var(--accent-orange-light);
-            padding: 8px 20px; 
-            border-radius: 20px; 
-            font-weight: bold;
-            font-size: 14px; 
-            z-index: 25000; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            display: none; 
-            align-items: center; 
-            gap: 8px;
-        }
-
+#userInfoBadge {
+    position: fixed; /* التعديل هنا بدل absolute */
+    top: 20px; 
+    left: 50%; 
+    transform: translateX(-50%);
+    background: var(--glass-bg); 
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--accent-orange); 
+    color: var(--accent-orange-light);
+    padding: 8px 20px; 
+    border-radius: 20px; 
+    font-weight: bold;
+    font-size: 14px; 
+    z-index: 25000; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    display: none; 
+    align-items: center; 
+    gap: 8px;
+}
         /* --- NEW STYLES FOR ALARM & LOGIN MODALS --- */
         .custom-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -99,16 +98,49 @@
         .hidden { display: none !important; }
 
         /* --- TOGGLE BUTTONS --- */
-        .floating-btn {
-            position: fixed; z-index: 1000; width: 50px; height: 50px;
-            border-radius: 50%; border: none; display: flex; align-items: center;
-            justify-content: center; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s, opacity 0.3s;
-        }
-        .floating-btn:active { transform: scale(0.9); }
-        .mode-toggle { top: 20px; left: 20px; background: var(--accent-orange); color: white; font-size: 20px; border: 2px solid white; }
-        .logout-btn { top: 40px; right: 20px; background: #e74c3c; color: white; font-size: 20px; border: 2px solid white; }
+        /* --- TOGGLE BUTTONS --- */
+/* --- STATIC TOP CONTROLS --- */
+.floating-btn {
+    position: absolute !important; /* التعديل الجوهري هنا عشان يثبتوا فوق بس */
+    z-index: 25000 !important;
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%; 
+    border: 2px solid white; 
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.floating-btn:active { transform: scale(0.9); }
+
+/* زرار الثيم يفضل مكانه فوق شمال */
+.mode-toggle { 
+    top: 20px !important; 
+    left: 20px !important; 
+    background: var(--accent-orange) !important; 
+    color: white !important; 
+}
+
+/* زرار اللوج أوت يفضل مكانه فوق يمين */
+.logout-btn { 
+    top: 20px !important; 
+    right: 20px !important; 
+    background: #e74c3c !important; 
+    color: white !important; 
+}
+
+/* التنبيه أو الـ Badge يثبت فوق في النص */
+#userInfoBadge {
+    position: absolute !important; 
+    top: 20px !important; 
+    left: 50% !important; 
+    transform: translateX(-50%) !important;
+    z-index: 25000 !important;
+}
         .scroll-toggle { bottom: 100px; right: 20px; background: var(--nav-bg-start); color: var(--text-primary); border: 1px solid var(--border-color); }
 
         /* IFRAME FULLSCREEN CONTAINER */
@@ -164,22 +196,25 @@
             display: flex; flex-direction: column; justify-content: center;
             padding: 25px; cursor: pointer;
         }
-        .banner-slide::after {
-            content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
-            background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.1));
-            z-index: 1;
-        }
         .banner-content { position: relative; z-index: 2; color: white; }
         .banner-slide h2 {
             font-size: 24px; margin-bottom: 8px; text-transform: uppercase;
             letter-spacing: 1px; color: var(--accent-orange); text-shadow: 1px 1px 2px black;
         }
         .banner-slide p { font-size: 14px; max-width: 80%; line-height: 1.4; }
-        .banner-bg-media {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 0; pointer-events: none;
-        }
+.banner-slide::after {
+    content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.1));
+    z-index: 1;
+    pointer-events: none; /* 🔴 التعديل هنا: منع هذه الطبقة من حجب النقرات */
+}
 
+.banner-bg-media {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; z-index: 0; 
+    /* 🔴 التعديل الأهم هنا: إزالة pointer-events: none ليتمكن المستخدم من النقر */
+    cursor: zoom-in; 
+}
         /* --- CONTENT CARDS --- */
         .content-grid { display: flex; flex-direction: column; gap: 20px; }
         .content-card {
@@ -595,7 +630,7 @@
         <button class="section-btn" onclick="openLink('mwazna.htm')">
             <i class="fas fa-balance-scale"></i><span>Mwazna</span>
         </button>
-        <button class="section-btn" onclick="openLink('.cgp.htm')">
+        <button class="section-btn" onclick="openLink('cgp.htm')">
             <i class="fas fa-book-medical"></i><span>CGP Mode</span>
         </button>
         <button class="section-btn full-width" onclick="openLink('links.htm')">
@@ -679,12 +714,12 @@ const START_OFFERS = [
     {
         id: 'offer_alert_3',
         title: 'MONTHLY OFFERS',
-        start_date: '2026-04-25T:00:00'
+        start_date: '2026-04-25T00:00:00'
     }
 ];
 
 // =========================================================================
-// 2. البانر والمحتوى
+// 2. البانر والمحتوى (المحلي)
 // =========================================================================
 const LOCAL_BANNERS = [
      {
@@ -692,13 +727,11 @@ const LOCAL_BANNERS = [
         title: 'owner items',
         desc: 'RONZAC',
         link: 'offersgit.html',
-        imageUrl: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/ronzac.jpeg',
+        imageUrl: 'https://stgprevapi.al-dawaa.com/medias/6-AR-gorner-1600x400.png?context=bWFzdGVyfGltYWdlc3w4NzgwMDF8aW1hZ2UvcG5nfGFEYzRMMmcxTUM4NU5UWTNOekkwTlRNMU9ETTRMell0UVZJdFoyOXlibVZ5TFRFMk1EQjROREF3TG5CdVp3fDc3OGQ2MTk0OTFkMTI3NzZhNjU0YmI1YTRlYjZjMjM3ZGJhOTI2ZDgzZDA0Mzc3ZDYyOTQyMGZlM2I0NDNiN2Q',
         videoUrl: '',
         color: ''
     }
 ];
-
-
 
 const LOCAL_CONTENTS = [
     {
@@ -707,21 +740,20 @@ const LOCAL_CONTENTS = [
         title: '',
         desc: '',
         images: [
-
             'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/nsaids.jpeg'
         ],
-
         videoUrl: ''
     }
-
 ];
 
 // =========================================================================
-// 3. Supabase
+// 3. Supabase & Global Data
 // =========================================================================
 const supabaseUrl = 'https://uzydzvfcrlqmtondugte.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo'; 
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+const WORKER_BANNERS_URL = "https://online.meralmohamed121022.workers.dev/api/banners?lang=ar";
 
 let APPDATA = { banners: [], content: [] };
 let currentPharmacy = localStorage.getItem('pharmacy_number');
@@ -776,13 +808,14 @@ function checkAuth() {
     if (!currentPharmacy) {
         document.getElementById('loginOverlay').style.display = 'flex';
         document.querySelector('.logout-btn').style.display = 'none';
-        badge.style.display = 'none';
+        if (badge) badge.style.display = 'none';
     } else {
         document.getElementById('loginOverlay').style.display = 'none';
         document.querySelector('.logout-btn').style.display = 'flex';
         
-        document.getElementById('pharmacyDisplay').innerText = `Pharmacy ${currentPharmacy}`;
-        badge.style.display = 'flex';
+        const display = document.getElementById('pharmacyDisplay');
+        if (display) display.innerText = `Pharmacy ${currentPharmacy}`;
+        if (badge) badge.style.display = 'flex';
         
         initSystem();
     }
@@ -797,8 +830,6 @@ async function doLogin() {
         requestNotificationPermission();
 
         try {
-            // التعديل هنا: استخدام upsert بدل insert
-            // بنبعت البيانات ونحدد إننا مش عايزين تكرار في pharmacy_number
             await supabaseClient
                 .from('login_logs')
                 .upsert({ 
@@ -807,8 +838,6 @@ async function doLogin() {
                 }, { 
                     onConflict: 'pharmacy_number' 
                 });
-                
-            console.log("Login tracked or updated successfully.");
         } catch (e) {
             console.error("Failed to log login:", e);
         }
@@ -818,6 +847,7 @@ async function doLogin() {
         alert("يرجى إدخال رقم الصيدلية!");
     }
 }
+
 function logout() {
     document.getElementById('logoutModal').style.display = 'flex';
 }
@@ -827,7 +857,6 @@ function closeLogoutModal() {
 }
 
 async function confirmLogout() {
-    // Clear local data
     localStorage.removeItem('pharmacy_number');
     currentPharmacy = null;
     
@@ -840,57 +869,81 @@ async function confirmLogout() {
         audio.currentTime = 0;
     }
     
-    // UI Cleanup
     document.getElementById('logoutModal').style.display = 'none';
     document.getElementById('alarmActionModal').style.display = 'none';
     
     checkAuth(); 
-    console.log("Session ended by user.");
 }
+
+// =========================================================================
+// INIT SYSTEM
+// =========================================================================
 async function initSystem() {
-    const loader = document.getElementById('loadingOverlay');
-    if (loader) {
-        loader.style.display = 'flex';
-        loader.style.opacity = '1';
-    }
-
+  const loader = document.getElementById('loadingOverlay');
+  if (loader) {
+    loader.style.display = 'flex';
+    loader.style.opacity = '1';
+  }
+  
+  try {
+    APPDATA.banners = Array.isArray(LOCAL_BANNERS) ? [...LOCAL_BANNERS] : [];
+    APPDATA.content = Array.isArray(LOCAL_CONTENTS) ? [...LOCAL_CONTENTS] : [];
+    
     try {
-        APPDATA.banners = LOCAL_BANNERS;
-        APPDATA.content = LOCAL_CONTENTS;
-        renderBanners();
-        renderContent();
-        
-        if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => { loader.style.display = 'none'; }, 300);
+      const response = await fetch(WORKER_BANNERS_URL);
+      if (response.ok) {
+        const result = await response.json();
+        if (result && result.success && result.banners && result.banners.length > 0) {
+          const dawaaBanners = result.banners.map((b, index) => ({
+            id: `dawaa_banner_${index}`,
+            title: "", 
+            desc: "",
+            link: "https://www.al-dawaa.com/ar/",
+            imageUrl: b.url,
+            videoUrl: "",
+            color: ""
+          }));
+          APPDATA.banners = [...APPDATA.banners, ...dawaaBanners];
         }
-
-        requestNotificationPermission();
-
-        await autoScheduleReminders();
-        await fetchReminders();
-        startAlarmChecker();
-        
-    } catch (err) {
-        console.error('System Error:', err);
-        if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => { loader.style.display = 'none'; }, 300);
-        }
+      }
+    } catch (workerError) {
+      console.warn("تم تخطي بنرات الدواء بسبب خطأ في الاتصال بالوركر:", workerError);
     }
+    
+    renderBanners();
+    renderContent();
+    
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(() => { loader.style.display = 'none'; }, 300);
+    }
+    
+    requestNotificationPermission();
+    await autoScheduleReminders();
+    await fetchReminders();
+    startAlarmChecker();
+    
+  } catch (err) {
+    console.error('System Critical Error:', err);
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(() => { loader.style.display = 'none'; }, 300);
+    }
+  }
 }
 
-// ==== التعديل الجوهري هنا في الحسابات =====
+// =========================================================================
+// ALARMS & SCHEDULES
+// =========================================================================
 async function autoScheduleReminders() {
     if(!currentPharmacy) return;
     
     for (let offer of START_OFFERS) {
         const offerStartTime = new Date(offer.start_date);
         
-        // التوقيتين اللي عايزينهم
         const triggerTimes = [
-            { id: offer.id + '_30min', time: new Date(offerStartTime.getTime() - (30 * 60000)) }, // قبلها بـ 30 دقيقة
-            { id: offer.id + '_exact', time: offerStartTime } // وقت العرض بالظبط
+            { id: offer.id + '_30min', time: new Date(offerStartTime.getTime() - (30 * 60000)) }, 
+            { id: offer.id + '_exact', time: offerStartTime } 
         ];
         
         for (let t of triggerTimes) {
@@ -898,7 +951,7 @@ async function autoScheduleReminders() {
                 .from('reminders')
                 .select('id')
                 .eq('pharmacy_number', currentPharmacy)
-                .eq('offer_id', t.id); // بنشيك بالـ ID الجديد المركب
+                .eq('offer_id', t.id); 
                 
             if (!existing || existing.length === 0) {
                 await supabaseClient.from('reminders').insert([{
@@ -912,6 +965,7 @@ async function autoScheduleReminders() {
         }
     }
 }
+
 async function fetchReminders() {
     if(!currentPharmacy) return;
     const { data, error } = await supabaseClient
@@ -922,14 +976,11 @@ async function fetchReminders() {
     if(!error && data) userReminders = data;
 }
 
-// ==== التعديل الجوهري في دالة المقارنة والمراقبة =====
-
 async function stopAlarm() {
     const idInput = document.getElementById('currentReminderId');
     const id = idInput.value;
     const audio = document.getElementById('offerAlarmSound');
     
-    // 1. إيقاف كل التايمرز والصوت فوراً لمنع التداخل
     clearTimeout(stopAudioTimeout);
     clearTimeout(autoSnoozeTimeout);
     
@@ -938,12 +989,10 @@ async function stopAlarm() {
         audio.currentTime = 0;
     }
     
-    // 2. إخفاء المودال فوراً عشان اليوزر يحس بالاستجابة
     document.getElementById('alarmActionModal').style.display = 'none';
 
     if (id) {
         try {
-            // 3. تحديث الحالة في سوبابيز لـ completed
             const { error } = await supabaseClient
                 .from('reminders')
                 .update({ status: 'completed' }) 
@@ -951,17 +1000,10 @@ async function stopAlarm() {
                 
             if (error) throw error;
 
-            // 4. مسح التنبيه من المصفوفة المحلية فوراً
             userReminders = userReminders.filter(r => r.id !== id);
-            
-            // 5. تصغير قيمة الـ ID المخفي لضمان عدم التكرار
             idInput.value = "";
-            
-            console.log("Alarm stopped and status updated to completed.");
         } catch (err) {
             console.error("Failed to finalize alarm in database:", err);
-            // ملحوظة: حتى لو فشل تحديث السيرفر، إحنا مسحناه محلياً (Filter) 
-            // وده هيمنعه يضرب تاني طول ما الصفحة مفتوحة
             userReminders = userReminders.filter(r => r.id !== id);
         }
     }
@@ -993,8 +1035,10 @@ async function snoozeAlarm(isAuto = false) {
     }
 
     const audio = document.getElementById('offerAlarmSound');
-    audio.pause();
-    audio.currentTime = 0;
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
     document.getElementById('alarmActionModal').style.display = 'none';
 
     if(id) {
@@ -1006,70 +1050,119 @@ async function snoozeAlarm(isAuto = false) {
     }
 }
 
-// === UI RENDER LOGIC (Banners & Contents) ===
+// =========================================================================
+// UI RENDER LOGIC (Banners) - الحجم الكامل، تقسيم البنرات 3، وربط صحيح بـ Lightbox
+// =========================================================================
+let bannerIntervals = [];
+let currentBannerIndices = [];
+
 function renderBanners() {
     const container = document.getElementById('bannerContainer');
+    if (!container) return;
+    
     if (!APPDATA.banners || APPDATA.banners.length === 0) {
         container.style.display = 'none';
         return;
     }
-    let slidesHtml = '';
-    let visibleCount = 0;
-    
-    APPDATA.banners.forEach(banner => {
-        const hasImage = banner.imageUrl && banner.imageUrl.trim() !== '';
-        const hasVideo = banner.videoUrl && banner.videoUrl.trim() !== '';
-        const hasColor = banner.color && banner.color.trim() !== '';
-        
-        if (!hasImage && !hasVideo && !hasColor) return;
-        
-        let mediaHTML = '';
-        if (hasVideo) {
-            mediaHTML = `<video class="banner-bg-media" autoplay muted loop playsinline disablePictureInPicture>
-                            <source src="${banner.videoUrl}" type="video/mp4">
-                         </video>`;
-        } else if (hasImage) {
-            mediaHTML = `<img class="banner-bg-media" src="${banner.imageUrl}" alt="${banner.title}">`;
-        }
-        
-        const bgStyle = (!hasImage && !hasVideo) ? `background: ${banner.color};` : '';
-        
-        slidesHtml += `
-            <div class="banner-slide" style="${bgStyle}" onclick="openLink('${banner.link}')">
-                ${mediaHTML}
-                <div class="banner-content">
-                    <h2>${banner.title}</h2>
-                    <p>${banner.desc}</p>
-                </div>
-            </div>
-        `;
-        visibleCount++;
-    });
 
-    if (visibleCount === 0) {
-        container.style.display = 'none';
-    } else {
-        container.style.display = 'block';
-        container.innerHTML = `<div class="banner-wrapper" id="bannerWrapper">${slidesHtml}</div>
-                               <div class="banner-dots" id="bannerDots"></div>`;
+    container.style.display = 'block';
+    container.innerHTML = ''; 
+
+    // تقسيم البنرات لمجموعات (أقصى عدد 3)
+    const chunkSize = 6;
+    const chunks = [];
+    for (let i = 0; i < APPDATA.banners.length; i += chunkSize) {
+        chunks.push(APPDATA.banners.slice(i, i + chunkSize));
+    }
+
+    if (bannerIntervals.length > 0) {
+        bannerIntervals.forEach(clearInterval);
+        bannerIntervals = [];
+    }
+    currentBannerIndices = new Array(chunks.length).fill(0);
+
+    chunks.forEach((chunk, chunkIdx) => {
+        let slidesHtml = '';
         
-        const dotsContainer = document.getElementById('bannerDots');
-        if (dotsContainer) {
-            for (let i = 0; i < visibleCount; i++) {
-                const dot = document.createElement('div');
-                dot.className = `banner-dot ${i === 0 ? 'active' : ''}`;
-                dot.onclick = (e) => { e.stopPropagation(); goToSlide(i); };
-                dotsContainer.appendChild(dot);
+        chunk.forEach((banner) => {
+            const hasImage = banner.imageUrl && banner.imageUrl.trim() !== '';
+            const hasVideo = banner.videoUrl && banner.videoUrl.trim() !== '';
+            const hasColor = banner.color && banner.color.trim() !== '';
+            
+            if (!hasImage && !hasVideo && !hasColor) return;
+            
+            let mediaHTML = '';
+            if (hasVideo) {
+                mediaHTML = `<video class="banner-bg-media" autoplay muted loop playsinline disablePictureInPicture style="width:100%; height:auto; display:block;">
+                                <source src="${banner.videoUrl}" type="video/mp4">
+                             </video>`;
+            } else if (hasImage) {
+                // 🔴 التعديل هنا: إضافة onpointerdown لضمان إطلاق الحدث بغض النظر عن المتصفح أو الجوال
+                mediaHTML = `<img class="banner-bg-media zoomable-img" src="${banner.imageUrl}" alt="${banner.title || ''}" 
+                                style="width:100%; height:auto; display:block; object-fit:contain; border-radius:12px; cursor:zoom-in;" 
+                                onclick="openLightbox('${banner.imageUrl}');">`;
+            }
+            
+            const bgStyle = (!hasImage && !hasVideo) ? `background: ${banner.color};` : '';
+            
+            slidesHtml += `
+                <div class="banner-slide" style="${bgStyle} flex: 0 0 100%; position: relative;">
+                    ${mediaHTML}
+                </div>
+            `;
+        });
+
+        if (slidesHtml) {
+            const sliderBlock = document.createElement('div');
+            sliderBlock.className = 'slider-block';
+            sliderBlock.style.cssText = 'position: relative; overflow: hidden; margin-bottom: 25px; border-radius: 12px; background: transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.1);';
+            
+            let dotsHtml = '';
+            if (chunk.length > 1) {
+                for (let i = 0; i < chunk.length; i++) {
+                    dotsHtml += `<div class="banner-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${chunkIdx}, ${i})"></div>`;
+                }
+                dotsHtml = `<div class="banner-dots" id="bannerDots-${chunkIdx}" style="position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 5px; z-index: 10;">${dotsHtml}</div>`;
+            }
+
+            sliderBlock.innerHTML = `
+                <div class="banner-wrapper" id="bannerWrapper-${chunkIdx}" style="display: flex; transition: transform 0.4s ease;">
+                    ${slidesHtml}
+                </div>
+                ${dotsHtml}
+            `;
+            container.appendChild(sliderBlock);
+
+            if (chunk.length > 1) {
+                const interval = setInterval(() => {
+                    currentBannerIndices[chunkIdx] = (currentBannerIndices[chunkIdx] + 1) % chunk.length;
+                    goToSlide(chunkIdx, currentBannerIndices[chunkIdx]);
+                }, 5000); 
+                bannerIntervals.push(interval);
             }
         }
-        if (visibleCount > 1) {
-            startBannerRotation();
-        }
+    });
+}
+
+function goToSlide(chunkIdx, slideIdx) {
+    const wrapper = document.getElementById(`bannerWrapper-${chunkIdx}`);
+    if (!wrapper) return;
+    
+    currentBannerIndices[chunkIdx] = slideIdx;
+    wrapper.style.transform = `translateX(-${slideIdx * 100}%)`;
+    
+    const dotsContainer = document.getElementById(`bannerDots-${chunkIdx}`);
+    if (dotsContainer) {
+        Array.from(dotsContainer.children).forEach((dot, i) => {
+            dot.classList.toggle('active', i === slideIdx);
+        });
     }
 }
 
 function renderContent() {
     const grid = document.getElementById('contentGrid');
+    if (!grid) return;
+    
     grid.innerHTML = '';
     if (!APPDATA.content || APPDATA.content.length === 0) {
         grid.innerHTML = `<p style="text-align:center; color:var(--text-secondary); margin-top:20px;">. .</p>`;
@@ -1132,34 +1225,61 @@ function changeGallerySlide(cardIdx, imgIdx) {
     images.forEach(img => { img.style.display = 'none'; });
     if(images[imgIdx]) images[imgIdx].style.display = 'block';
     
-    const dots = document.getElementById(`dots-${cardIdx}`).children;
-    Array.from(dots).forEach(d => { d.classList.remove('active'); });
-    if(dots[imgIdx]) dots[imgIdx].classList.add('active');
+    const dots = document.getElementById(`dots-${cardIdx}`);
+    if (dots) {
+        Array.from(dots.children).forEach(d => { d.classList.remove('active'); });
+        if(dots.children[imgIdx]) dots.children[imgIdx].classList.add('active');
+    }
 }
 
+// =========================================================================
+// LIGHTBOX & ZOOM LOGIC (Using your existing HTML div)
+// =========================================================================
 function openLightbox(url) {
     const lb = document.getElementById('lightbox');
     const img = document.getElementById('lightboxImg');
+    
+    if (!lb || !img) {
+        console.error("Lightbox elements not found in HTML!");
+        return;
+    }
+    
     img.src = url;
-    enablePinchZoomOnImage(img);
+    
+    // إعادة تعيين التحجيم
+    img.style.transform = 'scale(1)';
+    img.style.transition = 'transform 0.3s ease';
+    
+    // عرض اللايتبوكس
     lb.style.display = 'flex';
-    setTimeout(() => { lb.classList.add('show'); }, 10);
+    lb.classList.add('show');
+    
+    // تفعيل دالة الزوم على الصورة بداخل الـ Lightbox
+    enablePinchZoomOnImage(img);
 }
 
 function closeLightbox(event) {
-    if (event && event.target.id !== 'lightbox' && event.target.id !== 'lightboxImg') return;
+    // التأكد من إغلاق المربع فقط إذا ضغطت على الخلفية أو الزر، وتجنب الإغلاق إذا كان الزوم شغال
+    if (event && event.target.id !== 'lightbox' && !event.target.classList.contains('lightbox-close')) {
+        return;
+    }
+    
     const lb = document.getElementById('lightbox');
     const img = document.getElementById('lightboxImg');
+    if (!lb || !img) return;
+    
     lb.classList.remove('show');
     setTimeout(() => { 
         lb.style.display = 'none'; 
-        img.style.transform = '';
-        img.style.transition = '';
+        img.style.transform = 'scale(1)';
+        img.src = '';
     }, 300);
 }
 
 function enablePinchZoomOnImage(imageElement) {
     if (!imageElement) return;
+    
+    // تصفير الخصائص السابقة
     let imageScale = 1;
     let lastScale = 1;
     let startData = { x: 0, y: 0, distance: 0 };
@@ -1183,10 +1303,12 @@ function enablePinchZoomOnImage(imageElement) {
             event.preventDefault();
             event.stopPropagation();
             let scale = event.scale ? event.scale : getDistance(event) / startData.distance;
-            imageScale = Math.min(Math.max(1, lastScale * scale), 5);
+            imageScale = Math.min(Math.max(1, lastScale * scale), 5); // أقصى حد للتكبير هو 5
+            
             const deltaX = (event.touches[0].pageX + event.touches[1].pageX) / 2 - startData.x;
             const deltaY = (event.touches[0].pageY + event.touches[1].pageY) / 2 - startData.y;
             const transform = `translate(${deltaX}px, ${deltaY}px) scale(${imageScale})`;
+            
             imageElement.style.transform = transform;
             imageElement.style.WebkitTransform = transform;
             imageElement.style.zIndex = "99999";
@@ -1197,28 +1319,28 @@ function enablePinchZoomOnImage(imageElement) {
     imageElement.addEventListener('touchend', (event) => {
         if (event.touches.length < 2) {
             if (imageScale > 1.1) {
+                // إعادة الصورة لحجمها الطبيعي إذا لم تكن قيد التكبير
                 setTimeout(() => {
-                    imageElement.style.transform = '';
-                    imageElement.style.WebkitTransform = '';
+                    imageElement.style.transform = 'scale(1)';
+                    imageElement.style.WebkitTransform = 'scale(1)';
                     imageElement.style.transition = 'transform 0.3s ease';
-                    imageElement.style.zIndex = "";
                     imageScale = 1;
                     lastScale = 1;
-                }, 100);
+                }, 300);
             }
         }
     }, { passive: false });
-
+    
+    // لتجنب التكبير عند الضغط مرتين على الهاتف
     let lastTap = 0;
     imageElement.addEventListener('touchend', function(event) {
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTap;
         if (tapLength < 300 && tapLength > 0) {
             event.preventDefault();
-            imageElement.style.transform = '';
-            imageElement.style.WebkitTransform = '';
+            imageElement.style.transform = 'scale(1)';
+            imageElement.style.WebkitTransform = 'scale(1)';
             imageElement.style.transition = 'transform 0.3s ease';
-            imageElement.style.zIndex = "";
             imageScale = 1;
             lastScale = 1;
         }
@@ -1226,41 +1348,29 @@ function enablePinchZoomOnImage(imageElement) {
     });
 }
 
-let currentBannerIndex = 0;
-function startBannerRotation() {
-    if (window.bannerInterval) clearInterval(window.bannerInterval);
-    window.bannerInterval = setInterval(() => {
-        const slides = document.querySelectorAll('.banner-slide');
-        currentBannerIndex = (currentBannerIndex + 1) % slides.length;
-        goToSlide(currentBannerIndex);
-    }, 2000);
-}
-
-function goToSlide(index) {
-    const wrapper = document.getElementById('bannerWrapper');
-    if (!wrapper) return;
-    currentBannerIndex = index;
-    wrapper.style.transform = `translateX(-${index * 100}%)`;
-    const dots = document.querySelectorAll('.banner-dot');
-    dots.forEach((dot, i) => { dot.classList.toggle('active', i === index); });
-}
-
+// =========================================================================
+// UI CONTROLS & IFRAME
+// =========================================================================
 function toggleMode() {
     document.body.classList.toggle('day-mode');
     localStorage.setItem('theme', document.body.classList.contains('day-mode') ? 'day' : 'night');
-    document.querySelector('.mode-toggle i').className = document.body.classList.contains('day-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    const icon = document.querySelector('.mode-toggle i');
+    if (icon) icon.className = document.body.classList.contains('day-mode') ? 'fas fa-sun' : 'fas fa-moon';
 }
 
 function loadTheme() {
     if (localStorage.getItem('theme') === 'day') {
         document.body.classList.add('day-mode');
-        document.querySelector('.mode-toggle i').className = 'fas fa-sun';
+        const icon = document.querySelector('.mode-toggle i');
+        if (icon) icon.className = 'fas fa-sun';
     }
 }
 
 function toggleNavAndScroll() {
     const nav = document.getElementById('bottomNav');
     const icon = document.querySelector('.scroll-toggle i');
+    if (!nav || !icon) return;
+    
     if (!nav.classList.contains('hidden')) {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         nav.classList.add('hidden');
@@ -1273,19 +1383,19 @@ function toggleNavAndScroll() {
 }
 
 function closeAllMenus() {
-    document.getElementById('sectionsMenu').classList.remove('show');
-    document.getElementById('overlay').classList.remove('show');
+    const menu = document.getElementById('sectionsMenu');
+    const overlay = document.getElementById('overlay');
+    if (menu) menu.classList.remove('show');
+    if (overlay) overlay.classList.remove('show');
 }
 
 function openLink(url) {
     if (!url || url.trim() === '#') return;
     closeAllMenus();
 
-    // 🔴 التعديل هنا: سحب رقم الصيدلية وتمريره في الرابط
     const phNo = localStorage.getItem('pharmacy_number');
     let finalUrl = url;
     
-    // لو فيه رقم صيدلية، بنضيفه للرابط كـ Parameter اسمه ph
     if (phNo) {
         const separator = url.includes('?') ? '&' : '?';
         finalUrl = `${url}${separator}ph=${encodeURIComponent(phNo)}`;
@@ -1303,6 +1413,8 @@ function openLink(url) {
     const iframe = document.getElementById('embeddedFrame');
     const errorBox = document.getElementById('iframeError');
     const loader = document.getElementById('loadingOverlay');
+
+    if (!container || !iframe || !errorBox) return;
 
     errorBox.classList.remove('show');
 
@@ -1326,32 +1438,25 @@ function openLink(url) {
             }
         }, 15000);
 
-iframe.onload = function() {
+        iframe.onload = function() {
             try {
                 const frameSrc = iframe.contentWindow.location.href;
                 if (frameSrc === 'about:blank') return;
-            } catch(e) {
-                // cross-origin: يعني الصفحة اتحملت بنجاح
-            }
+            } catch(e) {}
+            
             hasLoaded = true;
             clearTimeout(loadTimeout);
             hideLoaderFast(loader);
 
-            // 🚀 التعديل الجوهري هنا: إرسال الرقم عبر postMessage
-            // بنجيب الرقم اللي متسجل في المنصة الرئيسية
             const phNo = localStorage.getItem('pharmacy_number');
-            
             if (phNo) {
-                // بنستنى نص ثانية عشان نضمن إن الصفحة اللي جوه الـ iframe جاهزة تسمعنا
                 setTimeout(() => {
                     console.log("Sending Pharmacy ID to iframe:", phNo);
-                    iframe.contentWindow.postMessage({ 
-                        type: 'LOGIN_DATA', 
-                        ph: phNo 
-                    }, '*'); // '*' تسمح بمرور الرسالة حتى لو الملفات محلياً
+                    iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); 
                 }, 500);
             }
         };
+        
         iframe.onerror = function() {
             hasLoaded = true;
             clearTimeout(loadTimeout);
@@ -1359,10 +1464,10 @@ iframe.onload = function() {
             errorBox.classList.add('show');
         };
 
-        // 🟢 نستخدم finalUrl اللي فيه رقم الصيدلية
         iframe.src = finalUrl;
     }, 50);
 }
+
 function hideLoaderFast(loader) {
     if (loader) {
         loader.style.opacity = '0';
@@ -1374,9 +1479,16 @@ function hideLoaderFast(loader) {
 }
 
 function closeIframe() {
-    document.getElementById('iframeContainer').classList.remove('show');
-    document.getElementById('iframeError').classList.remove('show');
-    setTimeout(() => { document.getElementById('embeddedFrame').src = 'about:blank'; }, 400);
+    const container = document.getElementById('iframeContainer');
+    const errorBox = document.getElementById('iframeError');
+    const iframe = document.getElementById('embeddedFrame');
+    
+    if (container) container.classList.remove('show');
+    if (errorBox) errorBox.classList.remove('show');
+    
+    setTimeout(() => { 
+        if (iframe) iframe.src = 'about:blank'; 
+    }, 400);
 }
 
 function goHome() {
@@ -1394,19 +1506,23 @@ function toggleSections() {
     navButtons.forEach(btn => btn.classList.remove('active'));
     const sectionsBtn = document.querySelector('.nav-btn[onclick="toggleSections()"]');
     if (sectionsBtn) sectionsBtn.classList.add('active');
-    document.getElementById('sectionsMenu').classList.add('show');
-    document.getElementById('overlay').classList.add('show');
+    
+    const menu = document.getElementById('sectionsMenu');
+    const overlay = document.getElementById('overlay');
+    if (menu) menu.classList.add('show');
+    if (overlay) overlay.classList.add('show');
 }
+
 function triggerAlarm(reminderObj) {
     const audio = document.getElementById('offerAlarmSound');
-    audio.currentTime = 0;
-    audio.play().catch(e => console.log("Audio prevented:", e));
+    if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log("Audio prevented:", e));
+    }
 
-    // جلب وقت العرض الأصلي وتنسيقه
     let timeString = "";
     let isExactlyNow = false;
     
-    // تنظيف الـ ID للوصول للبيانات الأصلية
     const cleanId = reminderObj.offer_id.replace('_30min', '').replace('_exact', '');
     const originalOffer = START_OFFERS.find(o => o.id === cleanId);
     
@@ -1422,13 +1538,15 @@ function triggerAlarm(reminderObj) {
         ? `${reminderObj.offer_title} بدأ الآن! 🔥` 
         : `${reminderObj.offer_title}${timeString} سيبدأ خلال 30 دقيقة! ⏳`;
 
-    // 1. تحديث البوب أب الداخلي (هيفضل موجود لحد ما تضغط Stop)
     const titleDisplay = document.getElementById('alarmOfferName');
-    titleDisplay.innerText = message;
-    document.getElementById('alarmActionModal').style.display = 'flex';
-    document.getElementById('currentReminderId').value = reminderObj.id;
+    if (titleDisplay) titleDisplay.innerText = message;
+    
+    const actionModal = document.getElementById('alarmActionModal');
+    if (actionModal) actionModal.style.display = 'flex';
+    
+    const idInput = document.getElementById('currentReminderId');
+    if (idInput) idInput.value = reminderObj.id;
 
-    // 2. إرسال الإشعار للـ Service Worker (للمتصفح بره)
     const notifTitle = "تنبيه MONO SYSTEM";
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
@@ -1440,11 +1558,12 @@ function triggerAlarm(reminderObj) {
         showBrowserNotification(notifTitle, message);
     }
 
-    // إيقاف الصوت بعد 20 ثانية منعاً للإزعاج
     clearTimeout(stopAudioTimeout);
     stopAudioTimeout = setTimeout(() => {
-        audio.pause();
-        audio.currentTime = 0;
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
     }, 20000);
 }
 
@@ -1460,12 +1579,13 @@ function startAlarmChecker() {
 
             if ((rem.status === 'pending' || rem.status === 'snoozed') && nowMs >= trigTimeMs && !isTooOld) {
                 console.log(`Triggering alarm: ${rem.offer_title}`);
-                rem.status = 'firing'; // قفل التكرار محلياً
+                rem.status = 'firing'; 
                 triggerAlarm(rem); 
             }
         });
     }, 5000); 
 }
+
 function openScannerDirectly() {
     const loader = document.getElementById('loadingOverlay');
     if (loader) {
@@ -1473,11 +1593,11 @@ function openScannerDirectly() {
         loader.style.opacity = '1';
     }
     
-    // استدعاء دالة فتح اللينك مع إضافة الهاش
     setTimeout(() => {
         openLink('offersgit.html#scanner');
     }, 100);
 }
+</script>
 </script>
 </body>
 </html>
