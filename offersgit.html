@@ -6833,82 +6833,83 @@ window.matchesFilters = function(product, filters) {
         }
     };
 
-    async function fetchStockForTargetedProducts(products, filters) {
-        currentFetchSession++; 
-        const mySession = currentFetchSession;
-        
-        const storeCode = getStoreCode();
-        if (!storeCode) return;
+async function fetchStockForTargetedProducts(products, filters) {
+    currentFetchSession++; 
+    const mySession = currentFetchSession;
+    
+    const storeCode = getStoreCode();
+    if (!storeCode) return;
 
-        const total = products.length;
-        let fetched = 0;
-        const isMassive = total > 300; 
-        
-        setStockUiState("loading", { current: 0, total: total });
+    const total = products.length;
+    let fetched = 0;
+    const isMassive = total > 300; 
+    
+    setStockUiState("loading", { current: 0, total: total });
 
-        // تجميع كل 40 منتج في طلب شبكة واحد للسرعة القصوى
-        const batchSize = 40; 
-        const fetchPromises = [];
+    const batchSize = 40; 
+    const fetchPromises = [];
+    
+    for (let i = 0; i < total; i += batchSize) {
+        const batch = products.slice(i, i + batchSize);
         
-        for (let i = 0; i < total; i += batchSize) {
-            const batch = products.slice(i, i + batchSize);
-            
-            const codesToRequest = [];
-            batch.forEach(p => {
-                const code = String(p?.Code ?? "").trim();
-                const cacheKey = storeCode + "__" + code;
-                if (stockCache.has(cacheKey)) {
-                    const cached = stockCache.get(cacheKey);
-                    p.inStock = cached.inStock; p.actualStock = cached.actualStock;
-                    fetched++;
-                } else if (code) {
-                    codesToRequest.push(code);
-                }
-            });
-
-            if (codesToRequest.length > 0) {
-                const codesString = codesToRequest.map(encodeURIComponent).join(',');
-                const req = fetch(workerBaseUrl + "/api/stock?codes=" + codesString + "&store=" + encodeURIComponent(storeCode))
-                    .then(res => res.json())
-                    .then(data => {
-                        if (currentFetchSession !== mySession) return;
-                        
-                        if (data && data.success && data.results) {
-                            data.results.forEach(resItem => {
-                                const cacheKey = storeCode + "__" + resItem.code;
-                                stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
-                                
-                                const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
-                                if (targetP) {
-                                    targetP.inStock = resItem.inStock;
-                                    targetP.actualStock = resItem.stockLevel;
-                                }
-                            });
-                        }
-                        fetched += codesToRequest.length;
-                        setStockUiState("loading", { current: fetched, total: total });
-                        
-                        if (!isMassive) {
-                            try { originalApplyFilters(); } catch (e) {}
-                        }
-                    })
-                    .catch(err => {
-                        fetched += codesToRequest.length;
-                    });
-                fetchPromises.push(req);
-            } else {
-                setStockUiState("loading", { current: fetched, total: total });
+        const codesToRequest = [];
+        batch.forEach(p => {
+            const code = String(p?.Code ?? "").trim();
+            const cacheKey = storeCode + "__" + code;
+            if (stockCache.has(cacheKey)) {
+                const cached = stockCache.get(cacheKey);
+                p.inStock = cached.inStock; p.actualStock = cached.actualStock;
+                fetched++;
+            } else if (code) {
+                codesToRequest.push(code);
             }
-        }
+        });
 
-        // تشغيل كل الطلبات بالتوازي
-        await Promise.all(fetchPromises);
+        if (codesToRequest.length > 0) {
+            const codesString = codesToRequest.map(encodeURIComponent).join(',');
 
-        if (currentFetchSession === mySession) {
-            finishFetchSession(filters);
+            // ✅ التعديل هنا
+            const req = fetch(workerBaseUrl + "/api/stock?codes=" + codesString + "&store=" + encodeURIComponent(storeCode), {
+                headers: { "x-session-token": SESSION_TOKEN }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (currentFetchSession !== mySession) return;
+                    
+                    if (data && data.success && data.results) {
+                        data.results.forEach(resItem => {
+                            const cacheKey = storeCode + "__" + resItem.code;
+                            stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                            
+                            const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
+                            if (targetP) {
+                                targetP.inStock = resItem.inStock;
+                                targetP.actualStock = resItem.stockLevel;
+                            }
+                        });
+                    }
+                    fetched += codesToRequest.length;
+                    setStockUiState("loading", { current: fetched, total: total });
+                    
+                    if (!isMassive) {
+                        try { originalApplyFilters(); } catch (e) {}
+                    }
+                })
+                .catch(err => {
+                    fetched += codesToRequest.length;
+                });
+            fetchPromises.push(req);
+        } else {
+            setStockUiState("loading", { current: fetched, total: total });
         }
     }
 
+    await Promise.all(fetchPromises);
+
+    if (currentFetchSession === mySession) {
+        finishFetchSession(filters);
+    }
+}
     function finishFetchSession(filters) {
         try { originalApplyFilters(); } catch (e) {}
         const db = Array.isArray(window.productsDB) ? window.productsDB : [];
