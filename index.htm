@@ -1394,11 +1394,19 @@ function openLink(url) {
     closeAllMenus();
 
     const phNo = localStorage.getItem('pharmacy_number');
+    
+    // ✅ إضافة: إنشاء توكن مؤقت
+    const token = crypto.randomUUID();
+    sessionStorage.setItem("_tk", token);
+
     let finalUrl = url;
     
     if (phNo) {
         const separator = url.includes('?') ? '&' : '?';
-        finalUrl = `${url}${separator}ph=${encodeURIComponent(phNo)}`;
+        // ✅ إضافة: حط التوكن مع الـ ph في الـ URL
+        finalUrl = `${url}${separator}ph=${encodeURIComponent(phNo)}&_tk=${token}`;
+    } else {
+        finalUrl = `${url}?_tk=${token}`;
     }
 
     const navButtons = document.querySelectorAll('.nav-btn');
@@ -1467,7 +1475,6 @@ function openLink(url) {
         iframe.src = finalUrl;
     }, 50);
 }
-
 function hideLoaderFast(loader) {
     if (loader) {
         loader.style.opacity = '0';
