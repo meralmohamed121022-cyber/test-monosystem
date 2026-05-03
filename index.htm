@@ -10,6 +10,10 @@
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
     
     <style>
+    /* إخفاء الأزرار افتراضياً إذا تم التعرف على iFrame عبر الوسائط */
+@media screen and (max-width: 0px) { 
+    /* هذا مجرد مثال، الاعتماد الأكبر يكون على كود JS بالأعلى */
+}
         /* --- GLOBAL RESET & VARS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -1411,8 +1415,14 @@ function openLink(url) {
     if (!url || url.trim() === '#') return;
     closeAllMenus();
 
-    // 1. ضمان تنظيف أي حالة عالقة قبل البدء
-    resetIframeLoader(); 
+    document.getElementById('modeToggle').style.display = 'none';
+    document.querySelector('.logout-btn').style.display = 'none';
+    document.getElementById('userInfoBadge').style.display = 'none';
+    
+    let scannerBtn = document.querySelector('.scanner-direct-btn');
+    if (scannerBtn) scannerBtn.style.display = 'none';
+
+    resetIframeLoader();
 
     const phNo = localStorage.getItem('pharmacy_number');
     const token = crypto.randomUUID();
@@ -1420,11 +1430,10 @@ function openLink(url) {
 
     let finalUrl = url;
     const separator = url.includes('?') ? '&' : '?';
-    finalUrl = phNo 
+    finalUrl = phNo
         ? `${url}${separator}ph=${encodeURIComponent(phNo)}&_tk=${token}`
         : `${url}${separator}_tk=${token}`;
 
-    // تحديث الأزرار
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => {
         btn.classList.remove('active');
@@ -1453,7 +1462,6 @@ function openLink(url) {
     setTimeout(() => {
         let hasLoaded = false;
         
-        // مفتاح الأمان (Safety Trigger)
         let safetyTimeout = setTimeout(() => {
             if (!hasLoaded) {
                 console.warn("Safety trigger active...");
@@ -1468,7 +1476,7 @@ function openLink(url) {
             
             if (phNo) {
                 setTimeout(() => {
-                    iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); 
+                    iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*');
                 }, 500);
             }
         };
@@ -1484,6 +1492,23 @@ function openLink(url) {
     }, 50);
 }
 
+function closeIframe() {
+    const container = document.getElementById('iframeContainer');
+    const errorBox = document.getElementById('iframeError');
+    const iframe = document.getElementById('embeddedFrame');
+    
+    if (container) container.classList.remove('show');
+    if (errorBox) errorBox.classList.remove('show');
+    
+    document.getElementById('modeToggle').style.display = 'flex';
+    let scannerBtn = document.querySelector('.scanner-direct-btn');
+    if (scannerBtn) scannerBtn.style.display = 'flex';
+    checkAuth();
+    
+    setTimeout(() => { 
+        if (iframe) iframe.src = 'about:blank'; 
+    }, 400);
+}
 // دالة Reset المساعدة (ضعها بجانب openLink)
 function resetIframeLoader() {
     const loader = document.getElementById('loadingOverlay');
@@ -1651,6 +1676,7 @@ function openScannerDirectly() {
         openLink('offersgit.html#scanner');
     }, 100);
 }
+
 </script>
 </script>
 </body>
