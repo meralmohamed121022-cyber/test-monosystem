@@ -1,33 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="light">
-<head>
-    <meta charset="UTF-8" />
-
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';
-        script-src 'self' https: 'unsafe-inline' 'unsafe-eval' blob: data:;
-        style-src 'self' https: 'unsafe-inline' data:;
-        img-src 'self' https: data: blob:;
-        connect-src 'self' https: data: blob:;
-        font-src 'self' https: data:;
-        media-src 'self' https: blob: data:;
-        worker-src 'self' blob:;
-        frame-ancestors *;
-    ">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-
-    <title>ALDAWAA OFFERS-MONO</title>
-
-    <link rel="icon" href="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png">
-
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-</head>
-<body>
-<style>
-/* ====== 🍎 IPHONE FIXES ====== */
+<style>/* ====== 🍎 IPHONE FIXES ====== */
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -4979,326 +4950,8 @@ body > div:has(> label[for="codesFileInput"]),
 .btn-reset-art:hover .btn-reset-icon {
     transform: rotate(-180deg);
 }
-</style>
-</style>
-</head>
-<body>
-<div id="loaderScreen">
-    <div id="closeLoaderX" onclick="hideInitialLoader()" style="
-        position: absolute;
-        top: 30px;
-        right: 30px;
-        width: 45px;
-        height: 45px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        font-family: Arial, sans-serif;
-        cursor: pointer;
-        z-index: 1000001; /* أعلى من الصورة */
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    " onmouseover="this.style.background='rgba(255, 0, 0, 0.6)'; this.style.borderColor='white';" 
-      onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.borderColor='rgba(255, 255, 255, 0.4)';">
-        ✕
-    </div>
 
-    <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png" alt="Loading...">
-</div>
-    </div>
-    <div id="gatewayView">
-    <div class="gateway-card">
-        <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png" 
-             class="header-personal-img" alt="Profile">
-        
-        <div class="ramadan-kareem">MONTHLY OFFERS</div>
-        <div class="sub-text">MONO Offers Control Panel</div>
-        
-        <div id="buttonsList"></div>
-    </div>
-</div>
-<div id="fixedHeader" style="display:none;">
-    <div class="header-logo" onclick="goHome()">
-        <svg viewBox="0 0 24 24">
-            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1.5-3.5c-3.59 0-6.5-2.91-6.5-6.5s2.91-6.5 6.5-6.5c.66 0 1.29.1 1.89.28-2.3 1.05-3.89 3.39-3.89 6.22 0 2.83 1.59 5.17 3.89 6.22-.6.18-1.23.28-1.89.28z"/>
-        </svg>
-        <span>HOME</span>
-    </div>
 
-    <img id="headerCenterImg" src="" class="header-center-img" alt="" style="max-height: 50px; width: auto;">
-    
-  
-</div>
-<button id="toolsSidebarToggle" class="sidebar-toggle-btn" onclick="toggleToolsSidebar()"></button>
-<div id="toolsSidebar" class="modern-sidebar">
-    <div class="sidebar-header">
-        <button class="sidebar-close" onclick="toggleToolsSidebar()">✖</button>
-    </div>
-    <div class="sidebar-content">
-       <button class="sidebar-btn btn-custom-print" 
-        onclick="openCustomPrintModal(); toggleToolsSidebar();" 
-        style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 15px 20px; height: auto; width: 100%; border: none; border-radius: 15px; cursor: pointer; transition: 0.3s; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
-    
-    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-        <span class="icon" style="font-size: 20px;">🖨️</span>
-        <span style="font-size: 15px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff;">Custom Offer Print</span>
-    </div>
-
-    <div style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 35px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; text-align: left;">
-        — PRINT OFFERS WITHOUT CODES
-    </div>
-    
-</button>
-            <div style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 32px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">
-            </div>
-        </button>
-
-        <button id="sidebarMagazineBtn" class="sidebar-btn btn-magazine" onclick="toggleMagazineModeFromSidebar()">
-            <span class="icon">📰</span> MAGAZINE MODE: OFF
-        </button>
-
-        <button class="sidebar-btn btn-exclusive" onclick="printExclusiveOffers(); toggleToolsSidebar();">
-            <span class="icon">🌟</span> Exclusive Offers (5,10,15)
-        </button>
-
-        <div class="sidebar-upload-box">
-            <label for="codesFileInput" class="sidebar-btn btn-file">
-                <span class="icon">📂</span> PRINT \ View FROM FILE ⚡
-            </label>
-            <input type="file" id="codesFileInput" accept=".pdf,.txt,.csv,.xlsx,.xls" style="display:none" onchange="handleSidebarFileUpload(event)">
-        </div>
-
-        <div style="border-top: 1px solid rgba(150, 150, 150, 0.2); margin: 5px 0;"></div>
-
-        <button class="sidebar-btn btn-help" onclick="openFilterHelpModal(); toggleToolsSidebar();">
-            <span class="icon">❓</span> كيف تفلتر ؟
-        </button>
-    </div>
-</div>
-
-<div id="mainOffersContainer" class="container" style="display: none; margin-top: 90px;">
-    <button id="exportPDFBtn" class="export-pdf-btn" onclick="exportFullMagazinePDF()">
-        <span class="icon">🖨️</span> PDF
-    </button>
-
-    <div id="printLoader">
-        <div class="spinner"></div>
-        <div style="margin-top:15px; font-size:1.2em;">Preparing Print Layout...<br>Please wait</div>
-    </div>
-
-    <div id="mainPageStatusContainer" class="main-page-status-container" style="display: none;">
-        <div id="codesFileStatus"></div>
-    </div>
-
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider">
-                <span class="icon sun">☀️</span>
-                <span class="icon moon">🌙</span>
-            </div>
-        </label>
-    </div>
-
-    <div class="hero-banner">
-        <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png" class="header-personal-img" alt="Profile">
-        <div style="display: flex; align-items: center; gap: 15px; padding: 10px;">
-            <div onclick="openEmail()" style="cursor: pointer;"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="#ff6b6b"/></svg></div>
-            <div onclick="openWhatsApp()" style="cursor: pointer;"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" fill="#25D366"/></svg></div>
-            <div onclick="openFacebook()" style="cursor: pointer;"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/></svg></div>
-        </div>
-        <div class="hero-content">
-            <h1>🔥 MEGA PHARMACY OFFERS 🔥</h1>
-            <div class="offer-badge">Offers</div>
-            <div class="offer-dates-container">
-                <div class="date-box"><span class="label">🎯 START</span><span class="date-value">Dec 25, 2025</span></div>
-                <div class="date-box"><span class="label">⏰ END</span><span class="date-value">Jan 07, 2026</span></div>
-            </div>
-            <div class="countdown-container">
-                <div class="countdown-header"><h2 id="countdownTitle">⏰ العرض لم يبدأ بعد</h2></div>
-                <div class="countdown-timer">
-                    <div class="countdown-item"><span class="number" id="days">--</span><span class="label">Days</span></div>
-                    <div class="countdown-item"><span class="number" id="hours">--</span><span class="label">Hours</span></div>
-                    <div class="countdown-item"><span class="number" id="minutes">--</span><span class="label">Min</span></div>
-                    <div class="countdown-item"><span class="number" id="seconds">--</span><span class="label">Sec</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
-<!-- =========================
-     PROMO MEDIA SWIPER SECTION
-========================= -->
-<div class="promo-media-section">
-    <div class="promo-media-head">
-        <h2>PLATFORM FEATURES</h2>
-    </div>
-
-    <div class="promo-media-swiper" id="promoMediaSwiper">
-        
-        <article class="promo-media-card">
-            <h3 class="promo-media-title">SCAN 6 CODE ITEM AND PRINT OFFERS</h3>
-            <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SCAN%206%20CODE%20ITEM%20AND%20PRINT%20OFFERS.mp4')">
-                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/scan%20code.jpeg">
-                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SCAN%206%20CODE%20ITEM%20AND%20PRINT%20OFFERS.mp4" type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-            </button>
-        </article>
-
-        <article class="promo-media-card">
-            <h3 class="promo-media-title">Sidebar Options</h3>
-            <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDEBAR%20OPTIONS.mp4')">
-                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDE%20BAR%20OPTIONS.jpeg">
-                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDEBAR%20OPTIONS.mp4" type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-            </button>
-        </article>
-
-        <article class="promo-media-card">
-            <h3 class="promo-media-title">CONNECTION ERROR</h3>
-            <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/CONNECTION%20ERROR.mp4')">
-                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/WhatsApp%20Image%202026-04-27%20at%205.56.33%20PM.jpeg">
-                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/CONNECTION%20ERROR.mp4" type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-            </button>
-        </article>
-
-        <article class="promo-media-card">
-            <h3 class="promo-media-title">كيف تفلتر</h3>
-            <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/FILTERS.mp4')">
-                <video muted playsinline preload="metadata">
-                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/FILTERS.mp4" type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-            </button>
-        </article>
-
-        <article class="promo-media-card">
-            <h3 class="promo-media-title">print setting</h3>
-            <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('image','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/d4f83b18f5ac37fac564406d27a2b3dc990c9d31/PRINTER%20SETTING.png')">
-                <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/d4f83b18f5ac37fac564406d27a2b3dc990c9d31/PRINTER%20SETTING.png" alt="Printer Settings" loading="lazy">
-            </button>
-        </article>
-
-        <article class="promo-media-card">
-            <h3 class="promo-media-title">PRINT OFFERS FROM FILE</h3>
-            <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/PRINT%20OFFERS%20FROM%20FILE%20.mp4')">
-                <video muted playsinline preload="metadata">
-                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/PRINT%20OFFERS%20FROM%20FILE%20.mp4" type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-            </button>
-        </article>
-
-        <article class="promo-media-card">
-            <h3 class="promo-media-title">Magazine offers file</h3>
-            <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazine%20offers%20print.mp4')">
-                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazie%20offers.jpeg">
-                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazine%20offers%20print.mp4" type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-            </button>
-        </article>
-        
-    </div>
-</div>
-<!-- FULLSCREEN LIGHTBOX -->
-<div id="promoMediaLightbox" class="promo-media-lightbox" onclick="closePromoMedia(event)">
-    <button class="promo-media-close" type="button" onclick="closePromoMedia()">✕</button>
-    <div class="promo-media-lightbox-inner" id="promoMediaStage"></div>
-</div>
-   <div class="global-search-wrapper" style="display: flex; gap: 8px; align-items: center;">
-    <input id="globalSearch" class="global-search-box" type="text" placeholder="Search by code or name..." style="flex: 1; margin: 0;">
-    <button onclick="openBarcodeScanner()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; height: 45px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        📷
-    </button>
-</div>
-
-<div id="scannerModalOverlay" style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:100000; flex-direction:column; align-items:center; justify-content:center; padding:8px;">
-    <div class="scanner-shell">
-
-        <button onclick="closeBarcodeScanner()" style="position:absolute; right:12px; top:12px; z-index:1001; background:#ef4444; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">✕</button>
-
-        <div class="scanner-camera-wrap">
-            <div class="scanner-camera-box">
-                <div id="reader" style="width:100%; height:clamp(220px, 35vh, 300px); min-height:220px; background:#000; border:2px solid #667eea; border-radius:18px; overflow:hidden;"></div>
-                <div class="scanner-frame"></div>
-            </div>
-        </div>
-
-        <div class="scanner-manual-wrap" style="padding: 10px; background: #0f172a; border-bottom: 1px solid #334155;">
-            <div class="scanner-manual-row" style="display:flex; gap:6px; align-items:center; justify-content: space-between;">
-                
-                <button onclick="clearAllScannerData()" title="مسح الكل" style="height:42px; width:42px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
-                    🗑️
-                </button>
-
-                <input
-                    id="scannerManualCode"
-                    type="text"
-                    inputmode="numeric"
-                    maxlength="6"
-                    placeholder="كود سداسي"
-                    oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)"
-                    onkeydown="handleScannerManualInputKey(event)"
-                    style="flex: 1; min-width: 80px; height:42px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:14px; outline:none;"
-                />
-
-                <button
-                    onclick="processManualScannerCode()"
-                    style="height:42px; padding:0 12px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;"
-                >
-                    إضافة
-                </button>
-            </div>
-        </div>
-
-        <div class="scanner-cards-wrap" style="flex:1; display:flex; flex-direction:column; overflow:hidden; background:#1e293b; padding:10px 12px 100px; border-top:1px solid #334155; position: relative;">
-            <div id="scannedItemsList" style="display:flex; flex-direction:row; gap:12px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding-bottom:10px;">
-                </div>
-            
-            <div class="modern-nav-indicator" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; padding: 5px; background: rgba(102, 126, 234, 0.1); border-radius: 20px; width: fit-content; align-self: center; pointer-events: none;">
-                <span style="color: #667eea; font-size: 18px; font-weight: bold; animation: arrowBlink 1s infinite alternate;">❮</span>
-                <div style="font-size: 10px; font-weight: 800; color: #667eea; text-transform: uppercase; letter-spacing: 1px;">اسحب للتنقل</div>
-                <span style="color: #667eea; font-size: 18px; font-weight: bold; animation: arrowBlink 1s infinite alternate-reverse;">❯</span>
-            </div>
-        </div>
-
-        <div id="scannerFabWrap" class="scanner-fab-wrap" style="position:absolute; left:14px; bottom:14px; z-index:1005; display:flex; flex-direction:column; align-items:flex-start;">
-            
-            <div id="scannerPrintPanel" class="scanner-print-panel" style="display:none; min-width:250px; background:rgba(15,23,42,0.97); border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:12px; box-shadow:0 18px 35px rgba(0,0,0,0.35); backdrop-filter:blur(10px); margin-bottom: 10px;">
-                
-                <div class="scanner-qty-box" style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(255,255,255,0.05); padding:10px 12px; border-radius:14px; margin-bottom:10px;">
-                    <label style="color:#fff; font-size:12px; font-weight:bold;">عدد الكروت</label>
-                    <input id="scannerQuantityPerCode" type="number" value="1" min="1" style="width:50px; height:35px; background:#111827; border:1px solid #475569; color:#fff; border-radius:999px; text-align:center; font-weight:bold; outline:none;"/>
-                </div>
-
-                <button onclick="clearAllScannerData()" class="scanner-panel-btn" style="width:100%; margin-bottom:8px; padding:10px; background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:white; border:none; border-radius:12px; font-weight:bold; font-size:12px;">Reset</button>
-                <button onclick="toggleScannerPrintPanel(); printScannedCustom()" class="scanner-panel-btn" style="width:100%; margin-bottom:8px; padding:10px; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; border:none; border-radius:12px; font-weight:bold; font-size:12px;">طباعة نوع العرض</button>
-                <button onclick="toggleScannerPrintPanel(); printScannedFullQR()" class="scanner-panel-btn" style="width:100%; padding:10px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:12px; font-weight:bold; font-size:12px;">طباعة التفاصيل</button>
-            </div>
-            
-            <button onclick="toggleScannerPrintPanel()" class="scanner-print-fab" style="width:60px; height:60px; border-radius:50%; border:2px solid rgba(255,255,255,0.9); background:linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color:white; box-shadow:0 8px 20px rgba(255,75,43,0.45); cursor:pointer; font-size:24px; display:flex; align-items:center; justify-content:center;">🖨️</button>
-        </div>
-    </div>
-</div>
-    <style>
 /* CSS خاص بشبكة الفلاتر الجديدة عشان تكون 3 في الصف وتتجاوب مع الموبايل */
 .filters-grid-layout {
     display: grid;
@@ -5319,238 +4972,8 @@ body > div:has(> label[for="codesFileInput"]),
         grid-template-columns: 1fr; /* 1 في الموبايل */
     }
 }
-</style>
 
-<div class="filters-container-main" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
-    
-    <!-- 1. Modern Stock Availability Toggle (Full Width) -->
-    <div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; transition: all 0.4s ease; width: 100%;">
-        <label style="display: flex; align-items: center; gap: 8px; color: #2c3e50; font-weight: 900; margin-bottom: 15px; font-size: 0.9em; justify-content: center; text-transform: uppercase;">
-            <span>📦</span> Stock Availability
-        </label>
-        
-        <!-- Wrapper for Toggle & Labels -->
-        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
-            <!-- Left Label -->
-            <span id="labelAllItems" style="font-size: 13px; font-weight: 800; color: #1e293b; transition: color 0.3s; letter-spacing: 0.5px;">ALL ITEMS</span>
-            
-            <!-- The Toggle Switch -->
-            <label class="stock-switch" style="position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; margin: 0;">
-                <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
-                <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
-            </label>
-            
-            <!-- Right Label -->
-            <span id="labelInStock" style="font-size: 13px; font-weight: 800; color: #94a3b8; transition: color 0.3s; letter-spacing: 0.5px;">IN STOCK</span>
-        </div>
 
-        <!-- Status Text (Store info & count) -->
-        <span id="stockStatusText" style="margin-top: 12px; font-size: 11px; font-weight: 700; color: #64748b; text-align: center; height: 16px;">Showing all items</span>
-
-        <!-- Hidden Select for logic compatibility -->
-        <select id="stockFilterToggle" style="display: none;">
-            <option value="all" selected>all</option>
-            <option value="instock">instock</option>
-        </select>
-    </div>
-
-    <!-- 2. Grid for the rest of the filters (3 items per row) -->
-    <div class="filters-grid-layout">
-        <!-- Offer Type -->
-        <div class="filter-group">
-            <label>Offer Type</label>
-            <div class="custom-select" data-filter="offerFilter">
-                <div class="custom-select-trigger"><span class="selected-text">All Offers</span><span class="arrow">▼</span></div>
-                <div class="custom-select-options">
-                    <input type="text" class="custom-select-search" placeholder="Search...">
-                    <div class="custom-options-list"></div>
-                </div>
-            </div>
-            <button class="reset-filter-btn" onclick="resetFilter('offerFilter')">🔄 Reset</button>
-        </div>
-
-        <!-- Brand -->
-        <div class="filter-group">
-            <label>Brand</label>
-            <div class="custom-select" data-filter="brandFilter">
-                <div class="custom-select-trigger"><span class="selected-text">All Brands</span><span class="arrow">▼</span></div>
-                <div class="custom-select-options">
-                    <input type="text" class="custom-select-search" placeholder="Search...">
-                    <div class="custom-options-list"></div>
-                </div>
-            </div>
-            <button class="reset-filter-btn" onclick="resetFilter('brandFilter')">🔄 Reset</button>
-        </div>
-
-        <!-- Manufacture -->
-        <div class="filter-group">
-            <label>🏭 Manufacture</label>
-            <div class="custom-select" data-filter="manufactureFilter">
-                <div class="custom-select-trigger"><span class="selected-text">All Manufactures</span><span class="arrow">▼</span></div>
-                <div class="custom-select-options">
-                    <input type="text" class="custom-select-search" placeholder="Search...">
-                    <div class="custom-options-list"></div>
-                </div>
-            </div>
-            <button class="reset-filter-btn" onclick="resetFilter('manufactureFilter')">🔄 Reset</button>
-        </div>
-
-        <!-- Category A -->
-        <div class="filter-group">
-            <label>Category A</label>
-            <div class="custom-select" data-filter="categoryAFilter">
-                <div class="custom-select-trigger"><span class="selected-text">All Cat A</span><span class="arrow">▼</span></div>
-                <div class="custom-select-options">
-                    <input type="text" class="custom-select-search" placeholder="Search...">
-                    <div class="custom-options-list"></div>
-                </div>
-            </div>
-            <button class="reset-filter-btn" onclick="resetFilter('categoryAFilter')">🔄 Reset</button>
-        </div>
-
-        <!-- Category B -->
-        <div class="filter-group">
-            <label>Category B</label>
-            <div class="custom-select" data-filter="categoryBFilter">
-                <div class="custom-select-trigger"><span class="selected-text">All Cat B</span><span class="arrow">▼</span></div>
-                <div class="custom-select-options">
-                    <input type="text" class="custom-select-search" placeholder="Search...">
-                    <div class="custom-options-list"></div>
-                </div>
-            </div>
-            <button class="reset-filter-btn" onclick="resetFilter('categoryBFilter')">🔄 Reset</button>
-        </div>
-
-        <!-- Category C -->
-        <div class="filter-group">
-            <label>Category C</label>
-            <div class="custom-select" data-filter="categoryCFilter">
-                <div class="custom-select-trigger"><span class="selected-text">All C</span><span class="arrow">▼</span></div>
-                <div class="custom-select-options">
-                    <input type="text" class="custom-select-search" placeholder="Search...">
-                    <div class="custom-options-list"></div>
-                </div>
-            </div>
-            <button class="reset-filter-btn" onclick="resetFilter('categoryCFilter')">🔄 Reset</button>
-        </div>
-
-        <!-- Category D -->
-        <div class="filter-group">
-            <label>Category D</label>
-            <div class="custom-select" data-filter="categoryDFilter">
-                <div class="custom-select-trigger"><span class="selected-text">All D</span><span class="arrow">▼</span></div>
-                <div class="custom-select-options">
-                    <input type="text" class="custom-select-search" placeholder="Search...">
-                    <div class="custom-options-list"></div>
-                </div>
-            </div>
-            <button class="reset-filter-btn" onclick="resetFilter('categoryDFilter')">🔄 Reset</button>
-        </div>
-    </div>
-
-    <!-- 3. Reset All Filters Button -->
-    <div style="display: flex; justify-content: center; width: 100%; margin-top: 15px;">
-        <button onclick="resetAllGlobalFilters()" class="btn-reset-art">
-            <span class="btn-reset-icon">🔄</span>
-            <span>Reset All Filters</span>
-        </button>
-    </div>
-</div>
-    <div class="products-section" id="productsContainer"></div>
-    <div id="loadingIndicator" style="text-align:center; padding:20px; display:none;"><div class="spinner"></div><div>Loading more products...</div></div>
-
-    <button id="backToTopBtn" class="back-to-top-btn" onclick="scrollToTop()"><div class="arrow-up"></div></button>
-</div>
-<div id="customPrintModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100000; justify-content:center; align-items:center; backdrop-filter: blur(8px);">
-    <div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding:25px; border-radius:20px; max-width:650px; width:95%; max-height:95vh; overflow-y:auto; border: 2px solid #d4af37; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-        
-        <h2 style="color:#d4af37; margin-bottom:20px; text-align:center; font-family:'Cairo', sans-serif; font-weight:900; letter-spacing:1px; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom:12px; font-size:22px;">🖨️ Custom Offer Print</h2>
-        
-        <div class="filter-group" style="margin-bottom:20px; position:relative;">
-            <label style="color:#fff; display:block; margin-bottom:8px; font-weight:bold; font-size:14px;">🎯 Select Offer Category (Optional)</label>
-            <div id="modalDropdownTrigger" onclick="toggleModalDropdown(event)" style="background:#16213e; color:#fff; border:1px solid #d4af37; padding:12px; border-radius:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-                <span id="modalDropdownText" style="font-weight:bold;">Search & Select List...</span>
-                <span class="arrow">▼</span>
-            </div>
-            <div id="modalDropdownOptions" style="display:none; background:#1a1a2e; border:1px solid #d4af37; border-radius:10px; margin-top:5px; max-height:200px; overflow-y:auto; position:absolute; width:100%; z-index:100000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-                <div style="display:flex; gap:5px; padding:10px; border-bottom:1px solid rgba(212,175,55,0.2);">
-                    <button onclick="selectAllCustomOffers(event)" style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#10b981; color:white; border:none; border-radius:5px; cursor:pointer;">✅ Select All</button>
-                    <button onclick="deselectAllCustomOffers(event)" style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌ Clear All</button>
-                </div>
-                <input type="text" placeholder="🔍 Filter list..." oninput="filterCustomOffersModal(this.value)" onclick="event.stopPropagation()" style="width:calc(100% - 20px); margin:10px; padding:10px; background:#0f172a; border:1px solid rgba(255,255,255,0.2); color:white; border-radius:5px; outline:none; box-sizing:border-box;">
-                <div id="customOfferTypesList" style="padding:5px;"></div>
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-            <div>
-                <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold;">✍️ Title (EN):</label>
-                <input type="text" id="customOfferEN" placeholder="e.g. 40% OFF" style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; outline:none; box-sizing: border-box; font-weight: 600; font-size: 13px;">
-            </div>
-            <div>
-                <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold; text-align: right;">✍️ العنوان (عربي):</label>
-                <input type="text" id="customOfferAR" placeholder="مثال: خصم 40%" style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; direction:rtl; outline:none; box-sizing: border-box; font-family:'Cairo', sans-serif; font-weight: 600; font-size: 13px;">
-            </div>
-        </div>
-
-        <div style="margin-bottom:20px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-            <label style="color:#fff; margin:0; font-weight:bold; font-size: 14px;">🔢 Cards to Print:</label>
-            <input type="number" id="customQuantity" value="6" min="1" style="width:80px; padding:10px; background:#0f172a; border:1px solid #d4af37; color:#fff; border-radius:8px; outline:none; font-size: 16px; font-weight: bold; text-align: center;">
-        </div>
-
-        <div style="display:flex; gap:12px;">
-            <button onclick="printCustomCardsDirectly()" style="flex:2; padding:15px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; border-radius:12px; font-weight:900; font-size:16px; cursor:pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.3); transition:0.3s;">
-                🖨️ START PRINTING
-            </button>
-            <button onclick="closeCustomPrintModal()" style="flex:1; padding:15px; background:#334155; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; transition:0.3s;">
-                ❌ Cancel
-            </button>
-        </div>
-    </div>
-</div>
-<div id="filterHelpModal" class="custom-modal-overlay" style="display:none;">
-    <div class="custom-modal-box">
-        <button class="custom-modal-close" onclick="closeFilterHelpModal()">✖</button>
-        <h3 class="modern-title">كيف تفلتر ؟</h3>
-        <p class="description-text">يرجى اختيار الفلتر ثم <span class="highlight-box">الضغط خارج القائمة</span> لتفعيل البحث.</p>
-        <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/wasfatyrefill/refs/heads/main/toturial%20filters.gif" style="width:100%">
-    </div>
-</div>
-
-<div class="print-container" id="printContainer"></div>
-
-<div class="print-button-wrapper" style="top: 50%; right: 0; transform: translateY(-50%);">
-    <button class="print-fab" onclick="startPrintProcess()" title="Export PDF">🖨️</button>
-</div>
-<div id="statusAlertOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; align-items: center; justify-content: center; z-index: 1000000; backdrop-filter: blur(8px);">
-    <div class="custom-alert-box">
-        <div class="alert-icon-container">⚠️</div>
-        <div class="alert-title"></div>
-        <div class="alert-message" style="direction: rtl; padding: 10px 20px;"></div>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button id="alertConfirmBtn" class="alert-close-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">Yes, View Now</button>
-            <button class="alert-close-btn" onclick="closeStatusAlert()">Close</button>
-        </div>
-    </div>
-</div>
-<div id="scannerImageGallery" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:2000000; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-    <button onclick="closeScannerGallery()" style="position:absolute; top:20px; right:20px; z-index:2000002; background:rgba(255,255,255,0.2); border:none; color:white; width:45px; height:45px; border-radius:50%; font-size:24px; cursor:pointer;">✕</button>
-    
-    <div id="galleryContainer" style="width:100%; height:80vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; touch-action: none;">
-        <img id="galleryImg" src="" style="max-width:95%; max-height:95%; object-fit:contain; transition: transform 0.3s ease; cursor: grab;" />
-    </div>
-
-    <div style="position:absolute; bottom:30px; display:flex; flex-direction:column; align-items:center; gap:15px; width:100%;">
-        <div id="galleryTitle" style="color:white; font-family:'Cairo'; font-weight:700; text-align:center; padding:0 20px;"></div>
-        <div style="display:flex; gap:40px; align-items:center;">
-            <button onclick="navGallery(-1)" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:bold;">❮ السابق</button>
-            <span id="galleryCounter" style="color:white; font-family:monospace; font-weight:bold; font-size:18px;">1 / 1</span>
-            <button onclick="navGallery(1)" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:bold;">التالي ❯</button>
-        </div>
-        <div style="color:rgba(255,255,255,0.5); font-size:12px;">استخدم إصبعين للزوم أو السحب للتنقل</div>
-    </div>
-</div>
-<style>
   .btn-custom-offer{
     padding:20px 42px;  /* 📏 كبر padding */
     font-size:20px;     /* 📏 كبر الخط */
@@ -5885,68 +5308,8 @@ body > div:has(> label[for="codesFileInput"]),
     70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
     100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
-</style>
 
-<!-- Offer Boxes -->
-<div class="offer-boxes-container"></div>
-<div class="pro-tip-card">
-    <div class="glow-effect"></div>
 
-  
-
-            </div>
-
-<div class="products-section" id="productsContainer"></div>
-
-<div id="loadingIndicator" style="text-align:center; padding:20px; display:none;">
-  <div class="spinner" style="display:inline-block;"></div>
-  <div>Loading more products...</div>
-</div>
-
-<!-- Back to Top Button -->
-<button id="backToTopBtn" class="back-to-top-btn" onclick="scrollToTop()">
-  <div class="arrow-up"></div>
-</button>
-
-    <div class="products-section" id="productsContainer"></div>
-    <div id="loadingIndicator" style="text-align:center; padding:20px; display:none;">
-        <div class="spinner" style="display:inline-block;"></div>
-        <div>Loading more products...</div>
-    </div>
-
-<div class="print-container" id="printContainer"></div>
-
- <div id="customAlertOverlay">
-    <div class="custom-alert-box">
-        <div class="alert-icon-container">
-            <span class="sand-clock-icon">⌛</span> 
-        </div>
-        <div class="alert-title">Coming Soon! ✨</div>
-        <div class="alert-message" style="direction: rtl;">
-            يتم حالياً تجهيز هذه العروض، وسيتم إتاحتها تلقائياً قبل موعد البدء الرسمي بـ 48 ساعة. يرجى الانتظار.
-        </div>
-        <button class="alert-close-btn" onclick="closeCustomArtAlert()">OK, Understood</button>
-    </div>
-</div>
-   
- <div id="deleteConfirmOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200000; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
-    <div class="confirm-card">
-        <div class="warning-icon-art">
-            <div class="exclamation-mark">!</div>
-        </div>
-        <h3 class="confirm-title">Clear All Data?</h3>
-        <div class="confirm-btns">
-            <button onclick="executeClearAll()" class="btn-confirm-yes">Yes, Clear All</button>
-            <button onclick="closeDeleteModal()" class="btn-confirm-no">Cancel</button>
-        </div>
-    </div>
-</div>
-    
-  
-  
-  
-
-<style>
 @keyframes fadeScaleIn {
   0% {
     opacity: 0;
@@ -6038,8 +5401,8 @@ body > div:has(> label[for="codesFileInput"]),
     font-size: 1.4em !important;
   }
 }
-</style>
-<style>
+
+
     .floating-pdf-btn {
         position: fixed;
         top: 50%;
@@ -6115,95 +5478,842 @@ body > div:has(> label[for="codesFileInput"]),
    📱 السلايدر الأفقي الشامل (للموبايل والتابلت) - تم التحديث
   
 
+
+
+      @keyframes slideInUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      
+      .product-card-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 22px !important;
+        height: 22px !important;
+        border: 3px solid #667eea !important;
+        border-radius: 6px !important;
+        background: rgba(255,255,255,0.9) !important;
+        cursor: pointer !important;
+        position: relative !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4) !important;
+      }
+      
+      .product-card-checkbox:hover {
+        transform: scale(1.1) !important;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6) !important;
+        border-color: #11998e !important;
+      }
+      
+      .product-card-checkbox:checked {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+        border-color: #11998e !important;
+      }
+      
+      .product-card-checkbox:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      
+      .checkbox-container {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 150;
+        background: rgba(255,255,255,0.95);
+        padding: 5px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        backdrop-filter: blur(10px);
+      }
+      
+      #printSelectionBar button {
+        padding: 8px 16px;
+        border: none;
+        color: white;
+        font-weight: 700;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+      }
+      
+      #printSelectionBar button:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+    
+
+            @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            html, body { width: 100%; height: 100%; margin: 0; padding: 0; background: white; }
+            body { font-family: 'Cairo', sans-serif; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            
+            #bg-image-fixed {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                object-fit: cover; opacity: ${bgOpacity}; filter: blur(${bgBlur});
+                z-index: -10; pointer-events: none;
+            }
+
+            .control-panel {
+                position: fixed; top: 0; left: 0; right: 0;
+                background: #f8f9fa; border-bottom: 2px solid #ddd;
+                padding: 15px; z-index: 999999;
+                display: flex; gap: 20px; justify-content: center; align-items: center;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+            .btn-action {
+                padding: 10px 30px; border-radius: 8px; border: none; font-size: 16px;
+                font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer;
+                color: white; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+            .btn-action:hover { transform: scale(1.05); }
+            .btn-compress { background: #00c853; }
+            .status-text { font-size: 16px; font-weight: bold; color: #333; }
+            .progress-bar-container { width: 300px; height: 10px; background: #ddd; border-radius: 5px; overflow: hidden; margin-top: 5px; display:none; }
+            .progress-bar-fill { height: 100%; background: #00c853; width: 0%; transition: width 0.3s; }
+
+            .print-container {
+                display: grid; grid-template-columns: repeat(3, 1fr);
+                grid-auto-flow: row dense; gap: 12px;
+                padding: 15mm 5mm; 
+                width: 98%; max-width: 98%; margin: 80px auto 0 auto;
+                border: 5px solid #00235B; border-radius: 12px; 
+                background: transparent;
+            }
+
+            .cat-a-header-wrapper { grid-column: 1 / -1; margin: 15px 0 10px 0; break-inside: avoid; }
+            .cat-a-header { display: flex; justify-content: center; padding: 8px 0; background: #00235B !important; color: #FF8C00 !important; border-radius: 4px; }
+            .cat-a-title { font-weight: 800; font-size: 16px; }
+            .cat-d-header-wrapper { grid-column: 1 / -1; margin: 10px 0 5px 0; break-after: avoid; }
+            .cat-d-banner { text-align: center; color: white; font-size: 13px; font-weight: 800; padding: 6px; border-radius: 6px; }
+            
+            .card-wrapper { break-inside: avoid-page !important; position: relative; }
+            .magazine-card { height: 270px; display: flex; flex-direction: column; position: relative; }
+            .card-img-container { height: 65%; display: flex; align-items: center; justify-content: center; padding-top: ${globalImageTopSpacer} !important; position: relative; overflow: hidden; }
+            
+            .single-img, .stack-img, .brand-logo-img { mix-blend-mode: multiply; }
+            .single-img { max-width: calc(98% * ${singleImageScale}); max-height: calc(98% * ${singleImageScale}); object-fit: contain; }
+            .brand-logo-box { width: 90%; height: 90%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); border-radius: 10px; }
+            .brand-logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+            .brand-text-fallback { width: 85%; height: 85%; display: flex; align-items: center; justify-content: center; background: #eee; border: 2px solid #ccc; border-radius: 12px; text-align: center; }
+            .fallback-brand-name { font-size: 20px; font-weight: 900; color: #00235B; }
+            
+            .card-images-stack { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+            .stack-img { position: relative; max-width: calc(45% * ${stackImageScale}); max-height: calc(90% * ${stackImageScale}); object-fit: contain; }
+            .stack-2 .img-0 { z-index: 1; transform: scale(0.95); }
+            .stack-2 .img-1 { z-index: 2; transform: translateX(60px) scale(0.95) !important; }
+            .stack-3 .img-0 { z-index: 1; transform: translateX(-70px) scale(0.85) translateY(10px) !important; }
+            .stack-3 .img-1 { z-index: 10; transform: scale(1.1) !important; }
+            .stack-3 .img-2 { z-index: 2; transform: translateX(70px) scale(0.85) translateY(10px) !important; }
+
+            /* 🔥 تحديثات الدايرة لتشمل النصوص الإضافية */
+            .offer-badge-wrapper { 
+                position: absolute; 
+                top: ${badgePositionTop} !important; 
+                left: ${badgePositionLeft} !important; 
+                z-index: 20; 
+                transform: translateX(-50%) rotate(-10deg) scale(${badgeScale}); 
+                
+                /* ضبط الاتجاه والتوسيط */
+                direction: ltr !important; 
+                unicode-bidi: isolate !important; 
+                
+                /* تحويل الدايرة لكونتينر مرن عشان الكلام ييجي تحت الرقم */
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .badge-main-content {
+                line-height: 1 !important;
+                margin-bottom: 2px;
+            }
+
+            /* ستايل النص العربي الإضافي */
+            .badge-sub-text {
+                font-family: 'Cairo', sans-serif !important;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                color: inherit !important; /* يأخذ نفس لون النص الأصلي */
+                direction: rtl !important; /* عشان يكتب عربي صح */
+                line-height: 0.9 !important;
+                margin-top: -3px !important;
+                text-shadow: 0px 0px 1px rgba(255,255,255,0.5);
+            }
+            
+            .best-seller-badge { position: absolute; top: 10px; right: 10px; background: #FF8C00; color: white; font-size: 8px; padding: 3px 6px; border-radius: 4px; z-index: 6; }
+            .card-info { text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 8px 10px 8px; z-index: 5; }
+            .brand { font-size: 10px; color: #555; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
+            .desc { font-size: 11px; font-weight: 700; color: #000; line-height: 1.25; max-height: 2.5em; overflow: hidden; }
+            .count-pill { font-size: 9px; background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 5px; border: 1px solid #999; display: inline-block; align-self: center; }
+
+            @media print {
+                @page { margin: 0; size: A4 portrait; }
+                .control-panel { display: none !important; }
+                .print-container { margin: 0 auto !important; border: 5px solid #00235B !important; width: 98% !important; min-height: 99vh !important; }
+            }
+        
+
+                    .card-content-scrollable::-webkit-scrollbar { width: 4px; }
+                    .card-content-scrollable::-webkit-scrollbar-track { background: transparent; }
+                    .card-content-scrollable::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }</style>
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';
+        script-src 'self' https: 'unsafe-inline' 'unsafe-eval' blob: data:;
+        style-src 'self' https: 'unsafe-inline' data:;
+        img-src 'self' https: data: blob:;
+        connect-src 'self' https: data: blob:;
+        font-src 'self' https: data:;
+        media-src 'self' https: blob: data:;
+        worker-src 'self' blob:;
+        frame-ancestors *;
+    ">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+
+    <title>ALDAWAA OFFERS-MONO</title>
+
+    <link rel="icon" href="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png">
+
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+
 </style>
+</head>
+<body>
+<div id="loaderScreen">
+    <div id="closeLoaderX" onclick="hideInitialLoader()" style="
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        width: 45px;
+        height: 45px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        z-index: 1000001; /* أعلى من الصورة */
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    " onmouseover="this.style.background='rgba(255, 0, 0, 0.6)'; this.style.borderColor='white';" 
+      onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.borderColor='rgba(255, 255, 255, 0.4)';">
+        ✕
+    </div>
+
+    <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png" alt="Loading...">
+</div>
+    </div>
+    <div id="gatewayView">
+    <div class="gateway-card">
+        <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png" 
+             class="header-personal-img" alt="Profile">
+        
+        <div class="ramadan-kareem">MONTHLY OFFERS</div>
+        <div class="sub-text">MONO Offers Control Panel</div>
+        
+        <div id="buttonsList"></div>
+    </div>
+</div>
+<div id="fixedHeader" style="display:none;">
+    <div class="header-logo" onclick="goHome()">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1.5-3.5c-3.59 0-6.5-2.91-6.5-6.5s2.91-6.5 6.5-6.5c.66 0 1.29.1 1.89.28-2.3 1.05-3.89 3.39-3.89 6.22 0 2.83 1.59 5.17 3.89 6.22-.6.18-1.23.28-1.89.28z"/>
+        </svg>
+        <span>HOME</span>
+    </div>
+
+    <img id="headerCenterImg" src="" class="header-center-img" alt="" style="max-height: 50px; width: auto;">
+    
+  
+</div>
+<button id="toolsSidebarToggle" class="sidebar-toggle-btn" onclick="toggleToolsSidebar()"></button>
+<div id="toolsSidebar" class="modern-sidebar">
+    <div class="sidebar-header">
+        <button class="sidebar-close" onclick="toggleToolsSidebar()">✖</button>
+    </div>
+    <div class="sidebar-content">
+       <button class="sidebar-btn btn-custom-print" 
+        onclick="openCustomPrintModal(); toggleToolsSidebar();" 
+        style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 15px 20px; height: auto; width: 100%; border: none; border-radius: 15px; cursor: pointer; transition: 0.3s; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+    
+    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+        <span class="icon" style="font-size: 20px;">🖨️</span>
+        <span style="font-size: 15px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff;">Custom Offer Print</span>
+    </div>
+
+    <div style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 35px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; text-align: left;">
+        — PRINT OFFERS WITHOUT CODES
+    </div>
+    
+</button>
+            <div style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 32px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">
+            </div>
+        </button>
+
+        <button id="sidebarMagazineBtn" class="sidebar-btn btn-magazine" onclick="toggleMagazineModeFromSidebar()">
+            <span class="icon">📰</span> MAGAZINE MODE: OFF
+        </button>
+
+        <button class="sidebar-btn btn-exclusive" onclick="printExclusiveOffers(); toggleToolsSidebar();">
+            <span class="icon">🌟</span> Exclusive Offers (5,10,15)
+        </button>
+
+        <div class="sidebar-upload-box">
+            <label for="codesFileInput" class="sidebar-btn btn-file">
+                <span class="icon">📂</span> PRINT \ View FROM FILE ⚡
+            </label>
+            <input type="file" id="codesFileInput" accept=".pdf,.txt,.csv,.xlsx,.xls" style="display:none" onchange="handleSidebarFileUpload(event)">
+        </div>
+
+        <div style="border-top: 1px solid rgba(150, 150, 150, 0.2); margin: 5px 0;"></div>
+
+        <button class="sidebar-btn btn-help" onclick="openFilterHelpModal(); toggleToolsSidebar();">
+            <span class="icon">❓</span> كيف تفلتر ؟
+        </button>
+    </div>
+</div>
+
+<div id="mainOffersContainer" class="container" style="display: none; margin-top: 90px;">
+    <button id="exportPDFBtn" class="export-pdf-btn" onclick="exportFullMagazinePDF()">
+        <span class="icon">🖨️</span> PDF
+    </button>
+
+    <div id="printLoader">
+        <div class="spinner"></div>
+        <div style="margin-top:15px; font-size:1.2em;">Preparing Print Layout...<br>Please wait</div>
+    </div>
+
+    <div id="mainPageStatusContainer" class="main-page-status-container" style="display: none;">
+        <div id="codesFileStatus"></div>
+    </div>
+
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+            </div>
+        </label>
+    </div>
+
+    <div class="hero-banner">
+        <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png" class="header-personal-img" alt="Profile">
+        <div style="display: flex; align-items: center; gap: 15px; padding: 10px;">
+            <div onclick="openEmail()" style="cursor: pointer;"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="#ff6b6b"/></svg></div>
+            <div onclick="openWhatsApp()" style="cursor: pointer;"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" fill="#25D366"/></svg></div>
+            <div onclick="openFacebook()" style="cursor: pointer;"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/></svg></div>
+        </div>
+        <div class="hero-content">
+            <h1>🔥 MEGA PHARMACY OFFERS 🔥</h1>
+            <div class="offer-badge">Offers</div>
+            <div class="offer-dates-container">
+                <div class="date-box"><span class="label">🎯 START</span><span class="date-value">Dec 25, 2025</span></div>
+                <div class="date-box"><span class="label">⏰ END</span><span class="date-value">Jan 07, 2026</span></div>
+            </div>
+            <div class="countdown-container">
+                <div class="countdown-header"><h2 id="countdownTitle">⏰ العرض لم يبدأ بعد</h2></div>
+                <div class="countdown-timer">
+                    <div class="countdown-item"><span class="number" id="days">--</span><span class="label">Days</span></div>
+                    <div class="countdown-item"><span class="number" id="hours">--</span><span class="label">Hours</span></div>
+                    <div class="countdown-item"><span class="number" id="minutes">--</span><span class="label">Min</span></div>
+                    <div class="countdown-item"><span class="number" id="seconds">--</span><span class="label">Sec</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- =========================
+     PROMO MEDIA SWIPER SECTION
+========================= -->
+<div class="promo-media-section">
+    <div class="promo-media-head">
+        <h2>PLATFORM FEATURES</h2>
+    </div>
+
+    <div class="promo-media-swiper" id="promoMediaSwiper">
+        
+        <article class="promo-media-card">
+            <h3 class="promo-media-title">SCAN 6 CODE ITEM AND PRINT OFFERS</h3>
+            <button class="promo-media-thumb" type="button"
+                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SCAN%206%20CODE%20ITEM%20AND%20PRINT%20OFFERS.mp4')">
+                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/scan%20code.jpeg">
+                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SCAN%206%20CODE%20ITEM%20AND%20PRINT%20OFFERS.mp4" type="video/mp4">
+                </video>
+                <span class="promo-play-badge">▶</span>
+            </button>
+        </article>
+
+        <article class="promo-media-card">
+            <h3 class="promo-media-title">Sidebar Options</h3>
+            <button class="promo-media-thumb" type="button"
+                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDEBAR%20OPTIONS.mp4')">
+                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDE%20BAR%20OPTIONS.jpeg">
+                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDEBAR%20OPTIONS.mp4" type="video/mp4">
+                </video>
+                <span class="promo-play-badge">▶</span>
+            </button>
+        </article>
+
+        <article class="promo-media-card">
+            <h3 class="promo-media-title">CONNECTION ERROR</h3>
+            <button class="promo-media-thumb" type="button"
+                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/CONNECTION%20ERROR.mp4')">
+                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/WhatsApp%20Image%202026-04-27%20at%205.56.33%20PM.jpeg">
+                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/CONNECTION%20ERROR.mp4" type="video/mp4">
+                </video>
+                <span class="promo-play-badge">▶</span>
+            </button>
+        </article>
+
+        <article class="promo-media-card">
+            <h3 class="promo-media-title">كيف تفلتر</h3>
+            <button class="promo-media-thumb" type="button"
+                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/FILTERS.mp4')">
+                <video muted playsinline preload="metadata">
+                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/FILTERS.mp4" type="video/mp4">
+                </video>
+                <span class="promo-play-badge">▶</span>
+            </button>
+        </article>
+
+        <article class="promo-media-card">
+            <h3 class="promo-media-title">print setting</h3>
+            <button class="promo-media-thumb" type="button"
+                onclick="openPromoMedia('image','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/d4f83b18f5ac37fac564406d27a2b3dc990c9d31/PRINTER%20SETTING.png')">
+                <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/d4f83b18f5ac37fac564406d27a2b3dc990c9d31/PRINTER%20SETTING.png" alt="Printer Settings" loading="lazy">
+            </button>
+        </article>
+
+        <article class="promo-media-card">
+            <h3 class="promo-media-title">PRINT OFFERS FROM FILE</h3>
+            <button class="promo-media-thumb" type="button"
+                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/PRINT%20OFFERS%20FROM%20FILE%20.mp4')">
+                <video muted playsinline preload="metadata">
+                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/PRINT%20OFFERS%20FROM%20FILE%20.mp4" type="video/mp4">
+                </video>
+                <span class="promo-play-badge">▶</span>
+            </button>
+        </article>
+
+        <article class="promo-media-card">
+            <h3 class="promo-media-title">Magazine offers file</h3>
+            <button class="promo-media-thumb" type="button"
+                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazine%20offers%20print.mp4')">
+                <video muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazie%20offers.jpeg">
+                    <source src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazine%20offers%20print.mp4" type="video/mp4">
+                </video>
+                <span class="promo-play-badge">▶</span>
+            </button>
+        </article>
+        
+    </div>
+</div>
+<!-- FULLSCREEN LIGHTBOX -->
+<div id="promoMediaLightbox" class="promo-media-lightbox" onclick="closePromoMedia(event)">
+    <button class="promo-media-close" type="button" onclick="closePromoMedia()">✕</button>
+    <div class="promo-media-lightbox-inner" id="promoMediaStage"></div>
+</div>
+   <div class="global-search-wrapper" style="display: flex; gap: 8px; align-items: center;">
+    <input id="globalSearch" class="global-search-box" type="text" placeholder="Search by code or name..." style="flex: 1; margin: 0;">
+    <button onclick="openBarcodeScanner()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; height: 45px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        📷
+    </button>
+</div>
+
+<div id="scannerModalOverlay" style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:100000; flex-direction:column; align-items:center; justify-content:center; padding:8px;">
+    <div class="scanner-shell">
+
+        <button onclick="closeBarcodeScanner()" style="position:absolute; right:12px; top:12px; z-index:1001; background:#ef4444; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">✕</button>
+
+        <div class="scanner-camera-wrap">
+            <div class="scanner-camera-box">
+                <div id="reader" style="width:100%; height:clamp(220px, 35vh, 300px); min-height:220px; background:#000; border:2px solid #667eea; border-radius:18px; overflow:hidden;"></div>
+                <div class="scanner-frame"></div>
+            </div>
+        </div>
+
+        <div class="scanner-manual-wrap" style="padding: 10px; background: #0f172a; border-bottom: 1px solid #334155;">
+            <div class="scanner-manual-row" style="display:flex; gap:6px; align-items:center; justify-content: space-between;">
+                
+                <button onclick="clearAllScannerData()" title="مسح الكل" style="height:42px; width:42px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
+                    🗑️
+                </button>
+
+                <input
+                    id="scannerManualCode"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="6"
+                    placeholder="كود سداسي"
+                    oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)"
+                    onkeydown="handleScannerManualInputKey(event)"
+                    style="flex: 1; min-width: 80px; height:42px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:14px; outline:none;"
+                />
+
+                <button
+                    onclick="processManualScannerCode()"
+                    style="height:42px; padding:0 12px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;"
+                >
+                    إضافة
+                </button>
+            </div>
+        </div>
+
+        <div class="scanner-cards-wrap" style="flex:1; display:flex; flex-direction:column; overflow:hidden; background:#1e293b; padding:10px 12px 100px; border-top:1px solid #334155; position: relative;">
+            <div id="scannedItemsList" style="display:flex; flex-direction:row; gap:12px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding-bottom:10px;">
+                </div>
+            
+            <div class="modern-nav-indicator" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; padding: 5px; background: rgba(102, 126, 234, 0.1); border-radius: 20px; width: fit-content; align-self: center; pointer-events: none;">
+                <span style="color: #667eea; font-size: 18px; font-weight: bold; animation: arrowBlink 1s infinite alternate;">❮</span>
+                <div style="font-size: 10px; font-weight: 800; color: #667eea; text-transform: uppercase; letter-spacing: 1px;">اسحب للتنقل</div>
+                <span style="color: #667eea; font-size: 18px; font-weight: bold; animation: arrowBlink 1s infinite alternate-reverse;">❯</span>
+            </div>
+        </div>
+
+        <div id="scannerFabWrap" class="scanner-fab-wrap" style="position:absolute; left:14px; bottom:14px; z-index:1005; display:flex; flex-direction:column; align-items:flex-start;">
+            
+            <div id="scannerPrintPanel" class="scanner-print-panel" style="display:none; min-width:250px; background:rgba(15,23,42,0.97); border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:12px; box-shadow:0 18px 35px rgba(0,0,0,0.35); backdrop-filter:blur(10px); margin-bottom: 10px;">
+                
+                <div class="scanner-qty-box" style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(255,255,255,0.05); padding:10px 12px; border-radius:14px; margin-bottom:10px;">
+                    <label style="color:#fff; font-size:12px; font-weight:bold;">عدد الكروت</label>
+                    <input id="scannerQuantityPerCode" type="number" value="1" min="1" style="width:50px; height:35px; background:#111827; border:1px solid #475569; color:#fff; border-radius:999px; text-align:center; font-weight:bold; outline:none;"/>
+                </div>
+
+                <button onclick="clearAllScannerData()" class="scanner-panel-btn" style="width:100%; margin-bottom:8px; padding:10px; background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:white; border:none; border-radius:12px; font-weight:bold; font-size:12px;">Reset</button>
+                <button onclick="toggleScannerPrintPanel(); printScannedCustom()" class="scanner-panel-btn" style="width:100%; margin-bottom:8px; padding:10px; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; border:none; border-radius:12px; font-weight:bold; font-size:12px;">طباعة نوع العرض</button>
+                <button onclick="toggleScannerPrintPanel(); printScannedFullQR()" class="scanner-panel-btn" style="width:100%; padding:10px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:12px; font-weight:bold; font-size:12px;">طباعة التفاصيل</button>
+            </div>
+            
+            <button onclick="toggleScannerPrintPanel()" class="scanner-print-fab" style="width:60px; height:60px; border-radius:50%; border:2px solid rgba(255,255,255,0.9); background:linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color:white; box-shadow:0 8px 20px rgba(255,75,43,0.45); cursor:pointer; font-size:24px; display:flex; align-items:center; justify-content:center;">🖨️</button>
+        </div>
+    </div>
+</div>
+    
+
+<div class="filters-container-main" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+    
+    <!-- 1. Modern Stock Availability Toggle (Full Width) -->
+    <div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; transition: all 0.4s ease; width: 100%;">
+        <label style="display: flex; align-items: center; gap: 8px; color: #2c3e50; font-weight: 900; margin-bottom: 15px; font-size: 0.9em; justify-content: center; text-transform: uppercase;">
+            <span>📦</span> Stock Availability
+        </label>
+        
+        <!-- Wrapper for Toggle & Labels -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
+            <!-- Left Label -->
+            <span id="labelAllItems" style="font-size: 13px; font-weight: 800; color: #1e293b; transition: color 0.3s; letter-spacing: 0.5px;">ALL ITEMS</span>
+            
+            <!-- The Toggle Switch -->
+            <label class="stock-switch" style="position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; margin: 0;">
+                <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
+                <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
+            </label>
+            
+            <!-- Right Label -->
+            <span id="labelInStock" style="font-size: 13px; font-weight: 800; color: #94a3b8; transition: color 0.3s; letter-spacing: 0.5px;">IN STOCK</span>
+        </div>
+
+        <!-- Status Text (Store info & count) -->
+        <span id="stockStatusText" style="margin-top: 12px; font-size: 11px; font-weight: 700; color: #64748b; text-align: center; height: 16px;">Showing all items</span>
+
+        <!-- Hidden Select for logic compatibility -->
+        <select id="stockFilterToggle" style="display: none;">
+            <option value="all" selected>all</option>
+            <option value="instock">instock</option>
+        </select>
+    </div>
+
+    <!-- 2. Grid for the rest of the filters (3 items per row) -->
+    <div class="filters-grid-layout">
+        <!-- Offer Type -->
+        <div class="filter-group">
+            <label>Offer Type</label>
+            <div class="custom-select" data-filter="offerFilter">
+                <div class="custom-select-trigger"><span class="selected-text">All Offers</span><span class="arrow">▼</span></div>
+                <div class="custom-select-options">
+                    <input type="text" class="custom-select-search" placeholder="Search...">
+                    <div class="custom-options-list"></div>
+                </div>
+            </div>
+            <button class="reset-filter-btn" onclick="resetFilter('offerFilter')">🔄 Reset</button>
+        </div>
+
+        <!-- Brand -->
+        <div class="filter-group">
+            <label>Brand</label>
+            <div class="custom-select" data-filter="brandFilter">
+                <div class="custom-select-trigger"><span class="selected-text">All Brands</span><span class="arrow">▼</span></div>
+                <div class="custom-select-options">
+                    <input type="text" class="custom-select-search" placeholder="Search...">
+                    <div class="custom-options-list"></div>
+                </div>
+            </div>
+            <button class="reset-filter-btn" onclick="resetFilter('brandFilter')">🔄 Reset</button>
+        </div>
+
+        <!-- Manufacture -->
+        <div class="filter-group">
+            <label>🏭 Manufacture</label>
+            <div class="custom-select" data-filter="manufactureFilter">
+                <div class="custom-select-trigger"><span class="selected-text">All Manufactures</span><span class="arrow">▼</span></div>
+                <div class="custom-select-options">
+                    <input type="text" class="custom-select-search" placeholder="Search...">
+                    <div class="custom-options-list"></div>
+                </div>
+            </div>
+            <button class="reset-filter-btn" onclick="resetFilter('manufactureFilter')">🔄 Reset</button>
+        </div>
+
+        <!-- Category A -->
+        <div class="filter-group">
+            <label>Category A</label>
+            <div class="custom-select" data-filter="categoryAFilter">
+                <div class="custom-select-trigger"><span class="selected-text">All Cat A</span><span class="arrow">▼</span></div>
+                <div class="custom-select-options">
+                    <input type="text" class="custom-select-search" placeholder="Search...">
+                    <div class="custom-options-list"></div>
+                </div>
+            </div>
+            <button class="reset-filter-btn" onclick="resetFilter('categoryAFilter')">🔄 Reset</button>
+        </div>
+
+        <!-- Category B -->
+        <div class="filter-group">
+            <label>Category B</label>
+            <div class="custom-select" data-filter="categoryBFilter">
+                <div class="custom-select-trigger"><span class="selected-text">All Cat B</span><span class="arrow">▼</span></div>
+                <div class="custom-select-options">
+                    <input type="text" class="custom-select-search" placeholder="Search...">
+                    <div class="custom-options-list"></div>
+                </div>
+            </div>
+            <button class="reset-filter-btn" onclick="resetFilter('categoryBFilter')">🔄 Reset</button>
+        </div>
+
+        <!-- Category C -->
+        <div class="filter-group">
+            <label>Category C</label>
+            <div class="custom-select" data-filter="categoryCFilter">
+                <div class="custom-select-trigger"><span class="selected-text">All C</span><span class="arrow">▼</span></div>
+                <div class="custom-select-options">
+                    <input type="text" class="custom-select-search" placeholder="Search...">
+                    <div class="custom-options-list"></div>
+                </div>
+            </div>
+            <button class="reset-filter-btn" onclick="resetFilter('categoryCFilter')">🔄 Reset</button>
+        </div>
+
+        <!-- Category D -->
+        <div class="filter-group">
+            <label>Category D</label>
+            <div class="custom-select" data-filter="categoryDFilter">
+                <div class="custom-select-trigger"><span class="selected-text">All D</span><span class="arrow">▼</span></div>
+                <div class="custom-select-options">
+                    <input type="text" class="custom-select-search" placeholder="Search...">
+                    <div class="custom-options-list"></div>
+                </div>
+            </div>
+            <button class="reset-filter-btn" onclick="resetFilter('categoryDFilter')">🔄 Reset</button>
+        </div>
+    </div>
+
+    <!-- 3. Reset All Filters Button -->
+    <div style="display: flex; justify-content: center; width: 100%; margin-top: 15px;">
+        <button onclick="resetAllGlobalFilters()" class="btn-reset-art">
+            <span class="btn-reset-icon">🔄</span>
+            <span>Reset All Filters</span>
+        </button>
+    </div>
+</div>
+    <div class="products-section" id="productsContainer"></div>
+    <div id="loadingIndicator" style="text-align:center; padding:20px; display:none;"><div class="spinner"></div><div>Loading more products...</div></div>
+
+    <button id="backToTopBtn" class="back-to-top-btn" onclick="scrollToTop()"><div class="arrow-up"></div></button>
+</div>
+<div id="customPrintModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100000; justify-content:center; align-items:center; backdrop-filter: blur(8px);">
+    <div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding:25px; border-radius:20px; max-width:650px; width:95%; max-height:95vh; overflow-y:auto; border: 2px solid #d4af37; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+        
+        <h2 style="color:#d4af37; margin-bottom:20px; text-align:center; font-family:'Cairo', sans-serif; font-weight:900; letter-spacing:1px; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom:12px; font-size:22px;">🖨️ Custom Offer Print</h2>
+        
+        <div class="filter-group" style="margin-bottom:20px; position:relative;">
+            <label style="color:#fff; display:block; margin-bottom:8px; font-weight:bold; font-size:14px;">🎯 Select Offer Category (Optional)</label>
+            <div id="modalDropdownTrigger" onclick="toggleModalDropdown(event)" style="background:#16213e; color:#fff; border:1px solid #d4af37; padding:12px; border-radius:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                <span id="modalDropdownText" style="font-weight:bold;">Search & Select List...</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div id="modalDropdownOptions" style="display:none; background:#1a1a2e; border:1px solid #d4af37; border-radius:10px; margin-top:5px; max-height:200px; overflow-y:auto; position:absolute; width:100%; z-index:100000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+                <div style="display:flex; gap:5px; padding:10px; border-bottom:1px solid rgba(212,175,55,0.2);">
+                    <button onclick="selectAllCustomOffers(event)" style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#10b981; color:white; border:none; border-radius:5px; cursor:pointer;">✅ Select All</button>
+                    <button onclick="deselectAllCustomOffers(event)" style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌ Clear All</button>
+                </div>
+                <input type="text" placeholder="🔍 Filter list..." oninput="filterCustomOffersModal(this.value)" onclick="event.stopPropagation()" style="width:calc(100% - 20px); margin:10px; padding:10px; background:#0f172a; border:1px solid rgba(255,255,255,0.2); color:white; border-radius:5px; outline:none; box-sizing:border-box;">
+                <div id="customOfferTypesList" style="padding:5px;"></div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div>
+                <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold;">✍️ Title (EN):</label>
+                <input type="text" id="customOfferEN" placeholder="e.g. 40% OFF" style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; outline:none; box-sizing: border-box; font-weight: 600; font-size: 13px;">
+            </div>
+            <div>
+                <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold; text-align: right;">✍️ العنوان (عربي):</label>
+                <input type="text" id="customOfferAR" placeholder="مثال: خصم 40%" style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; direction:rtl; outline:none; box-sizing: border-box; font-family:'Cairo', sans-serif; font-weight: 600; font-size: 13px;">
+            </div>
+        </div>
+
+        <div style="margin-bottom:20px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+            <label style="color:#fff; margin:0; font-weight:bold; font-size: 14px;">🔢 Cards to Print:</label>
+            <input type="number" id="customQuantity" value="6" min="1" style="width:80px; padding:10px; background:#0f172a; border:1px solid #d4af37; color:#fff; border-radius:8px; outline:none; font-size: 16px; font-weight: bold; text-align: center;">
+        </div>
+
+        <div style="display:flex; gap:12px;">
+            <button onclick="printCustomCardsDirectly()" style="flex:2; padding:15px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; border-radius:12px; font-weight:900; font-size:16px; cursor:pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.3); transition:0.3s;">
+                🖨️ START PRINTING
+            </button>
+            <button onclick="closeCustomPrintModal()" style="flex:1; padding:15px; background:#334155; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; transition:0.3s;">
+                ❌ Cancel
+            </button>
+        </div>
+    </div>
+</div>
+<div id="filterHelpModal" class="custom-modal-overlay" style="display:none;">
+    <div class="custom-modal-box">
+        <button class="custom-modal-close" onclick="closeFilterHelpModal()">✖</button>
+        <h3 class="modern-title">كيف تفلتر ؟</h3>
+        <p class="description-text">يرجى اختيار الفلتر ثم <span class="highlight-box">الضغط خارج القائمة</span> لتفعيل البحث.</p>
+        <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/wasfatyrefill/refs/heads/main/toturial%20filters.gif" style="width:100%">
+    </div>
+</div>
+
+<div class="print-container" id="printContainer"></div>
+
+<div class="print-button-wrapper" style="top: 50%; right: 0; transform: translateY(-50%);">
+    <button class="print-fab" onclick="startPrintProcess()" title="Export PDF">🖨️</button>
+</div>
+<div id="statusAlertOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; align-items: center; justify-content: center; z-index: 1000000; backdrop-filter: blur(8px);">
+    <div class="custom-alert-box">
+        <div class="alert-icon-container">⚠️</div>
+        <div class="alert-title"></div>
+        <div class="alert-message" style="direction: rtl; padding: 10px 20px;"></div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="alertConfirmBtn" class="alert-close-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">Yes, View Now</button>
+            <button class="alert-close-btn" onclick="closeStatusAlert()">Close</button>
+        </div>
+    </div>
+</div>
+<div id="scannerImageGallery" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:2000000; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <button onclick="closeScannerGallery()" style="position:absolute; top:20px; right:20px; z-index:2000002; background:rgba(255,255,255,0.2); border:none; color:white; width:45px; height:45px; border-radius:50%; font-size:24px; cursor:pointer;">✕</button>
+    
+    <div id="galleryContainer" style="width:100%; height:80vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; touch-action: none;">
+        <img id="galleryImg" src="" style="max-width:95%; max-height:95%; object-fit:contain; transition: transform 0.3s ease; cursor: grab;" />
+    </div>
+
+    <div style="position:absolute; bottom:30px; display:flex; flex-direction:column; align-items:center; gap:15px; width:100%;">
+        <div id="galleryTitle" style="color:white; font-family:'Cairo'; font-weight:700; text-align:center; padding:0 20px;"></div>
+        <div style="display:flex; gap:40px; align-items:center;">
+            <button onclick="navGallery(-1)" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:bold;">❮ السابق</button>
+            <span id="galleryCounter" style="color:white; font-family:monospace; font-weight:bold; font-size:18px;">1 / 1</span>
+            <button onclick="navGallery(1)" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:bold;">التالي ❯</button>
+        </div>
+        <div style="color:rgba(255,255,255,0.5); font-size:12px;">استخدم إصبعين للزوم أو السحب للتنقل</div>
+    </div>
+</div>
+
+
+<!-- Offer Boxes -->
+<div class="offer-boxes-container"></div>
+<div class="pro-tip-card">
+    <div class="glow-effect"></div>
+
+  
+
+            </div>
+
+<div class="products-section" id="productsContainer"></div>
+
+<div id="loadingIndicator" style="text-align:center; padding:20px; display:none;">
+  <div class="spinner" style="display:inline-block;"></div>
+  <div>Loading more products...</div>
+</div>
+
+<!-- Back to Top Button -->
+<button id="backToTopBtn" class="back-to-top-btn" onclick="scrollToTop()">
+  <div class="arrow-up"></div>
+</button>
+
+    <div class="products-section" id="productsContainer"></div>
+    <div id="loadingIndicator" style="text-align:center; padding:20px; display:none;">
+        <div class="spinner" style="display:inline-block;"></div>
+        <div>Loading more products...</div>
+    </div>
+
+<div class="print-container" id="printContainer"></div>
+
+ <div id="customAlertOverlay">
+    <div class="custom-alert-box">
+        <div class="alert-icon-container">
+            <span class="sand-clock-icon">⌛</span> 
+        </div>
+        <div class="alert-title">Coming Soon! ✨</div>
+        <div class="alert-message" style="direction: rtl;">
+            يتم حالياً تجهيز هذه العروض، وسيتم إتاحتها تلقائياً قبل موعد البدء الرسمي بـ 48 ساعة. يرجى الانتظار.
+        </div>
+        <button class="alert-close-btn" onclick="closeCustomArtAlert()">OK, Understood</button>
+    </div>
+</div>
+   
+ <div id="deleteConfirmOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200000; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div class="confirm-card">
+        <div class="warning-icon-art">
+            <div class="exclamation-mark">!</div>
+        </div>
+        <h3 class="confirm-title">Clear All Data?</h3>
+        <div class="confirm-btns">
+            <button onclick="executeClearAll()" class="btn-confirm-yes">Yes, Clear All</button>
+            <button onclick="closeDeleteModal()" class="btn-confirm-no">Cancel</button>
+        </div>
+    </div>
+</div>
+    
+  
+  
+  
+
+
+
 
 <button id="exportPDFBtn" class="floating-pdf-btn" onclick="exportFullMagazinePDF()">
     <span class="icon-text">PDF</span>
     <span class="btn-text">تصدير المجلة</span>
 </button>
-<script>
-    
-// Email Function
-function openEmail() {
-    const emailAddress = "Muhammedkhulif@yahoo.com";
-    const mailtoUrl = `mailto:${emailAddress}`;
-    window.location.href = mailtoUrl;
-}
 
-// WhatsApp Function
-function openWhatsApp() {
-    const whatsappUrl = "https://wa.me/966541932559";
-    window.open(whatsappUrl, '_blank');
-}
-
-// Facebook Function
-function openFacebook() {
-    const facebookUrl = "https://www.facebook.com/share/1Ghv7eEw6A/";
-    window.open(facebookUrl, '_blank');
-}
-// ✅ نسخة معدلة وآمنة لـ Mo
-const infoBox = document.getElementById('sys_blob_data');
-// بنستهدف الصورة الشخصية عن طريق الكلاس بتاعها بما إن مفيش ID
-const profileImage = document.querySelector('.header-personal-img'); 
-
-let hideTimeout = null;
-
-function showInfoBox() {
-    // التأكد من وجود العنصر
-    if (!infoBox) return; 
-    
-    if (infoBox.style.display !== 'block') {
-        infoBox.style.display = 'block';
-        infoBox.style.animation = 'fadeScaleIn 0.4s forwards';
-    }
-    
-    if (hideTimeout) clearTimeout(hideTimeout);
-    hideTimeout = setTimeout(hideInfoBox, 3000);
-}
-
-function hideInfoBox() {
-    if (!infoBox) return;
-    
-    infoBox.style.animation = 'fadeScaleOut 0.3s forwards';
-    
-    // استخدام { once: true } لضمان تنفيذ المسح مرة واحدة فقط عند انتهاء الأنيميشن
-    infoBox.addEventListener('animationend', () => {
-        infoBox.style.display = 'none';
-        infoBox.style.animation = '';
-    }, { once: true });
-    
-    if (hideTimeout) clearTimeout(hideTimeout);
-}
-
-function toggleInfoBox() {
-    if (!infoBox) return;
-    
-    if (infoBox.style.display === 'block') {
-        hideInfoBox();
-    } else {
-        showInfoBox();
-    }
-}
-
-// 🎬 تشغيل تلقائي أولي
-if (infoBox) {
-    showInfoBox();
-}
-
-// تشغيل كل دقيقة
-setInterval(() => {
-    showInfoBox();
-}, 60000);
-
-// ✅ إضافة الـ Listeners بأمان (بعد التأكد من وجود العناصر)
-if (profileImage) {
-    profileImage.style.cursor = 'pointer';
-    profileImage.addEventListener('click', toggleInfoBox);
-}
-if (infoBox) {
-    infoBox.addEventListener('click', toggleInfoBox);
-}
-</script>
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 <script src="https://unpkg.com/html2canvas@latest/dist/html2canvas.min.js"></script>
 <script>   
@@ -38820,76 +38930,7 @@ function createPrintSelectionBar() {
   `;
   
   bar.innerHTML = `
-    <style>
-      @keyframes slideInUp {
-        from { transform: translateY(100px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-      
-      .product-card-checkbox {
-        appearance: none;
-        -webkit-appearance: none;
-        width: 22px !important;
-        height: 22px !important;
-        border: 3px solid #667eea !important;
-        border-radius: 6px !important;
-        background: rgba(255,255,255,0.9) !important;
-        cursor: pointer !important;
-        position: relative !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4) !important;
-      }
-      
-      .product-card-checkbox:hover {
-        transform: scale(1.1) !important;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6) !important;
-        border-color: #11998e !important;
-      }
-      
-      .product-card-checkbox:checked {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-        border-color: #11998e !important;
-      }
-      
-      .product-card-checkbox:checked::after {
-        content: '✓';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-      }
-      
-      .checkbox-container {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 150;
-        background: rgba(255,255,255,0.95);
-        padding: 5px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        backdrop-filter: blur(10px);
-      }
-      
-      #printSelectionBar button {
-        padding: 8px 16px;
-        border: none;
-        color: white;
-        font-weight: 700;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s;
-        font-size: 14px;
-      }
-      
-      #printSelectionBar button:hover {
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-      }
-    </style>
+    
     <button onclick="selectAllCards()" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);">
       ✅ اختر الكل
     </button>
@@ -43680,120 +43721,7 @@ async function exportFullMagazinePDF() {
 
     // CSS
     const css = `
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            html, body { width: 100%; height: 100%; margin: 0; padding: 0; background: white; }
-            body { font-family: 'Cairo', sans-serif; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            
-            #bg-image-fixed {
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                object-fit: cover; opacity: ${bgOpacity}; filter: blur(${bgBlur});
-                z-index: -10; pointer-events: none;
-            }
-
-            .control-panel {
-                position: fixed; top: 0; left: 0; right: 0;
-                background: #f8f9fa; border-bottom: 2px solid #ddd;
-                padding: 15px; z-index: 999999;
-                display: flex; gap: 20px; justify-content: center; align-items: center;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            }
-            .btn-action {
-                padding: 10px 30px; border-radius: 8px; border: none; font-size: 16px;
-                font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer;
-                color: white; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            }
-            .btn-action:hover { transform: scale(1.05); }
-            .btn-compress { background: #00c853; }
-            .status-text { font-size: 16px; font-weight: bold; color: #333; }
-            .progress-bar-container { width: 300px; height: 10px; background: #ddd; border-radius: 5px; overflow: hidden; margin-top: 5px; display:none; }
-            .progress-bar-fill { height: 100%; background: #00c853; width: 0%; transition: width 0.3s; }
-
-            .print-container {
-                display: grid; grid-template-columns: repeat(3, 1fr);
-                grid-auto-flow: row dense; gap: 12px;
-                padding: 15mm 5mm; 
-                width: 98%; max-width: 98%; margin: 80px auto 0 auto;
-                border: 5px solid #00235B; border-radius: 12px; 
-                background: transparent;
-            }
-
-            .cat-a-header-wrapper { grid-column: 1 / -1; margin: 15px 0 10px 0; break-inside: avoid; }
-            .cat-a-header { display: flex; justify-content: center; padding: 8px 0; background: #00235B !important; color: #FF8C00 !important; border-radius: 4px; }
-            .cat-a-title { font-weight: 800; font-size: 16px; }
-            .cat-d-header-wrapper { grid-column: 1 / -1; margin: 10px 0 5px 0; break-after: avoid; }
-            .cat-d-banner { text-align: center; color: white; font-size: 13px; font-weight: 800; padding: 6px; border-radius: 6px; }
-            
-            .card-wrapper { break-inside: avoid-page !important; position: relative; }
-            .magazine-card { height: 270px; display: flex; flex-direction: column; position: relative; }
-            .card-img-container { height: 65%; display: flex; align-items: center; justify-content: center; padding-top: ${globalImageTopSpacer} !important; position: relative; overflow: hidden; }
-            
-            .single-img, .stack-img, .brand-logo-img { mix-blend-mode: multiply; }
-            .single-img { max-width: calc(98% * ${singleImageScale}); max-height: calc(98% * ${singleImageScale}); object-fit: contain; }
-            .brand-logo-box { width: 90%; height: 90%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); border-radius: 10px; }
-            .brand-logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-            .brand-text-fallback { width: 85%; height: 85%; display: flex; align-items: center; justify-content: center; background: #eee; border: 2px solid #ccc; border-radius: 12px; text-align: center; }
-            .fallback-brand-name { font-size: 20px; font-weight: 900; color: #00235B; }
-            
-            .card-images-stack { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-            .stack-img { position: relative; max-width: calc(45% * ${stackImageScale}); max-height: calc(90% * ${stackImageScale}); object-fit: contain; }
-            .stack-2 .img-0 { z-index: 1; transform: scale(0.95); }
-            .stack-2 .img-1 { z-index: 2; transform: translateX(60px) scale(0.95) !important; }
-            .stack-3 .img-0 { z-index: 1; transform: translateX(-70px) scale(0.85) translateY(10px) !important; }
-            .stack-3 .img-1 { z-index: 10; transform: scale(1.1) !important; }
-            .stack-3 .img-2 { z-index: 2; transform: translateX(70px) scale(0.85) translateY(10px) !important; }
-
-            /* 🔥 تحديثات الدايرة لتشمل النصوص الإضافية */
-            .offer-badge-wrapper { 
-                position: absolute; 
-                top: ${badgePositionTop} !important; 
-                left: ${badgePositionLeft} !important; 
-                z-index: 20; 
-                transform: translateX(-50%) rotate(-10deg) scale(${badgeScale}); 
-                
-                /* ضبط الاتجاه والتوسيط */
-                direction: ltr !important; 
-                unicode-bidi: isolate !important; 
-                
-                /* تحويل الدايرة لكونتينر مرن عشان الكلام ييجي تحت الرقم */
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
-                text-align: center;
-                white-space: nowrap;
-            }
-
-            .badge-main-content {
-                line-height: 1 !important;
-                margin-bottom: 2px;
-            }
-
-            /* ستايل النص العربي الإضافي */
-            .badge-sub-text {
-                font-family: 'Cairo', sans-serif !important;
-                font-size: 14px !important;
-                font-weight: 800 !important;
-                color: inherit !important; /* يأخذ نفس لون النص الأصلي */
-                direction: rtl !important; /* عشان يكتب عربي صح */
-                line-height: 0.9 !important;
-                margin-top: -3px !important;
-                text-shadow: 0px 0px 1px rgba(255,255,255,0.5);
-            }
-            
-            .best-seller-badge { position: absolute; top: 10px; right: 10px; background: #FF8C00; color: white; font-size: 8px; padding: 3px 6px; border-radius: 4px; z-index: 6; }
-            .card-info { text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 8px 10px 8px; z-index: 5; }
-            .brand { font-size: 10px; color: #555; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
-            .desc { font-size: 11px; font-weight: 700; color: #000; line-height: 1.25; max-height: 2.5em; overflow: hidden; }
-            .count-pill { font-size: 9px; background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 5px; border: 1px solid #999; display: inline-block; align-self: center; }
-
-            @media print {
-                @page { margin: 0; size: A4 portrait; }
-                .control-panel { display: none !important; }
-                .print-container { margin: 0 auto !important; border: 5px solid #00235B !important; width: 98% !important; min-height: 99vh !important; }
-            }
-        </style>
+        
     `;
 
     // ============ نافذة المعاينة ============
@@ -44980,11 +44908,7 @@ function buildScannerCardHtml({
                 padding-right: 6px;
                 padding-bottom: 15px; /* 🔴 التعديل هنا: دفع المحتوى للأعلى ليظهر بالكامل عند التمرير */
             ">
-                <style>
-                    .card-content-scrollable::-webkit-scrollbar { width: 4px; }
-                    .card-content-scrollable::-webkit-scrollbar-track { background: transparent; }
-                    .card-content-scrollable::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-                </style>
+                
 
                 <!-- 💡 الجزء العلوي (الصورة على اليسار والبيانات على اليمين) -->
                 <div style="display: flex; gap: 12px; align-items: flex-start; width: 100%; box-sizing: border-box;">
@@ -46267,3 +46191,83 @@ window.resetAllGlobalFilters = function() {
     }
 };
 </script>
+<script>// Email Function
+function openEmail() {
+    const emailAddress = "Muhammedkhulif@yahoo.com";
+    const mailtoUrl = `mailto:${emailAddress}`;
+    window.location.href = mailtoUrl;
+}
+
+// WhatsApp Function
+function openWhatsApp() {
+    const whatsappUrl = "https://wa.me/966541932559";
+    window.open(whatsappUrl, '_blank');
+}
+
+// Facebook Function
+function openFacebook() {
+    const facebookUrl = "https://www.facebook.com/share/1Ghv7eEw6A/";
+    window.open(facebookUrl, '_blank');
+}
+// ✅ نسخة معدلة وآمنة لـ Mo
+const infoBox = document.getElementById('sys_blob_data');
+// بنستهدف الصورة الشخصية عن طريق الكلاس بتاعها بما إن مفيش ID
+const profileImage = document.querySelector('.header-personal-img'); 
+
+let hideTimeout = null;
+
+function showInfoBox() {
+    // التأكد من وجود العنصر
+    if (!infoBox) return; 
+    
+    if (infoBox.style.display !== 'block') {
+        infoBox.style.display = 'block';
+        infoBox.style.animation = 'fadeScaleIn 0.4s forwards';
+    }
+    
+    if (hideTimeout) clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(hideInfoBox, 3000);
+}
+
+function hideInfoBox() {
+    if (!infoBox) return;
+    
+    infoBox.style.animation = 'fadeScaleOut 0.3s forwards';
+    
+    // استخدام { once: true } لضمان تنفيذ المسح مرة واحدة فقط عند انتهاء الأنيميشن
+    infoBox.addEventListener('animationend', () => {
+        infoBox.style.display = 'none';
+        infoBox.style.animation = '';
+    }, { once: true });
+    
+    if (hideTimeout) clearTimeout(hideTimeout);
+}
+
+function toggleInfoBox() {
+    if (!infoBox) return;
+    
+    if (infoBox.style.display === 'block') {
+        hideInfoBox();
+    } else {
+        showInfoBox();
+    }
+}
+
+// 🎬 تشغيل تلقائي أولي
+if (infoBox) {
+    showInfoBox();
+}
+
+// تشغيل كل دقيقة
+setInterval(() => {
+    showInfoBox();
+}, 60000);
+
+// ✅ إضافة الـ Listeners بأمان (بعد التأكد من وجود العناصر)
+if (profileImage) {
+    profileImage.style.cursor = 'pointer';
+    profileImage.addEventListener('click', toggleInfoBox);
+}
+if (infoBox) {
+    infoBox.addEventListener('click', toggleInfoBox);
+}</script>
