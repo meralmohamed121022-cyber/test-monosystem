@@ -3190,7 +3190,6 @@ input, select, textarea {
 }
 
 /
-
 /* =========================================
    🔍 ستايل مربع البحث داخل القائمة المنسدلة
    ========================================= */
@@ -3198,10 +3197,10 @@ input, select, textarea {
     width: calc(100% - 20px) !important; /* مسافة متناسقة من الجناب */
     margin: 10px !important;
     padding: 12px 15px !important;
-    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    border: 2px solid #e2e8f0 !important;
     border-radius: 8px !important;
-    background: #16213e !important; /* متناسق مع باقي المودال */
-    color: #ffffff !important;
+    background: #f8f9fa !important; /* خلفية فاتحة ومريحة للعين */
+    color: #1e293b !important; /* لون الخط غامق وواضح */
     font-size: 14px !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
     outline: none !important;
@@ -3209,19 +3208,39 @@ input, select, textarea {
     box-sizing: border-box !important;
 }
 
-/* لون كلمة Search offer types... */
+/* لون كلمة Search... */
 .custom-select-search::placeholder {
-    color: #888888 !important;
+    color: #94a3b8 !important;
     font-size: 13px !important;
 }
 
 /* 🌟 تأثير لما المستخدم يضغط جوه المربع عشان يكتب */
 .custom-select-search:focus {
     border-color: #667eea !important; /* إطار موف شيك */
-    box-shadow: 0 0 12px rgba(102, 126, 234, 0.4) !important; /* توهج خفيف */
-    background: #1a2647 !important; /* تفتيح الخلفية سِنة صغيرة */
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.2) !important; /* توهج خفيف */
+    background: #ffffff !important; /* تفتيح الخلفية للأبيض الصريح */
 }
-/* إخفاء الزراير القديمة اللي برا السايدبار عشان ننظف الصفحة */
+
+/* ====== 🌙 الوضع الليلي لمربع البحث ====== */
+[data-theme="dark"] .custom-select-search {
+    background: #1f2937 !important;
+    color: #ffffff !important;
+    border-color: #374151 !important;
+}
+
+[data-theme="dark"] .custom-select-search:focus {
+    background: #111827 !important;
+    border-color: #667eea !important;
+    box-shadow: 0 0 12px rgba(102, 126, 234, 0.4) !important;
+}
+
+[data-theme="dark"] .custom-select-search::placeholder {
+    color: #9ca3af !important;
+}
+
+/* =========================================
+   إخفاء الزراير القديمة اللي برا السايدبار
+   ========================================= */
 body > button[onclick*="openCustomPrintModal"],
 body > button[onclick*="printExclusiveOffers"],
 body > div:has(> label[for="codesFileInput"]),
@@ -4815,6 +4834,152 @@ body > div:has(> label[for="codesFileInput"]),
     from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
 }
+<style>
+.stock-filter-group{
+    background:#fdfdfd;
+    border:1px solid #eee;
+    padding:15px;
+    border-radius:16px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.03);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:135px;
+    transition:all 0.35s ease;
+}
+
+.stock-filter-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#2c3e50;
+    font-weight:800;
+    margin-bottom:12px;
+    font-size:0.90em;
+    width:100%;
+    justify-content:center;
+    text-transform:uppercase;
+    text-align:center;
+}
+
+.stock-switch{
+    position:relative;
+    display:inline-block;
+    width:60px;
+    height:30px;
+}
+
+.stock-switch input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.stock-slider{
+    position:absolute;
+    cursor:pointer;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background-color:#ccc;
+    transition:.4s;
+    border-radius:34px;
+}
+
+.stock-slider:before{
+    position:absolute;
+    content:"";
+    height:22px;
+    width:22px;
+    left:4px;
+    bottom:4px;
+    background-color:#fff;
+    transition:.4s;
+    border-radius:50%;
+    box-shadow:0 2px 5px rgba(0,0,0,0.18);
+}
+
+.stock-switch input:checked + .stock-slider:before{
+    transform:translateX(30px);
+}
+
+.stock-status-text{
+    margin-top:10px;
+    font-size:0.78em;
+    font-weight:800;
+    color:#7f8c8d;
+    text-transform:uppercase;
+    transition:all 0.3s ease;
+    text-align:center;
+    line-height:1.5;
+}
+
+.stock-store-text{
+    margin-top:4px;
+    font-size:0.74em;
+    font-weight:700;
+    color:#64748b;
+    text-align:center;
+    direction:ltr;
+}
+.btn-reset-art {
+    position: relative;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%);
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 8px 25px rgba(255, 65, 108, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-reset-art::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: all 0.6s ease;
+}
+
+.btn-reset-art:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(255, 65, 108, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.4);
+}
+
+.btn-reset-art:hover::before {
+    left: 100%;
+}
+
+.btn-reset-art:active {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+}
+
+.btn-reset-icon {
+    font-size: 18px;
+    transition: transform 0.5s ease;
+}
+
+.btn-reset-art:hover .btn-reset-icon {
+    transform: rotate(-180deg);
+}
+</style>
 </style>
 </head>
 <body>
@@ -5133,8 +5298,65 @@ body > div:has(> label[for="codesFileInput"]),
         </div>
     </div>
 </div>
-    <div class="filters-container">
+    <style>
+/* CSS خاص بشبكة الفلاتر الجديدة عشان تكون 3 في الصف وتتجاوب مع الموبايل */
+.filters-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+@media (max-width: 992px) {
+    .filters-grid-layout {
+        grid-template-columns: repeat(2, 1fr); /* 2 في التابلت */
+    }
+}
+
+@media (max-width: 576px) {
+    .filters-grid-layout {
+        grid-template-columns: 1fr; /* 1 في الموبايل */
+    }
+}
+</style>
+
+<div class="filters-container-main" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+    
+    <!-- 1. Modern Stock Availability Toggle (Full Width) -->
+    <div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; transition: all 0.4s ease; width: 100%;">
+        <label style="display: flex; align-items: center; gap: 8px; color: #2c3e50; font-weight: 900; margin-bottom: 15px; font-size: 0.9em; justify-content: center; text-transform: uppercase;">
+            <span>📦</span> Stock Availability
+        </label>
         
+        <!-- Wrapper for Toggle & Labels -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
+            <!-- Left Label -->
+            <span id="labelAllItems" style="font-size: 13px; font-weight: 800; color: #1e293b; transition: color 0.3s; letter-spacing: 0.5px;">ALL ITEMS</span>
+            
+            <!-- The Toggle Switch -->
+            <label class="stock-switch" style="position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; margin: 0;">
+                <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
+                <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
+            </label>
+            
+            <!-- Right Label -->
+            <span id="labelInStock" style="font-size: 13px; font-weight: 800; color: #94a3b8; transition: color 0.3s; letter-spacing: 0.5px;">IN STOCK</span>
+        </div>
+
+        <!-- Status Text (Store info & count) -->
+        <span id="stockStatusText" style="margin-top: 12px; font-size: 11px; font-weight: 700; color: #64748b; text-align: center; height: 16px;">Showing all items</span>
+
+        <!-- Hidden Select for logic compatibility -->
+        <select id="stockFilterToggle" style="display: none;">
+            <option value="all" selected>all</option>
+            <option value="instock">instock</option>
+        </select>
+    </div>
+
+    <!-- 2. Grid for the rest of the filters (3 items per row) -->
+    <div class="filters-grid-layout">
+        <!-- Offer Type -->
         <div class="filter-group">
             <label>Offer Type</label>
             <div class="custom-select" data-filter="offerFilter">
@@ -5147,6 +5369,7 @@ body > div:has(> label[for="codesFileInput"]),
             <button class="reset-filter-btn" onclick="resetFilter('offerFilter')">🔄 Reset</button>
         </div>
 
+        <!-- Brand -->
         <div class="filter-group">
             <label>Brand</label>
             <div class="custom-select" data-filter="brandFilter">
@@ -5159,6 +5382,7 @@ body > div:has(> label[for="codesFileInput"]),
             <button class="reset-filter-btn" onclick="resetFilter('brandFilter')">🔄 Reset</button>
         </div>
 
+        <!-- Manufacture -->
         <div class="filter-group">
             <label>🏭 Manufacture</label>
             <div class="custom-select" data-filter="manufactureFilter">
@@ -5171,6 +5395,7 @@ body > div:has(> label[for="codesFileInput"]),
             <button class="reset-filter-btn" onclick="resetFilter('manufactureFilter')">🔄 Reset</button>
         </div>
 
+        <!-- Category A -->
         <div class="filter-group">
             <label>Category A</label>
             <div class="custom-select" data-filter="categoryAFilter">
@@ -5183,6 +5408,7 @@ body > div:has(> label[for="codesFileInput"]),
             <button class="reset-filter-btn" onclick="resetFilter('categoryAFilter')">🔄 Reset</button>
         </div>
 
+        <!-- Category B -->
         <div class="filter-group">
             <label>Category B</label>
             <div class="custom-select" data-filter="categoryBFilter">
@@ -5195,6 +5421,7 @@ body > div:has(> label[for="codesFileInput"]),
             <button class="reset-filter-btn" onclick="resetFilter('categoryBFilter')">🔄 Reset</button>
         </div>
 
+        <!-- Category C -->
         <div class="filter-group">
             <label>Category C</label>
             <div class="custom-select" data-filter="categoryCFilter">
@@ -5207,6 +5434,7 @@ body > div:has(> label[for="codesFileInput"]),
             <button class="reset-filter-btn" onclick="resetFilter('categoryCFilter')">🔄 Reset</button>
         </div>
 
+        <!-- Category D -->
         <div class="filter-group">
             <label>Category D</label>
             <div class="custom-select" data-filter="categoryDFilter">
@@ -5218,27 +5446,16 @@ body > div:has(> label[for="codesFileInput"]),
             </div>
             <button class="reset-filter-btn" onclick="resetFilter('categoryDFilter')">🔄 Reset</button>
         </div>
-
     </div>
-   <button onclick="clearAllFilters()" class="reset-all-btn" 
-        style="margin-top: 25px; 
-               width: auto; 
-               padding: 12px 35px; 
-               background: linear-gradient(135deg, #e74c3c, #c0392b) !important; 
-               color: white !important; 
-               border: none !important; 
-               border-radius: 8px !important; 
-               cursor: pointer; 
-               font-size: 14px; 
-               font-weight: 700; 
-               box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4) !important; 
-               transition: all 0.3s ease; 
-               text-transform: uppercase; 
-               letter-spacing: 1px;">
-    🔄 Reset All Filters
-</button>
-</div>
 
+    <!-- 3. Reset All Filters Button -->
+    <div style="display: flex; justify-content: center; width: 100%; margin-top: 15px;">
+        <button onclick="resetAllGlobalFilters()" class="btn-reset-art">
+            <span class="btn-reset-icon">🔄</span>
+            <span>Reset All Filters</span>
+        </button>
+    </div>
+</div>
     <div class="products-section" id="productsContainer"></div>
     <div id="loadingIndicator" style="text-align:center; padding:20px; display:none;"><div class="spinner"></div><div>Loading more products...</div></div>
 
@@ -6490,7 +6707,250 @@ window.matchesFilters = function(product, filters) {
     
     return baseMatch;
 };
+// ===============================
+// STOCK FILTER - SAFE INTEGRATION
+// أضفه بعد matchesFilters الأصلية
+// ===============================
+// ==========================================
+// STOCK FILTER - V4 (ULTRA FAST & STRICT) 🚀
+// ==========================================
+// ==========================================
+// STOCK FILTER - V4.1 (ULTRA FAST & STRICT)
+// ==========================================
+// ==========================================
+// STOCK FILTER - V6 (BULK API TURBO + TOAST) 🚀🚀
+// ==========================================
+(function () {
+    if (window.__stockFilterV6) return;
+    window.__stockFilterV6 = true;
 
+    const workerBaseUrl = "https://online.meralmohamed121022.workers.dev";
+    const stockCache = new Map();
+    let currentFetchSession = 0;
+    let capturedFilters = {};
+
+    function getStoreCode() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const raw = urlParams.get("ph") || localStorage.getItem("pharmacy_number") || sessionStorage.getItem("pharmacy_number") || "";
+        const cleanNum = String(raw).replace(/\D/g, "");
+        if (!cleanNum) return null;
+        const storeNum = parseInt(cleanNum, 10);
+        if (!Number.isFinite(storeNum)) return null;
+        return storeNum < 1000 ? "P" + String(storeNum).padStart(3, "0") : String(storeNum);
+    }
+
+    function showWelcomeMessage() {
+        const storeCode = getStoreCode();
+        if (!storeCode) return;
+        if (document.getElementById('pharmacyWelcomeToast')) return;
+
+        const toast = document.createElement('div');
+        toast.id = 'pharmacyWelcomeToast';
+        toast.innerHTML = `
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div style="background:rgba(255,255,255,0.25); padding:10px; border-radius:50%; display:flex;">
+                    <span style="font-size:28px; line-height:1;">🏥</span>
+                </div>
+                <div style="display:flex; flex-direction:column; text-align:left;">
+                    <span style="font-size:12px; font-weight:800; color:#e2e8f0; text-transform:uppercase; letter-spacing:1px;">Connected Pharmacy</span>
+                    <span style="font-size:22px; font-weight:900; color:#ffffff; letter-spacing:1.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Store: ${storeCode}</span>
+                </div>
+            </div>
+        `;
+        toast.style.cssText = `
+            position: fixed; top: 25px; left: 50%; transform: translate(-50%, -120px);
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); color: white;
+            padding: 15px 30px; border-radius: 18px; box-shadow: 0 12px 35px rgba(29, 78, 216, 0.45);
+            z-index: 9999999; font-family: Arial, sans-serif; opacity: 0;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.4s ease;
+            border: 1px solid rgba(255,255,255,0.2); min-width: 280px;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.transform = 'translate(-50%, 0)'; toast.style.opacity = '1'; }, 500);
+        setTimeout(() => {
+            toast.style.transform = 'translate(-50%, -120px)'; toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 600);
+        }, 4000);
+    }
+
+    function setStockUiState(mode, extra = {}) {
+        const statusText = document.getElementById("stockStatusText");
+        const card = document.getElementById("stockFilterCard");
+        const slider = document.getElementById("sliderInner");
+        const storeCode = getStoreCode() || "--";
+
+        if (!statusText || !card || !slider) return;
+
+        if (mode === "off") {
+            statusText.innerHTML = "Show All Items";
+            statusText.style.color = "#7f8c8d";
+            card.style.backgroundColor = "#fdfdfd"; slider.style.backgroundColor = "#ccc";
+        } else if (mode === "loading") {
+            if (extra.total > 0 && extra.total > 150) {
+                statusText.innerHTML = `⏳ Loading (${storeCode})<br><span style="font-size:11px; color:#b45309;">${extra.current || 0} / ${extra.total}</span>`;
+            } else {
+                statusText.innerHTML = `⏳ Loading Stock (${storeCode})...`;
+            }
+            statusText.style.color = "#d97706";
+            card.style.backgroundColor = "#fffbeb"; slider.style.backgroundColor = "#f59e0b";
+        } else if (mode === "on") {
+            const countText = typeof extra.count === "number" ? " - " + extra.count + " items" : "";
+            statusText.innerHTML = `✅ IN STOCK ONLY (${storeCode})${countText}`;
+            statusText.style.color = "#166534";
+            card.style.backgroundColor = "#ecfdf5"; slider.style.backgroundColor = "#16a34a";
+        }
+    }
+
+    const originalMatchesFilters = typeof window.matchesFilters === "function" 
+        ? window.matchesFilters : function () { return true; };
+
+    window.matchesFilters = function (product, filters) {
+        const safeFilters = filters || window.currentFilters || capturedFilters || {};
+        capturedFilters = safeFilters; 
+
+        if (!originalMatchesFilters(product, safeFilters)) return false;
+
+        const stockToggle = document.getElementById("stockFilterToggleCheckbox");
+        if (stockToggle && stockToggle.checked) {
+            if (typeof product.inStock === "undefined") return false; 
+            return product.inStock === true && Number(product.actualStock) > 0; 
+        }
+        return true;
+    };
+
+    const originalApplyFilters = typeof window.applyFilters === "function" 
+        ? window.applyFilters : function () {};
+
+    window.applyFilters = function () {
+        try { originalApplyFilters(); } catch (e) {}
+
+        const stockToggle = document.getElementById("stockFilterToggleCheckbox");
+        if (stockToggle && stockToggle.checked) {
+            const db = Array.isArray(window.productsDB) ? window.productsDB : [];
+            const productsToFetch = db.filter(p => originalMatchesFilters(p, capturedFilters) && typeof p.inStock === "undefined");
+
+            if (productsToFetch.length > 0) {
+                fetchStockForTargetedProducts(productsToFetch, capturedFilters);
+            } else {
+                finishFetchSession(capturedFilters);
+            }
+        }
+    };
+
+    async function fetchStockForTargetedProducts(products, filters) {
+        currentFetchSession++; 
+        const mySession = currentFetchSession;
+        
+        const storeCode = getStoreCode();
+        if (!storeCode) return;
+
+        const total = products.length;
+        let fetched = 0;
+        const isMassive = total > 300; 
+        
+        setStockUiState("loading", { current: 0, total: total });
+
+        // تجميع كل 40 منتج في طلب شبكة واحد للسرعة القصوى
+        const batchSize = 40; 
+        const fetchPromises = [];
+        
+        for (let i = 0; i < total; i += batchSize) {
+            const batch = products.slice(i, i + batchSize);
+            
+            const codesToRequest = [];
+            batch.forEach(p => {
+                const code = String(p?.Code ?? "").trim();
+                const cacheKey = storeCode + "__" + code;
+                if (stockCache.has(cacheKey)) {
+                    const cached = stockCache.get(cacheKey);
+                    p.inStock = cached.inStock; p.actualStock = cached.actualStock;
+                    fetched++;
+                } else if (code) {
+                    codesToRequest.push(code);
+                }
+            });
+
+            if (codesToRequest.length > 0) {
+                const codesString = codesToRequest.map(encodeURIComponent).join(',');
+                const req = fetch(workerBaseUrl + "/api/stock?codes=" + codesString + "&store=" + encodeURIComponent(storeCode))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (currentFetchSession !== mySession) return;
+                        
+                        if (data && data.success && data.results) {
+                            data.results.forEach(resItem => {
+                                const cacheKey = storeCode + "__" + resItem.code;
+                                stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                                
+                                const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
+                                if (targetP) {
+                                    targetP.inStock = resItem.inStock;
+                                    targetP.actualStock = resItem.stockLevel;
+                                }
+                            });
+                        }
+                        fetched += codesToRequest.length;
+                        setStockUiState("loading", { current: fetched, total: total });
+                        
+                        if (!isMassive) {
+                            try { originalApplyFilters(); } catch (e) {}
+                        }
+                    })
+                    .catch(err => {
+                        fetched += codesToRequest.length;
+                    });
+                fetchPromises.push(req);
+            } else {
+                setStockUiState("loading", { current: fetched, total: total });
+            }
+        }
+
+        // تشغيل كل الطلبات بالتوازي
+        await Promise.all(fetchPromises);
+
+        if (currentFetchSession === mySession) {
+            finishFetchSession(filters);
+        }
+    }
+
+    function finishFetchSession(filters) {
+        try { originalApplyFilters(); } catch (e) {}
+        const db = Array.isArray(window.productsDB) ? window.productsDB : [];
+        const finalCount = db.filter(p => originalMatchesFilters(p, filters) && p.inStock === true && Number(p.actualStock) > 0).length;
+        setStockUiState("on", { count: finalCount });
+    }
+
+    window.toggleStockValue = function (checkbox) {
+        const hiddenSelect = document.getElementById("stockFilterToggle");
+        if (checkbox.checked) {
+            if (hiddenSelect) hiddenSelect.value = "instock";
+            window.applyFilters(); 
+        } else {
+            if (hiddenSelect) hiddenSelect.value = "all";
+            currentFetchSession++; 
+            setStockUiState("off");
+            window.applyFilters(); 
+        }
+    };
+
+    window.clearAllStockFilters = function () {
+        const checkbox = document.getElementById("stockFilterToggleCheckbox");
+        const hiddenSelect = document.getElementById("stockFilterToggle");
+        if (checkbox) checkbox.checked = false;
+        if (hiddenSelect) hiddenSelect.value = "all";
+        currentFetchSession++;
+        setStockUiState("off");
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        setStockUiState("off");
+    });
+    window.addEventListener("load", function () {
+        if (!document.getElementById("pharmacyWelcomeToast")) {
+            setTimeout(showWelcomeMessage, 800);
+        }
+    });
+})();
 // 1. مخزن كل فترات العروض
 const ALL_PERIODS_OFFERS = [
     {
@@ -45736,55 +46196,74 @@ document.getElementById('galleryContainer').addEventListener('touchmove', (e) =>
 });
 document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
 // 1. إخفاء كل شيء في الصفحة تماماً (اللودر، الجات واي، العروض، الهيدر) في أول جزء من الثانية
+// 1. الحقن الفوري: ده كود بيشتغل قبل ما المتصفح يرسم أي حاجة على الشاشة
 if (window.location.hash.includes('scanner')) {
+    // بنعمل ستايل إجباري يخفي اللودر والجات واي فوراً
     const instantStyle = document.createElement('style');
-    instantStyle.id = "scannerHideStyle"; 
     instantStyle.innerHTML = `
-        #loaderScreen, #gatewayView, #fixedHeader, #mainOffersContainer { 
-            display: none !important; 
-            opacity: 0 !important; 
-            visibility: hidden !important; 
-            pointer-events: none !important; 
-            z-index: -1 !important; 
-        }
-        body { 
-            background: #0a1628 !important; /* لون كحلي غامق بدل الأبيض */
-            overflow: hidden !important; 
-        }
+        #loaderScreen, #gatewayView { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; z-index: -1 !important; }
+        #fixedHeader { display: flex !important; }
+        #mainOffersContainer { display: block !important; }
+        body { overflow: auto !important; }
     `;
     document.head.appendChild(instantStyle);
 }
 
-// 2. تشغيل السكانر وبعدين إعادة العروض والهيدر في خلفية الكاميرا بهدوء
+// 2. تشغيل السكانر بمجرد ما الصفحة تقرأ العناصر (أسرع بكتير من load)
 window.addEventListener("DOMContentLoaded", () => {
     if (window.location.hash.includes('scanner')) {
+        // تأكيد الإخفاء والظهور بالجافاسكريبت (زيادة أمان)
+        const gatewayView = document.getElementById('gatewayView');
+        const fixedHeader = document.getElementById('fixedHeader');
+        const mainOffersContainer = document.getElementById('mainOffersContainer');
+        const loader = document.getElementById('loaderScreen');
         
-        // فتح السكانر بسرعة جداً
+        if (gatewayView) gatewayView.style.display = 'none';
+        if (fixedHeader) fixedHeader.style.display = 'flex';
+        if (mainOffersContainer) mainOffersContainer.style.display = 'block'; 
+        if (loader) loader.style.display = 'none';
+
+        // فتح السكانر بسرعة (300 ملي ثانية كافية جداً لتشغيل الكاميرا)
         setTimeout(() => {
             if (typeof openBarcodeScanner === 'function') {
                 openBarcodeScanner();
             }
-            
-            // بعد 500 ملي ثانية (يعني السكانر بيكون فتح خلاص وغطى الشاشة)
-            // نشيل الاستايل الإجباري ونرجع صفحة العروض في ضهره
-            setTimeout(() => {
-                const hideStyle = document.getElementById("scannerHideStyle");
-                if (hideStyle) hideStyle.remove();
-                
-                const gatewayView = document.getElementById('gatewayView');
-                const fixedHeader = document.getElementById('fixedHeader');
-                const mainOffersContainer = document.getElementById('mainOffersContainer');
-                const loader = document.getElementById('loaderScreen');
-                
-                // نضمن إن اللودر والجات واي مختفيين، والعروض معروضة ورا السكانر
-                if (gatewayView) gatewayView.style.display = 'none';
-                if (loader) loader.style.display = 'none';
-                if (fixedHeader) fixedHeader.style.display = 'flex';
-                if (mainOffersContainer) mainOffersContainer.style.display = 'block';
-                document.body.style.overflow = 'auto'; // نرجع السكرول طبيعي
-            }, 500);
-
         }, 300);
     }
 });
+window.resetAllGlobalFilters = function() {
+    // 1. تصفير مربع البحث
+    const searchInput = document.getElementById('globalSearch');
+    if (searchInput) searchInput.value = '';
+
+    // 2. تصفير كل الشيك بوكسات الخاصة بالفلاتر
+    document.querySelectorAll('.custom-options-list input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+
+    // 3. إرجاع أسماء القوائم للوضع الافتراضي
+    document.querySelectorAll('.custom-select').forEach(select => {
+        const textSpan = select.querySelector('.selected-text');
+        const filterType = select.getAttribute('data-filter');
+        if (textSpan) {
+            if (filterType === 'offerFilter') textSpan.textContent = 'All Offers';
+            else if (filterType === 'brandFilter') textSpan.textContent = 'All Brands';
+            else if (filterType === 'manufactureFilter') textSpan.textContent = 'All Manufactures';
+            else if (filterType === 'categoryAFilter') textSpan.textContent = 'All Cat A';
+            else if (filterType === 'categoryBFilter') textSpan.textContent = 'All Cat B';
+            else if (filterType === 'categoryCFilter') textSpan.textContent = 'All C';
+            else if (filterType === 'categoryDFilter') textSpan.textContent = 'All D';
+        }
+    });
+
+    // 4. تصفير فلتر الاستوك
+    if (typeof window.clearAllStockFilters === 'function') {
+        window.clearAllStockFilters();
+    }
+
+    // 5. تحديث الشاشة لتطبيق المسح
+    if (typeof window.applyFilters === 'function') {
+        window.applyFilters();
+    }
+};
 </script>
