@@ -1418,21 +1418,18 @@ function openLink(url) {
     document.getElementById('modeToggle').style.display = 'none';
     document.querySelector('.logout-btn').style.display = 'none';
     document.getElementById('userInfoBadge').style.display = 'none';
-    
-    let scannerBtn = document.querySelector('.scanner-direct-btn');
-    if (scannerBtn) scannerBtn.style.display = 'none';
 
-    resetIframeLoader();
+    resetIframeLoader(); 
 
     const phNo = localStorage.getItem('pharmacy_number');
     const token = crypto.randomUUID();
-    sessionStorage.setItem("_tk", token);
+    sessionStorage.setItem('_tk', token);
 
     let finalUrl = url;
     const separator = url.includes('?') ? '&' : '?';
-    finalUrl = phNo
-        ? `${url}${separator}ph=${encodeURIComponent(phNo)}&_tk=${token}`
-        : `${url}${separator}_tk=${token}`;
+    finalUrl = phNo 
+        ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
+        : url + separator + '_tk=' + token;
 
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => {
@@ -1464,7 +1461,6 @@ function openLink(url) {
         
         let safetyTimeout = setTimeout(() => {
             if (!hasLoaded) {
-                console.warn("Safety trigger active...");
                 hideLoaderFast(loader);
             }
         }, 10000);
@@ -1476,7 +1472,7 @@ function openLink(url) {
             
             if (phNo) {
                 setTimeout(() => {
-                    iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*');
+                    iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); 
                 }, 500);
             }
         };
@@ -1501,8 +1497,6 @@ function closeIframe() {
     if (errorBox) errorBox.classList.remove('show');
     
     document.getElementById('modeToggle').style.display = 'flex';
-    let scannerBtn = document.querySelector('.scanner-direct-btn');
-    if (scannerBtn) scannerBtn.style.display = 'flex';
     checkAuth();
     
     setTimeout(() => { 
