@@ -799,9 +799,27 @@ document.getElementById('snoozeSelect').addEventListener('change', function() {
 
 window.addEventListener('DOMContentLoaded', async () => {
     loadTheme();
-    checkAuth();
-});
+    
+    // 1. التحقق من تسجيل الدخول
+    await checkAuth(); 
 
+    // 2. تفعيل الفلتر الأوتوماتيكي للستوك بعد تحميل الصفحة
+    window.addEventListener('load', () => {
+        // التأكد من وجود الدالة قبل استدعائها
+        if (typeof window.applyFilters === "function") {
+            console.log("Auto-triggering Stock Filter...");
+            
+            // نستخدم مهلة بسيطة لضمان تحميل الداتا بالكامل
+            setTimeout(() => {
+                const hiddenSelect = document.getElementById('stockFilterToggle');
+                if (hiddenSelect) {
+                    hiddenSelect.value = 'instock';
+                    window.applyFilters();
+                }
+            }, 1000); 
+        }
+    });
+});
 function checkAuth() {
     const badge = document.getElementById('userInfoBadge');
     
@@ -1393,22 +1411,20 @@ function openLink(url) {
     if (!url || url.trim() === '#') return;
     closeAllMenus();
 
+    // 1. ضمان تنظيف أي حالة عالقة قبل البدء
+    resetIframeLoader(); 
+
     const phNo = localStorage.getItem('pharmacy_number');
-    
-    // ✅ إضافة: إنشاء توكن مؤقت
     const token = crypto.randomUUID();
     sessionStorage.setItem("_tk", token);
 
     let finalUrl = url;
-    
-    if (phNo) {
-        const separator = url.includes('?') ? '&' : '?';
-        // ✅ إضافة: حط التوكن مع الـ ph في الـ URL
-        finalUrl = `${url}${separator}ph=${encodeURIComponent(phNo)}&_tk=${token}`;
-    } else {
-        finalUrl = `${url}?_tk=${token}`;
-    }
+    const separator = url.includes('?') ? '&' : '?';
+    finalUrl = phNo 
+        ? `${url}${separator}ph=${encodeURIComponent(phNo)}&_tk=${token}`
+        : `${url}${separator}_tk=${token}`;
 
+    // تحديث الأزرار
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => {
         btn.classList.remove('active');
@@ -1423,15 +1439,12 @@ function openLink(url) {
     const loader = document.getElementById('loadingOverlay');
 
     if (!container || !iframe || !errorBox) return;
-
     errorBox.classList.remove('show');
-
     if (loader) {
         loader.style.display = 'flex';
         loader.style.opacity = '1';
         loader.classList.remove('hidden');
     }
-
     container.classList.add('show');
 
     iframe.onload = null;
@@ -1439,27 +1452,22 @@ function openLink(url) {
 
     setTimeout(() => {
         let hasLoaded = false;
-        let loadTimeout = setTimeout(() => {
+        
+        // مفتاح الأمان (Safety Trigger)
+        let safetyTimeout = setTimeout(() => {
             if (!hasLoaded) {
+                console.warn("Safety trigger active...");
                 hideLoaderFast(loader);
-                errorBox.classList.add('show');
             }
-        }, 15000);
+        }, 10000);
 
         iframe.onload = function() {
-            try {
-                const frameSrc = iframe.contentWindow.location.href;
-                if (frameSrc === 'about:blank') return;
-            } catch(e) {}
-            
             hasLoaded = true;
-            clearTimeout(loadTimeout);
+            clearTimeout(safetyTimeout);
             hideLoaderFast(loader);
-
-            const phNo = localStorage.getItem('pharmacy_number');
+            
             if (phNo) {
                 setTimeout(() => {
-                    console.log("Sending Pharmacy ID to iframe:", phNo);
                     iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); 
                 }, 500);
             }
@@ -1467,7 +1475,7 @@ function openLink(url) {
         
         iframe.onerror = function() {
             hasLoaded = true;
-            clearTimeout(loadTimeout);
+            clearTimeout(safetyTimeout);
             hideLoaderFast(loader);
             errorBox.classList.add('show');
         };
@@ -1475,16 +1483,55 @@ function openLink(url) {
         iframe.src = finalUrl;
     }, 50);
 }
-function hideLoaderFast(loader) {
+
+// دالة Reset المساعدة (ضعها بجانب openLink)
+function resetIframeLoader() {
+    const loader = document.getElementById('loadingOverlay');
     if (loader) {
+        loader.style.display = 'none';
+        loader.classList.add('hidden');
         loader.style.opacity = '0';
-        setTimeout(() => {
-            loader.classList.add('hidden');
-            loader.style.display = 'none';
-        }, 150);
     }
 }
 
+function hideLoaderFast(loader) {
+    if (!loader) loader = document.getElementById('loadingOverlay');
+    if (!loader) return;
+
+    // 1. إخفاء فوري للعناصر البصرية
+    loader.style.transition = 'opacity 0.2s';
+    loader.style.opacity = '0';
+    
+    // 2. إخفاء قسري بعد وقت قصير جداً
+    setTimeout(() => {
+        loader.classList.add('hidden');
+        loader.style.display = 'none';
+        
+        // 3. (إضافة) تأمين إضافي: التأكد من اختفاء اللودر تماماً
+        if (loader.style.display !== 'none') {
+            loader.style.display = 'none';
+        }
+    }, 200);
+}
+
+// 4. دالة الـ Reset التي طلبتها (استخدمها عند أي تعليق)
+function resetIframeLoader() {
+    const loader = document.getElementById('loadingOverlay');
+    const container = document.getElementById('iframeContainer');
+    
+    console.log("Forcing loader reset...");
+    
+    // إخفاء اللودر فوراً
+    if (loader) {
+        loader.style.display = 'none';
+        loader.classList.add('hidden');
+    }
+    
+    // إظهار الـ container إذا كان مختفياً
+    if (container) {
+        container.classList.add('show');
+    }
+}
 function closeIframe() {
     const container = document.getElementById('iframeContainer');
     const errorBox = document.getElementById('iframeError');
