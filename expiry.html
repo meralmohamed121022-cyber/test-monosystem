@@ -1283,117 +1283,119 @@ render: (resetPagination = true) => {
             app.renderVisiblePart();
         },        
 renderVisiblePart: () => {
-            const t = app.i18n[app.language];
-            const resultContainer = document.getElementById('inventoryContainer');
-            if (!resultContainer) return;
+    const t = app.i18n[app.language];
+    const resultContainer = document.getElementById('inventoryContainer');
+    if (!resultContainer) return;
 
-            // دالة مساعدة لتوليد لون فريد وثابت لكل صيدلية بناءً على الـ ID
-            const getPhColor = (id) => {
-                let hash = 0;
-                const str = String(id);
-                for (let i = 0; i < str.length; i++) {
-                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                return `hsl(${Math.abs(hash) % 360}, 70%, 45%)`;
-            };
+    const getPhColor = (id) => {
+        let hash = 0;
+        const str = String(id);
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return `hsl(${Math.abs(hash) % 360}, 70%, 45%)`;
+    };
 
-            const limit = app.currentPage * app.displayLimit;
-            const visibleList = app.fullFilteredList.slice(0, limit);
+    const limit = app.currentPage * app.displayLimit;
+    const visibleList = app.fullFilteredList.slice(0, limit);
 
-            if (visibleList.length === 0) {
-                if (app.exploreMode && app.selectedUsers.size === 0) {
-                    resultContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc;">رجاءً اختر صيدلي واحد على الأقل</div>`;
-                } else {
-                    resultContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc;">${t.noData}</div>`;
-                }
-                return;
-            }
+    if (visibleList.length === 0) {
+        if (app.exploreMode && app.selectedUsers.size === 0) {
+            resultContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc;">رجاءً اختر صيدلي واحد على الأقل</div>`;
+        } else {
+            resultContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc;">${t.noData}</div>`;
+        }
+        return;
+    }
 
-            const grouped = {};
-            visibleList.forEach(it => {
-                const mKey = it.expiryDate.slice(0, 7);
-                if (!grouped[mKey]) grouped[mKey] = [];
-                grouped[mKey].push(it);
-            });
+    const grouped = {};
+    visibleList.forEach(it => {
+        const mKey = it.expiryDate.slice(0, 7);
+        if (!grouped[mKey]) grouped[mKey] = [];
+        grouped[mKey].push(it);
+    });
 
-            let finalHtml = "";
-            Object.keys(grouped).sort().forEach(mKey => {
-                const alert = app.getAlert(mKey + "-01");
-                let headerClass = alert === 'expired' ? 'expired-header' : alert === 'warning' ? 'warning-header' : 'safe-header';
-                finalHtml += `<div class="date-section" id="sec-${mKey}"><div class="date-header ${headerClass}">📅 ${mKey}</div><div class="date-grid">`;
-                
-                grouped[mKey].forEach(item => {
-                    // تحديد اللون: لو استكشاف ياخد لون الصيدلية، لو صيدليتي ياخد اللون الأساسي
-                    const phColor = item.isExplore ? getPhColor(item.ownerId) : 'var(--primary)';
-                    const cardStyle = item.isExplore 
-                        ? `border: 2.5px solid ${phColor}; background: #fdfdfd; box-shadow: 0 4px 15px ${phColor}20;` 
-                        : '';
+    let finalHtml = "";
+    Object.keys(grouped).sort().forEach(mKey => {
+        const alert = app.getAlert(mKey + "-01");
+        let headerClass = alert === 'expired' ? 'expired-header' : alert === 'warning' ? 'warning-header' : 'safe-header';
+        finalHtml += `<div class="date-section" id="sec-${mKey}"><div class="date-header ${headerClass}">📅 ${mKey}</div><div class="date-grid">`;
+        
+        grouped[mKey].forEach(item => {
+            const phColor = item.isExplore ? getPhColor(item.ownerId) : 'var(--primary)';
+            const cardStyle = item.isExplore 
+                ? `border: 2.5px solid ${phColor}; background: #fdfdfd; box-shadow: 0 4px 15px ${phColor}20;` 
+                : '';
 
-                    finalHtml += `
-                    <div class="card" style="${cardStyle}">
-                        <div class="card-header">
-                            <!-- نقطة ملونة صغيرة لتمييز المصدر بصرياً بدون أرقام -->
-                            ${item.isExplore ? `<div style="position:absolute; top:10px; right:10px; width:12px; height:12px; background:${phColor}; border-radius:50%; border:2px solid white; box-shadow:0 0 5px ${phColor}; z-index:10;"></div>` : ''}
-                            <img data-code="${item.code}" class="card-img">
-                        </div>
-                        <div class="card-body">
-                            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <div class="brand" style="color:${phColor}; font-weight:800;">${item.brand}</div>
-                                    <div style="font-size:11px; font-weight:bold; color:var(--text-light); background:#f1f5f9; padding:2px 6px; border-radius:4px;">
-                                        #${item.code}
-                                    </div>
-                                </div>
-                                <div style="display:flex; align-items:center; justify-content:center; background:#fff; border:1px dashed #E2E8F0; padding:6px; border-radius:8px;">
-                                    <svg class="barcode-svg" data-barcode="${item.code}"></svg>
-                                </div>
-                            </div>
-
-                            <div class="name-en"><b>${item.nameEn}</b></div>
-                            <div class="name-ar">${item.nameAr}</div>
-                            
-                            <div class="status-actions">
-                                <button class="st-btn found ${item.status === 'found' ? 'active' : ''}" 
-                                        style="${item.status === 'found' ? `background:${phColor} !important; border-color:${phColor} !important; color:white !important;` : ''}"
-                                        onclick="app.update('${item.code}','${item.expiryDate}','found', ${item.isExplore || false}, '${item.ownerId || ''}')">
-                                    ${t.found}
-                                </button>
-                                <button class="st-btn missing ${item.status === 'not-found' ? 'active' : ''}" 
-                                        onclick="app.update('${item.code}','${item.expiryDate}','not-found', ${item.isExplore || false}, '${item.ownerId || ''}')">
-                                    ${t.missing}
-                                </button>
+            finalHtml += `
+            <div class="card" style="${cardStyle}">
+                <div class="card-header">
+                    ${item.isExplore ? `<div style="position:absolute; top:10px; right:10px; width:12px; height:12px; background:${phColor}; border-radius:50%; border:2px solid white; box-shadow:0 0 5px ${phColor}; z-index:10;"></div>` : ''}
+                    <img data-code="${item.code}" class="card-img">
+                </div>
+                <div class="card-body">
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="brand" style="color:${phColor}; font-weight:800;">${item.brand}</div>
+                            <!-- التاريخ مكان الكود السداسي في الأعلى -->
+                            <div style="font-size:11px; font-weight:bold; color:#DC2626; background:#FEF2F2; padding:2px 6px; border-radius:4px; border:1px solid #FECACA;">
+                                📅 ${item.expiryDate.slice(5, 7)}-${item.expiryDate.slice(0, 4)}
                             </div>
                         </div>
-                    </div>`;
-                });
-                finalHtml += `</div></div>`;
-            });
-            resultContainer.innerHTML = finalHtml;
-            
-            document.querySelectorAll('.card-img').forEach(img => app.observer.observe(img));
+                        <!-- الباركود وتحته الكود السداسي مباشرة -->
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:1px dashed #E2E8F0; padding:6px; border-radius:8px;">
+                            <svg class="barcode-svg" data-barcode="${item.code}"></svg>
+                            <div style="font-size:12px; font-weight:bold; color:var(--text-main); margin-top:4px;">
+                                #${item.code}
+                            </div>
+                        </div>
+                    </div>
 
-            if (typeof JsBarcode !== 'undefined') {
-                document.querySelectorAll('.barcode-svg').forEach(svg => {
-                    const bCode = svg.getAttribute('data-barcode');
-                    if (bCode) {
-                        try {
-                            JsBarcode(svg, bCode, {
-                                format: "CODE128",
-                                width: 1.5,
-                                height: 35,
-                                displayValue: false,
-                                margin: 0,
-                                lineColor: "#1E293B",
-                                background: "transparent"
-                            });
-                        } catch (e) {
-                            console.error(`Barcode generation failed for: ${bCode}`, e);
-                        }
-                    }
-                });
+                    <div class="name-en"><b>${item.nameEn}</b></div>
+                    <div class="name-ar">${item.nameAr}</div>
+                    
+                    <div class="status-actions">
+                        <button class="st-btn found ${item.status === 'found' ? 'active' : ''}" 
+                                style="${item.status === 'found' ? `background:${phColor} !important; border-color:${phColor} !important; color:white !important;` : ''}"
+                                onclick="app.update('${item.code}','${item.expiryDate}','found', ${item.isExplore || false}, '${item.ownerId || ''}')">
+                            ${t.found}
+                        </button>
+                        <button class="st-btn missing ${item.status === 'not-found' ? 'active' : ''}" 
+                                onclick="app.update('${item.code}','${item.expiryDate}','not-found', ${item.isExplore || false}, '${item.ownerId || ''}')">
+                            ${t.missing}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        });
+        finalHtml += `</div></div>`;
+    });
+    resultContainer.innerHTML = finalHtml;
+    
+    document.querySelectorAll('.card-img').forEach(img => app.observer.observe(img));
+
+    if (typeof JsBarcode !== 'undefined') {
+        document.querySelectorAll('.barcode-svg').forEach(svg => {
+            const bCode = svg.getAttribute('data-barcode');
+            if (bCode) {
+                try {
+                    JsBarcode(svg, bCode, {
+                        format: "CODE128",
+                        width: 1.5,
+                        height: 35,
+                        displayValue: false, // تم إخفاؤه من داخل الباركود لأننا أضفناه يدوياً تحته بتنسيق أوضح
+                        margin: 0,
+                        lineColor: "#1E293B",
+                        background: "transparent"
+                    });
+                } catch (e) {
+                    console.error(`Barcode generation failed for: ${bCode}`, e);
+                }
             }
-        },
-        update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
+        });
+    }
+},
+update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             try {
                 if (isExplore) {
                     const local = DB_MAP.get(String(code)) || {};
