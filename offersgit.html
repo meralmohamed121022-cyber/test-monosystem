@@ -41826,6 +41826,9 @@ document.head.appendChild(style);
 function applyFilters() {
   const globalSearchEl = document.getElementById('globalSearch');
   
+  // 🔥 [NEW] أهم سطر: التحقق من حالة زر الاستوك
+  const isStockFilterActive = document.getElementById("stockFilterToggleCheckbox")?.checked;
+
   const filters = {
     offerType: getSelectedValues('offerFilter'),
     brand: getSelectedValues('brandFilter'),
@@ -41837,34 +41840,28 @@ function applyFilters() {
     categoryD: getSelectedValues('categoryDFilter'),
     searchTerm: globalSearchEl ? globalSearchEl.value.trim() : ''
   };
-  
-  console.log('🔍 Applying filters:', filters);
-  
-  // 🔥 CHECK IF INITIAL LOAD (NO FILTERS)
-  const isInitialLoad = !filters.searchTerm && 
-                       !filters.offerType?.length && 
-                       !filters.brand?.length && 
-                       !filters.manufacture?.length && 
-                       !filters.categoryA?.length && 
-                       !filters.categoryB?.length && 
-                       !filters.itemClass?.length && 
-                       !filters.categoryC?.length && 
-                       !filters.categoryD?.length;
+
+  // 🔥 [MODIFIED] لو فلتر الاستوك شغال، "إياك" تعمل Initial Load (الـ 30 صنف)
+  // لازم تعرض الكل عشان عملية الـ Fetch والفلترة تتم على الـ 1569 صنف كلهم
+  const isInitialLoad = !isStockFilterActive && // لو الاستوك شغال اقلب false فوراً
+                        !filters.searchTerm && 
+                        !filters.offerType?.length && 
+                        !filters.brand?.length && 
+                        !filters.manufacture?.length && 
+                        !filters.categoryA?.length && 
+                        !filters.categoryB?.length && 
+                        !filters.itemClass?.length && 
+                        !filters.categoryC?.length && 
+                        !filters.categoryD?.length;
 
   if (isInitialLoad) {
-    // 🚀 INITIAL: 30 ITEMS ONLY + Load All Button
-    console.log('🚀 Initial Load: 30 items FAST!');
-    
-    // مرر flag للـ renderProducts عشان يعرف إنه initial
+    console.log('🚀 Initial Load Mode');
     renderProducts({...filters, limit: 30, isInitial: true});
-    return;
   } else {
-    // ✅ FILTERED: Full results
-    console.log('✅ Filter Applied: Full results');
-    renderProducts(filters);
+    console.log('✅ Full Results Mode (Stock/Filter Active)');
+    renderProducts(filters); // هنا هيعرض الـ 1500 كلهم
   }
 }
-
 // ========== COUNTDOWN TIMER ==========
 function updateCountdown() {
   const now = Date.now();
