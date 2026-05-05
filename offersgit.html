@@ -6909,9 +6909,12 @@ window.matchesFilters = function(product, filters) {
         const fetchPromises = [];
         
         for (let i = 0; i < total; i += batchSize) {
+            // التحقق من أننا ما زلنا في نفس الجلسة (لم يقم المستخدم بإغلاق الفلتر)
+            if (currentFetchSession !== mySession) break;
+
             const batch = allRelevantProducts.slice(i, i + batchSize);
-            
             const codesToRequest = [];
+            
             batch.forEach(p => {
                 const code = String(p?.Code ?? "").trim();
                 const cacheKey = storeCode + "__" + code;
@@ -6929,16 +6932,17 @@ window.matchesFilters = function(product, filters) {
             if (codesToRequest.length > 0) {
                 const codesString = codesToRequest.map(encodeURIComponent).join(',');
                 const fullUrl = `${workerBaseUrl}/api/stock?codes=${codesString}&store=${encodeURIComponent(storeCode)}`;
-                console.log("📡 Stock URL:", fullUrl);  // ✅ للتأكد من الرابط
                 
-                const req = fetch(fullUrl, {
-                    headers: { "x-session-token": SESSION_TOKEN }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (currentFetchSession !== mySession) return;
+                try {
+                    const response = await fetch(fullUrl, {
+                        headers: { "x-session-token": SESSION_TOKEN }
+                    });
                     
-                    if (data && data.success && data.results) {
+                    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+                    
+                    const data = await response.json();
+                    
+                    if (currentFetchSession === mySession && data && data.success && data.results) {
                         data.results.forEach(resItem => {
                             const cacheKey = storeCode + "__" + resItem.code;
                             stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
@@ -6950,25 +6954,23 @@ window.matchesFilters = function(product, filters) {
                             }
                         });
                     }
-                    
-                    fetched += codesToRequest.length;
-                    setStockUiState("loading", { current: fetched, total: total });
-                    
-                    if (!isMassive) {
-                        try { originalApplyFilters(); } catch (e) {}
-                    }
-                })
-                .catch(err => {
-                    fetched += codesToRequest.length;
-                    console.error("Stock Fetch Error:", err);
-                });
-                fetchPromises.push(req);
+                } catch (err) {
+                    console.error("Batch Fetch Error:", err);
+                }
+
+                fetched += codesToRequest.length;
+                setStockUiState("loading", { current: fetched, total: total });
+                
+                if (!isMassive) {
+                    try { originalApplyFilters(); } catch (e) {}
+                }
+
+                // ⏳ تأخير بسيط بين كل دفعة ودفعة لتجنب الـ 502 وحظر الـ IP
+                await new Promise(r => setTimeout(r, 200));
             } else {
                 setStockUiState("loading", { current: fetched, total: total });
             }
         }
-
-        await Promise.all(fetchPromises);
 
         if (currentFetchSession === mySession) {
             finishFetchSession(filters);
@@ -39617,6 +39619,24 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
     const onlineBox = document.getElementById(onlineBoxId);
     const priceBox = document.getElementById(priceId);
     const RIYAL_SVG = "https://www.sama.gov.sa/ar-sa/Currency/Documents/Saudi_Riyal_Symbol-2.svg";
+
+    // 0️⃣ تحسين: لو المنتج تم جلب بيانات الستوك بتاعته بالفعل من خلال الـ Bulk Sync، لا داعي لطلبه مرة أخرى
+    const existingP = window.productsDB?.find(p => String(p.Code).trim() === String(code));
+    if (existingP && typeof existingP.inStock !== "undefined") {
+        // تحديث الواجهة فوراً من البيانات المخزنة
+        if (existingP.inStock) {
+            const offer = getOffer(code);
+            onlineBox.style.background = "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)";
+            onlineBox.style.display = "flex"; 
+            onlineBox.innerHTML = `<span style="color:white; font-weight:800; font-size:10px; text-align:center; line-height:1.2;">🌐 Online: ${offer?.offer || 'In Stock'}</span>`;
+        } else {
+            onlineBox.innerHTML = `<span style="color:#94a3b8; font-size:10px;">🌐 No Online Offer</span>`;
+            setTimeout(() => { onlineBox.style.display = 'none'; }, 2000);
+        }
+        // تحديث السعر لو متاح
+        priceBox.innerHTML = `<span style="color: #0f172a; font-size: 18px; font-weight: 800;">${dbPrice.toFixed(2)} <img src="${RIYAL_SVG}" style="width:14px!important;height:14px!important;display:inline-block!important;"/></span>`;
+        return;
+    }
 
     // 1️⃣ استدعاء كود الصيدلية الموحد (مثل P066) لضمان دقة البيانات بناءً على تسجيل الدخول
     const storeCode = typeof getStoreCode === 'function' ? getStoreCode() : null;
