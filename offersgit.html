@@ -6840,25 +6840,38 @@ async function fetchStockForTargetedProducts(products, filters) {
     const storeCode = getStoreCode();
     if (!storeCode) return;
 
-    const total = products.length;
+    // 1️⃣ البحث في كامل قاعدة البيانات (حل مشكلة الـ 100 كود)
+    const allRelevantProducts = window.productsDB.filter(p => {
+        const hasActiveOffer = getOffer(p.Code) !== null;
+        return hasActiveOffer && originalMatchesFilters(p, filters);
+    });
+
+    const total = allRelevantProducts.length;
+    if (total === 0) {
+        finishFetchSession(filters);
+        return;
+    }
+
     let fetched = 0;
     const isMassive = total > 300; 
     
     setStockUiState("loading", { current: 0, total: total });
 
-    const batchSize = 40; 
+    const batchSize = 100; // حجم الدفعة مناسب جداً للـ Worker
     const fetchPromises = [];
     
     for (let i = 0; i < total; i += batchSize) {
-        const batch = products.slice(i, i + batchSize);
-        
+        const batch = allRelevantProducts.slice(i, i + batchSize);
         const codesToRequest = [];
+
         batch.forEach(p => {
             const code = String(p?.Code ?? "").trim();
             const cacheKey = storeCode + "__" + code;
+            
             if (stockCache.has(cacheKey)) {
                 const cached = stockCache.get(cacheKey);
-                p.inStock = cached.inStock; p.actualStock = cached.actualStock;
+                p.inStock = cached.inStock; 
+                p.actualStock = cached.actualStock;
                 fetched++;
             } else if (code) {
                 codesToRequest.push(code);
@@ -6868,38 +6881,43 @@ async function fetchStockForTargetedProducts(products, filters) {
         if (codesToRequest.length > 0) {
             const codesString = codesToRequest.map(encodeURIComponent).join(',');
 
-            // ✅ التعديل هنا
             const req = fetch(workerBaseUrl + "/api/stock?codes=" + codesString + "&store=" + encodeURIComponent(storeCode), {
                 headers: { "x-session-token": SESSION_TOKEN }
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (currentFetchSession !== mySession) return;
+            .then(res => res.json())
+            .then(data => {
+                if (currentFetchSession !== mySession) return;
+                
+                if (data && data.success && data.results) {
+                    // تحويل الـ batch لماب لتسريع التحديث جداً
+                    const batchMap = new Map(batch.map(item => [String(item.Code).trim(), item]));
                     
-                    if (data && data.success && data.results) {
-                        data.results.forEach(resItem => {
-                            const cacheKey = storeCode + "__" + resItem.code;
-                            stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
-                            
-                            const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
-                            if (targetP) {
-                                targetP.inStock = resItem.inStock;
-                                targetP.actualStock = resItem.stockLevel;
-                            }
-                        });
-                    }
-                    fetched += codesToRequest.length;
-                    setStockUiState("loading", { current: fetched, total: total });
-                    
-                    if (!isMassive) {
-                        try { originalApplyFilters(); } catch (e) {}
-                    }
-                })
-                .catch(err => {
-                    fetched += codesToRequest.length;
-                });
+                    data.results.forEach(resItem => {
+                        const cacheKey = storeCode + "__" + resItem.code;
+                        stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                        
+                        // تحديث الصنف في الماب (أسرع من .find)
+                        const targetP = batchMap.get(String(resItem.code));
+                        if (targetP) {
+                            targetP.inStock = resItem.inStock;
+                            targetP.actualStock = resItem.stockLevel;
+                        }
+                    });
+                }
+                fetched += codesToRequest.length;
+                setStockUiState("loading", { current: fetched, total: total });
+                
+                if (!isMassive) {
+                    try { originalApplyFilters(); } catch (e) {}
+                }
+            })
+            .catch(err => {
+                fetched += codesToRequest.length;
+                console.error("Stock Fetch Error:", err);
+            });
             fetchPromises.push(req);
         } else {
+            // تحديث العداد حتى لو البيانات كلها من الكاش
             setStockUiState("loading", { current: fetched, total: total });
         }
     }
@@ -6910,7 +6928,7 @@ async function fetchStockForTargetedProducts(products, filters) {
         finishFetchSession(filters);
     }
 }
-    function finishFetchSession(filters) {
+function finishFetchSession(filters) {
         try { originalApplyFilters(); } catch (e) {}
         const db = Array.isArray(window.productsDB) ? window.productsDB : [];
         const finalCount = db.filter(p => originalMatchesFilters(p, filters) && p.inStock === true && Number(p.actualStock) > 0).length;
@@ -39006,6 +39024,9 @@ function renderProducts(filters = {}) {
   
   if(filters.searchTerm) filters.searchTerm = filters.searchTerm.toLowerCase();
   
+  // 🔥 [NEW] شيك لو فلتر الاستوك متفعل حالياً
+  const isStockFilterActive = document.getElementById("stockFilterToggleCheckbox")?.checked;
+  
   // 🔥 GET FILTERED PRODUCTS
   let filteredProducts = productsDB.filter(product => {
     // ✅ أول حاجة: شيك على matchesFilters
@@ -39029,25 +39050,27 @@ function renderProducts(filters = {}) {
   // 🔥 INITIAL LOAD CHECK
   const hasUploadedCodesFilter = uploadedCodesFilter && uploadedCodesFilter.length > 0;
   
-  const isInitialLoad = !filters.searchTerm && 
-                       !filters.offerType?.length && 
-                       !filters.brand?.length && 
-                       !filters.manufacture?.length && 
-                       !filters.categoryA?.length && 
-                       !filters.categoryB?.length && 
-                       !filters.itemClass?.length && 
-                       !filters.categoryC?.length && 
-                       !filters.categoryD?.length &&
-                       !hasUploadedCodesFilter;
+  // ⚡ [MODIFIED] لو الاستوك شغال (isStockFilterActive)، بنخلي isInitialLoad دايماً false 
+  // عشان الكود يعرض كل المنتجات المتاحة وميقصش أول 30 بس.
+  const isInitialLoad = !isStockFilterActive && 
+                        !filters.searchTerm && 
+                        !filters.offerType?.length && 
+                        !filters.brand?.length && 
+                        !filters.manufacture?.length && 
+                        !filters.categoryA?.length && 
+                        !filters.categoryB?.length && 
+                        !filters.itemClass?.length && 
+                        !filters.categoryC?.length && 
+                        !filters.categoryD?.length &&
+                        !hasUploadedCodesFilter;
 
-  console.log(`📊 ${isInitialLoad ? '🚀 INITIAL' : '✅ FILTERED'}: ${filteredProducts.length} products`);
+  console.log(`📊 ${isInitialLoad ? '🚀 INITIAL' : '✅ FULL/FILTERED'}: ${filteredProducts.length} products`);
 
   updateDynamicFilters(filters);
   
   if (filteredProducts.length === 0) {
     container.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">No products found</div>';
     if(loader) loader.style.display = "none";
-    // تحديث العداد حتى لو مفيش نتائج عشان الشريط يختفي لو مفيش عناصر
     updateSelectedCount(); 
     return;
   }
@@ -39057,7 +39080,7 @@ function renderProducts(filters = {}) {
     renderMagazineMode(filteredProducts);
     window.currentFilteredProducts = filteredProducts;
     restoreSelections();
-    updateSelectedCount(); // 🔥 إظهار الشريط في وضع المجلة
+    updateSelectedCount(); 
     if(loader) loader.style.display = "none";
     return;
   }
@@ -39067,7 +39090,7 @@ function renderProducts(filters = {}) {
     window.currentFilteredProducts = filteredProducts;
     createPrintSelectionBar();
     restoreSelections();
-    updateSelectedCount(); // 🔥 إظهار الشريط في وضع الـ Brief
+    updateSelectedCount(); 
     if(loader) loader.style.display = "none";
     return;
   }
@@ -39075,6 +39098,8 @@ function renderProducts(filters = {}) {
   window.fullProductsCount = filteredProducts.length;
   
   let showLoadAllButton = false;
+  // ⚡ [LOGIC] لو هي تحميل أولي (والاستوك مش شغال)، بنعرض 30 بس. 
+  // لو الاستوك شغال، الشرط ده مش هيتحقق وهيعرض الكل.
   if (isInitialLoad && filteredProducts.length > 30) {
     showLoadAllButton = true;
     filteredProducts = filteredProducts.slice(0, 30);
@@ -39129,11 +39154,13 @@ function renderProducts(filters = {}) {
     const loadAllBtn = document.createElement('button');
     loadAllBtn.id = 'loadAllBtn';
     loadAllBtn.innerHTML = `🔥 Load All Products (${window.fullProductsCount} items)`;
-    loadAllBtn.style.cssText = `display: block; padding: 16px 48px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 15px; font-weight: 700; font-size: 18px; cursor: pointer; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;`;
+    loadAllBtn.className = "btn-reset-art"; // استخدام كلاسك الجاهز للجمالية
+    loadAllBtn.style.padding = "16px 48px";
     
     loadAllBtn.onclick = () => {
       loadAllBtnContainer.remove();
-      renderProducts(filters);
+      // لما يدوس هنا بنجبر الفلتر يفتح الكل حتى لو مفيش استوك
+      renderProducts({...filters, forceAll: true});
     };
     
     loadAllBtnContainer.appendChild(loadAllBtn);
@@ -39142,13 +39169,12 @@ function renderProducts(filters = {}) {
   
   window.currentFilteredProducts = filteredProducts;
   
-  // ✅ التأكد من وجود الشريط وتحديث حالته فوراً
   if (!document.getElementById('printSelectionBar')) {
       createPrintSelectionBar();
   }
   
   restoreSelections();
-  updateSelectedCount(); // 🔥 تحديث العداد وإظهار الـ Bar لو فيه مختارين
+  updateSelectedCount(); 
   
   if(loader) loader.style.display = "none";
   console.log(`✅ Rendered ${filteredProducts.length} products`);
@@ -46257,50 +46283,5 @@ window.resetAllGlobalFilters = function() {
     }
 };
 // --- التشغيل التلقائي السريع والشامل ---
-// --- التشغيل التلقائي النهائي والآمن ---
-(function autoStartStrict() {
-    // 1. التأكد من توفر قاعدة البيانات
-    if (window.productsDB && window.productsDB.length > 0) {
-        
-        const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
-        
-        // لو الزرار موجود ومش متفعل
-        if (autoCheckbox && !autoCheckbox.checked) {
-            
-            // 2. تحديث الشكل البصري للزرار والتسميات
-            autoCheckbox.checked = true;
-            const hiddenSelect = document.getElementById("stockFilterToggle");
-            if (hiddenSelect) hiddenSelect.value = "instock";
-            
-            const labelAll = document.getElementById("labelAllItems");
-            const labelInStock = document.getElementById("labelInStock");
-            if (labelAll) labelAll.style.color = "#94a3b8";
-            if (labelInStock) labelInStock.style.color = "#1e293b";
-            
-            if (typeof setStockUiState === "function") {
-                setStockUiState("loading");
-            }
 
-            // 3. تأخير 300 ملي ثانية (مهم جداً)
-            // ليه 300؟ عشان ندي فرصة لنظام الـ Pagination عندك إنه يرسم الـ 40 كارت الأوليين في الشاشة
-            setTimeout(() => {
-                try {
-                    if (typeof window.applyFilters === "function") {
-                        // نداء مباشر لدالة الفلترة الأساسية عشان تراجع الداتا وتطلب الاستوك
-                        window.applyFilters();
-                    } else if (typeof window.toggleStockValue === "function") {
-                        // كبديل احتياطي لو applyFilters مش جاهزة
-                        window.toggleStockValue(autoCheckbox);
-                    }
-                } catch(e) {
-                    console.error("AutoStart Error:", e);
-                }
-            }, 300); 
-            
-        }
-    } else {
-        // لو الداتا لسه مجاتش (productsDB لسه فاضية)، حاول تاني كمان 100 ملي ثانية
-        setTimeout(autoStartStrict, 100);
-    }
-})();
 </script>
