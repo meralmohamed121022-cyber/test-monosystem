@@ -39543,8 +39543,17 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
     const priceBox = document.getElementById(priceId);
     const RIYAL_SVG = "https://www.sama.gov.sa/ar-sa/Currency/Documents/Saudi_Riyal_Symbol-2.svg";
 
+    // 1️⃣ جلب رقم الصيدلية الحالي (من اللوجيك بتاعك)
+    const storeCode = typeof getStoreCode === 'function' ? getStoreCode() : null;
+
+    // 2️⃣ إضافة باراميتر الـ store للرابط
+    let apiUrl = `https://online.meralmohamed121022.workers.dev/api/product?code=${code}&t=${Date.now()}`;
+    if (storeCode) {
+        apiUrl += `&store=${encodeURIComponent(storeCode)}`;
+    }
+
     try {
-        const response = await fetch(`https://online.meralmohamed121022.workers.dev/api/product?code=${code}&t=${Date.now()}`, {
+        const response = await fetch(apiUrl, {
             headers: { "x-session-token": SESSION_TOKEN }
         });
         const data = await response.json();
@@ -39559,6 +39568,7 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
                 setTimeout(() => { onlineBox.style.display = 'none'; }, 2000);
             }
 
+            // تحديث السعر بناءً على بيانات الأونلاين
             const finalP = data.finalPrice || data.originalPrice || dbPrice;
             const originalP = data.originalPrice || dbPrice;
             const isDiscounted = finalP < originalP;
@@ -39570,6 +39580,12 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
                     <img src="${RIYAL_SVG}" style="width:14px!important;height:14px!important;display:inline-block!important;"/>
                 </span>
             `;
+
+            // 💡 إضافة: تحديث الـ Stock Level لو الوركر رجعه خاص بالصيدلية
+            if (data.stockLevel !== undefined) {
+                console.log(`Stock for ${code} in store ${storeCode}: ${data.stockLevel}`);
+            }
+
         } else {
             throw new Error("API Failure");
         }
