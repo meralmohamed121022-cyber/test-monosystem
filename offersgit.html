@@ -6844,16 +6844,34 @@ window.matchesFilters = function(product, filters) {
     const originalApplyFilters = typeof window.applyFilters === "function" 
         ? window.applyFilters : function () {};
 
+    // 🔥 دالة تجميع أكواد العروض الحالية فقط لتسريع العملية
+    function getActiveOfferCodesSet() {
+        const codes = new Set();
+        if (typeof offersDB !== 'undefined' && Array.isArray(offersDB)) {
+            offersDB.forEach(off => {
+                if (off.codes) off.codes.forEach(c => codes.add(String(c).trim()));
+            });
+        }
+        if (typeof exclusiveOffersDB !== 'undefined' && Array.isArray(exclusiveOffersDB)) {
+            exclusiveOffersDB.forEach(off => {
+                if (off.codes) off.codes.forEach(c => codes.add(String(c).trim()));
+            });
+        }
+        return codes;
+    }
+
     window.applyFilters = function () {
         try { originalApplyFilters(); } catch (e) {}
 
         const stockToggle = document.getElementById("stockFilterToggleCheckbox");
         if (stockToggle && stockToggle.checked) {
             const db = Array.isArray(window.productsDB) ? window.productsDB : [];
-            // 🔥 تعديل: جلب الاستوكات لكل الأكواد اللي عليها عروض (عشان لما يفلتر براند تاني يكون الداتا موجودة)
+            const activeCodes = getActiveOfferCodesSet();
+            
+            // جلب الأكواد اللي "عليها عرض حالي" فقط وفقط لو لسه معندناش الستوك بتاعها
             const productsToFetch = db.filter(p => {
-                const hasOffer = getOffer(p.Code) !== null;
-                return hasOffer && typeof p.inStock === "undefined";
+                const codeStr = String(p.Code).trim();
+                return activeCodes.has(codeStr) && typeof p.inStock === "undefined";
             });
 
             if (productsToFetch.length > 0) {
@@ -6876,8 +6894,9 @@ window.matchesFilters = function(product, filters) {
             return;
         }
 
+        const activeCodes = getActiveOfferCodesSet();
         const allRelevantProducts = window.productsDB.filter(p => {
-            return getOffer(p.Code) !== null;
+            return activeCodes.has(String(p.Code).trim());
         });
 
         const total = allRelevantProducts.length;
