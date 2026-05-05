@@ -46256,4 +46256,47 @@ window.resetAllGlobalFilters = function() {
         window.applyFilters();
     }
 };
+// --- التشغيل التلقائي السريع والشامل ---
+(function autoStartStrict() {
+    // 1. التأكد من توفر قاعدة البيانات
+    if (window.productsDB && window.productsDB.length > 100) {
+        
+        const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
+        
+        if (autoCheckbox && !autoCheckbox.checked) {
+            autoCheckbox.checked = true; // تفعيل الزر بصرياً
+            
+            // 2. إجبار النظام على الفلترة على قاعدة البيانات كاملة
+            // بدلاً من استدعاء toggleStockValue العادي، نقوم بحقن الفلتر
+            const hiddenSelect = document.getElementById("stockFilterToggle");
+            if (hiddenSelect) hiddenSelect.value = "instock";
+            
+            // تحديث الألوان
+            const labelAll = document.getElementById("labelAllItems");
+            const labelInStock = document.getElementById("labelInStock");
+            if (labelAll) labelAll.style.color = "#94a3b8";
+            if (labelInStock) labelInStock.style.color = "#1e293b";
+            
+            // تحديث واجهة المستخدم فوراً لتظهر أنها تحمل
+            if (typeof setStockUiState === "function") {
+                setStockUiState("loading");
+            }
+            
+            // 3. تأخير بسيط جداً لضمان رسم الـ UI، ثم إجبار الفلترة
+            setTimeout(() => {
+                try {
+                    // هذه الدالة ستبحث في db.filter(p => matchesFilters...) 
+                    // وتجلب الـ API لكل ما هو ناقص
+                    window.applyFilters();
+                } catch(e) {
+                    console.error("AutoStart Error:", e);
+                }
+            }, 50);
+            
+        }
+    } else {
+        // إذا لم تكن قاعدة البيانات جاهزة، حاول مجدداً بسرعة
+        setTimeout(autoStartStrict, 50);
+    }
+})();
 </script>
