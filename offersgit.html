@@ -4979,29 +4979,6 @@ body > div:has(> label[for="codesFileInput"]),
 .btn-reset-art:hover .btn-reset-icon {
     transform: rotate(-180deg);
 }
-#stockStatusText .stock-loading-bar {
-    width: 60px;
-    height: 3px;
-    background: #e2e8f0;
-    border-radius: 99px;
-    overflow: hidden;
-    margin-top: 4px;
-}
-
-#stockStatusText .stock-loading-bar::after {
-    content: '';
-    display: block;
-    height: 100%;
-    width: 40%;
-    background: #f59e0b;
-    border-radius: 99px;
-    animation: stockSlide 1s ease-in-out infinite;
-}
-
-@keyframes stockSlide {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(350%); }
-}
 </style>
 </style>
 </head>
@@ -5345,21 +5322,37 @@ body > div:has(> label[for="codesFileInput"]),
 </style>
 
 <div class="filters-container-main" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
-   <!-- Stock Toggle -->
-<div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; transition: all 0.4s ease; width: 100%;">
     
-    <label class="stock-switch" style="position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; margin: 0;">
-        <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
-        <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
-    </label>
+    <!-- 1. Modern Stock Availability Toggle (Full Width) -->
+    <div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; transition: all 0.4s ease; width: 100%;">
+        <label style="display: flex; align-items: center; gap: 8px; color: #2c3e50; font-weight: 900; margin-bottom: 15px; font-size: 0.9em; justify-content: center; text-transform: uppercase;">
+            <span>📦</span> Stock Availability
+        </label>
+        
+        <!-- Wrapper for Toggle & Labels -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
+            <!-- Left Label -->
+            <span id="labelAllItems" style="font-size: 13px; font-weight: 800; color: #1e293b; transition: color 0.3s; letter-spacing: 0.5px;">ALL ITEMS</span>
+            
+            <!-- The Toggle Switch -->
+            <label class="stock-switch" style="position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; margin: 0;">
+                <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
+                <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
+            </label>
+            
+            <!-- Right Label -->
+            <span id="labelInStock" style="font-size: 13px; font-weight: 800; color: #94a3b8; transition: color 0.3s; letter-spacing: 0.5px;">IN STOCK</span>
+        </div>
 
-    <span id="stockStatusText" style="margin-top: 10px; font-size: 11px; font-weight: 700; text-align: center; min-height: 16px;"></span>
+        <!-- Status Text (Store info & count) -->
+        <span id="stockStatusText" style="margin-top: 12px; font-size: 11px; font-weight: 700; color: #64748b; text-align: center; height: 16px;">Showing all items</span>
 
-    <select id="stockFilterToggle" style="display: none;">
-        <option value="all" selected>all</option>
-        <option value="instock">instock</option>
-    </select>
-</div>
+        <!-- Hidden Select for logic compatibility -->
+        <select id="stockFilterToggle" style="display: none;">
+            <option value="all" selected>all</option>
+            <option value="instock">instock</option>
+        </select>
+    </div>
 
     <!-- 2. Grid for the rest of the filters (3 items per row) -->
     <div class="filters-grid-layout">
@@ -6776,28 +6769,35 @@ window.matchesFilters = function(product, filters) {
         }, 4000);
     }
 
-function setStockUiState(mode, extra = {}) {
-    const statusText = document.getElementById("stockStatusText");
-    const card = document.getElementById("stockFilterCard");
-    const slider = document.getElementById("sliderInner");
+    function setStockUiState(mode, extra = {}) {
+        const statusText = document.getElementById("stockStatusText");
+        const card = document.getElementById("stockFilterCard");
+        const slider = document.getElementById("sliderInner");
+        const storeCode = getStoreCode() || "--";
 
-    if (!statusText || !card || !slider) return;
+        if (!statusText || !card || !slider) return;
 
-    if (mode === "off") {
-        statusText.innerHTML = "";
-        card.style.backgroundColor = "#fdfdfd";
-        slider.style.backgroundColor = "#cbd5e1";
-    } else if (mode === "loading") {
-        statusText.innerHTML = `<div class="stock-loading-bar"></div>`;
-        card.style.backgroundColor = "#fffbeb";
-        slider.style.backgroundColor = "#f59e0b";
-    } else if (mode === "on") {
-        statusText.innerHTML = "";
-        card.style.backgroundColor = "#ecfdf5";
-        slider.style.backgroundColor = "#16a34a";
+        if (mode === "off") {
+            statusText.innerHTML = "Show All Items";
+            statusText.style.color = "#7f8c8d";
+            card.style.backgroundColor = "#fdfdfd"; slider.style.backgroundColor = "#ccc";
+        } else if (mode === "loading") {
+            if (extra.total > 0 && extra.total > 150) {
+                statusText.innerHTML = `⏳ Loading (${storeCode})<br><span style="font-size:11px; color:#b45309;">${extra.current || 0} / ${extra.total}</span>`;
+            } else {
+                statusText.innerHTML = `⏳ Loading Stock (${storeCode})...`;
+            }
+            statusText.style.color = "#d97706";
+            card.style.backgroundColor = "#fffbeb"; slider.style.backgroundColor = "#f59e0b";
+        } else if (mode === "on") {
+            const countText = typeof extra.count === "number" ? " - " + extra.count + " items" : "";
+            statusText.innerHTML = `✅ IN STOCK ONLY (${storeCode})${countText}`;
+            statusText.style.color = "#166534";
+            card.style.backgroundColor = "#ecfdf5"; slider.style.backgroundColor = "#16a34a";
+        }
     }
-}
-const originalMatchesFilters = typeof window.matchesFilters === "function" 
+
+    const originalMatchesFilters = typeof window.matchesFilters === "function" 
         ? window.matchesFilters : function () { return true; };
 
     window.matchesFilters = function (product, filters) {
