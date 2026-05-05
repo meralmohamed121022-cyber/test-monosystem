@@ -46256,22 +46256,17 @@ window.resetAllGlobalFilters = function() {
         window.applyFilters();
     }
 };
-// تشغيل تلقائي أسرع
-// تشغيل فوري بمجرد تحميل السكريبت - الأسرع على الإطلاق
 (function autoStart() {
-    const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
-    
-    // تأكد إن العنصر موجود
-    if (autoCheckbox) {
-        // لو مش متفعل، فعله
-        if (!autoCheckbox.checked) {
+    // التأكد من أن قاعدة بيانات المنتجات ليست فارغة
+    if (window.productsDB && window.productsDB.length > 1000) {
+        const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
+        if (autoCheckbox && !autoCheckbox.checked) {
             autoCheckbox.checked = true;
-            // استدعي دالة التبديل فوراً
-            window.toggleStockValue(autoCheckbox);
+            toggleStockValue(autoCheckbox);
         }
     } else {
-        // لو العنصر لسه محملش، جرب تاني بعد 20 ملي ثانية (سريع جداً)
-        setTimeout(autoStart, 20);
+        // لو الداتا لسه مجاتش، استنى 100 ملي ثانية وحاول تاني
+        setTimeout(autoStart, 100);
     }
 })();
 </script>
