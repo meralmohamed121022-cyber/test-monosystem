@@ -36693,10 +36693,39 @@ function goHome() {
 
     console.log("🏠 Back to Home: Sidebar hidden and data cleared.");
 }
-const WORKER_BASE = "https://dry-rain-899d.meralmohamed121022.workers.dev";
-const API_ENDPOINT = `${WORKER_BASE}/api/product?code=`;
+// 🔥 وركر الصور + Offers (مع دعم الستوك للصيدلية)
+const IMAGE_WORKER_BASE = "https://dry-rain-899d.meralmohamed121022.workers.dev";
+const STOCK_WORKER_BASE = "https://online.meralmohamed121022.workers.dev";  // وركر الستوك المنفصل
 const imageCache = new Map();
-console.log('🚀 Worker API initialized:', WORKER_BASE);
+
+console.log('🚀 Image Worker:', IMAGE_WORKER_BASE);
+console.log('🚀 Stock Worker:', STOCK_WORKER_BASE);
+
+// 🔥 دالة سحب رقم الصيدلية (من ph=66 أو localStorage)
+function getStoreCode() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const raw = urlParams.get("ph") || 
+              localStorage.getItem("pharmacy_number") || 
+              sessionStorage.getItem("pharmacy_number") || "";
+  
+  const cleanNum = String(raw).replace(/\D/g, "");
+  if (!cleanNum) return null;
+  
+  const storeNum = parseInt(cleanNum, 10);
+  if (!Number.isFinite(storeNum)) return null;
+  
+  return storeNum < 1000 ? "P" + String(storeNum).padStart(3, "0") : String(storeNum);
+}
+
+// 🔥 دالة بناء رابط المنتج مع الستوك
+function buildProductUrl(code) {
+  const storeCode = getStoreCode();
+  const url = `${IMAGE_WORKER_BASE}/api/product?code=${encodeURIComponent(code)}&store=${encodeURIComponent(storeCode || '')}&t=${Date.now()}`;
+  console.log(`🔗 Product URL for ${code} → Store: ${storeCode}`);
+  return url;
+}
+
+console.log('✅ Dynamic Product URLs ready with store support');
 // ====== 💾 SAVE CUSTOM MODAL DATA ======
 const customModalData = {
   codes: '',
@@ -36868,22 +36897,37 @@ async function fetchProductImage(code) {
   }
   
   try {
-    // تأكد ان API_ENDPOINT معرفة عندك
-    const response = await fetch(`${API_ENDPOINT}${code}`, {
+    // 🔥 الحل: سحب رقم الصيدلية + بناء الرابط الجديد
+    const storeCode = getStoreCode();  // نفس دالة الـ Stock Filter
+    const fullUrl = `${WORKER_BASE}/api/product?code=${encodeURIComponent(code)}&store=${encodeURIComponent(storeCode || '')}&t=${Date.now()}`;
+    
+    console.log(`🖼️  Fetching image for ${code} (store: ${storeCode})`);
+    console.log(`📡 Image URL:`, fullUrl);
+    
+    const response = await fetch(fullUrl, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' }
+      headers: { 
+        'Accept': 'application/json',
+        'x-session-token': SESSION_TOKEN || ''  // لو عندك توكن
+      }
     });
     
     if (!response.ok) {
+      console.warn(`⚠️ Image fetch failed for ${code}: ${response.status}`);
       imageCache.set(code, null);
       return null;
     }
     
     const data = await response.json();
+    console.log(`✅ Product data for ${code}:`, {
+      name: data.name,
+      stock: data.stockLevel,
+      storeUsed: storeCode
+    });
     
-    if (data.success && data.image) {
-      imageCache.set(code, data.image);
-      return data.image;
+    if (data.success && data.image_url) {  // ✅ image_url مش image
+      imageCache.set(code, data.image_url);
+      return data.image_url;
     } else {
       imageCache.set(code, null);
       return null;
@@ -36895,7 +36939,6 @@ async function fetchProductImage(code) {
     return null;
   }
 }
-
 // ====== LAZY LOADING OBSERVER (MODIFIED) ======
 const imageObserver = new IntersectionObserver((entries, observer) => {
   entries.forEach(entry => {
@@ -39553,10 +39596,10 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
     const priceBox = document.getElementById(priceId);
     const RIYAL_SVG = "https://www.sama.gov.sa/ar-sa/Currency/Documents/Saudi_Riyal_Symbol-2.svg";
 
-    // 1️⃣ استدعاء كود الصيدلية الموحد (مثل P066) لضمان دقة البيانات
+    // 1️⃣ استدعاء كود الصيدلية الموحد (مثل P066) لضمان دقة البيانات بناءً على تسجيل الدخول
     const storeCode = typeof getStoreCode === 'function' ? getStoreCode() : null;
 
-    // 2️⃣ بناء الرابط مع تمرير الـ store للوركر لجلب ستوك الصيدلية وليس العام
+    // 2️⃣ بناء الرابط مع تمرير الـ store للوركر لجلب بيانات فرعك المحدد وليس البيانات العامة
     let apiUrl = `https://online.meralmohamed121022.workers.dev/api/product?code=${code}&t=${Date.now()}`;
     if (storeCode) {
         apiUrl += `&store=${encodeURIComponent(storeCode)}`;
@@ -39569,18 +39612,18 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
         const data = await response.json();
 
         if (data.success) {
-            // 3️⃣ تحديث بوكس العروض أونلاين
+            // 3️⃣ تحديث بوكس العروض أونلاين بناءً على توافر العرض
             if (data.hasOnlineOffer) {
                 onlineBox.style.background = "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)";
                 onlineBox.style.border = "none";
-                onlineBox.style.display = "flex"; // التأكد من الظهور
+                onlineBox.style.display = "flex"; 
                 onlineBox.innerHTML = `<span style="color:white; font-weight:800; font-size:10px; text-align:center; line-height:1.2;">🌐 Online: ${data.offer}</span>`;
             } else {
                 onlineBox.innerHTML = `<span style="color:#94a3b8; font-size:10px;">🌐 No Online Offer</span>`;
                 setTimeout(() => { onlineBox.style.display = 'none'; }, 2000);
             }
 
-            // 4️⃣ معالجة الأسعار (الخصم أونلاين vs السعر العادي)
+            // 4️⃣ معالجة الأسعار (مقارنة السعر أونلاين بالسعر المخزن في قاعدة البيانات)
             const finalP = data.finalPrice || data.originalPrice || dbPrice;
             const originalP = data.originalPrice || dbPrice;
             const isDiscounted = finalP < originalP;
@@ -39593,21 +39636,21 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
                 </span>
             `;
 
-            // 5️⃣ تحديث كاش الاستوك الخاص بالمنتج لضمان تزامن الفلاتر
+            // 5️⃣ تحديث حالة الاستوك الفعلي في قاعدة البيانات المحلية لضمان عمل الفلاتر بشكل صحيح
             if (data.stockLevel !== undefined) {
                 const product = window.productsDB?.find(p => String(p.Code).trim() === String(code));
                 if (product) {
                     product.inStock = data.inStock;
                     product.actualStock = data.stockLevel;
                 }
-                console.log(`✅ Updated stock for ${code} (Store ${storeCode}): ${data.stockLevel}`);
+                console.log(`✅ Stock Synced for ${code} in ${storeCode}: ${data.stockLevel}`);
             }
 
         } else {
-            throw new Error("API Failure");
+            throw new Error("API Response Error");
         }
     } catch (e) {
-        // في حالة الفشل، نعود لعرض السعر الافتراضي من قاعدة البيانات
+        // في حالة الفشل، يتم عرض السعر الافتراضي من قاعدة البيانات لضمان عدم تعطل الواجهة
         if (priceBox) {
             priceBox.innerHTML = `<span style="color: #0f172a; font-size: 18px; font-weight: 800;">${dbPrice.toFixed(2)} <img src="${RIYAL_SVG}" style="width:14px!important;height:14px!important;display:inline-block!important;"/></span>`;
         }
@@ -45554,13 +45597,21 @@ const fetchOnlineOffer = () => {
             box.innerHTML = `<div class="scanner-mini-loader"></div><span style="font-size:11px;color:#a78bfa;font-weight:700;">جاري فحص العرض الأونلاين...</span>`;
         });
 
-        // ✅ التعديل هنا — أضف headers
-        fetch(`https://online.meralmohamed121022.workers.dev/api/product?code=${encodeURIComponent(cleanCode)}&t=${Date.now()}`, {
+        // 1️⃣ جلب رقم الصيدلية الحالي (P066)
+        const storeCode = typeof getStoreCode === 'function' ? getStoreCode() : null;
+
+        // 2️⃣ بناء الرابط وإضافة باراميتر الـ store
+        let apiUrl = `https://online.meralmohamed121022.workers.dev/api/product?code=${encodeURIComponent(cleanCode)}&t=${Date.now()}`;
+        if (storeCode) {
+            apiUrl += `&store=${encodeURIComponent(storeCode)}`;
+        }
+
+        // 3️⃣ تنفيذ طلب الـ Fetch مع الـ Headers والـ Store
+        fetch(apiUrl, {
             headers: { "x-session-token": SESSION_TOKEN }
         })
             .then(res => res.json())
             .then(data => {
-                // ... باقي الكود زي ما هو بدون أي تغيير
                 const itemInMem = scannedItemsMemory.find(i => i.cleanCode === cleanCode);
                 if (!itemInMem) return;
 
@@ -45571,43 +45622,35 @@ const fetchOnlineOffer = () => {
                     thumbWrap.querySelector('svg') !== null
                 );
 
-                console.log(`[Worker Debug] data.image_url:`, data.image_url);
-                console.log(`[Worker Debug] itemInMem.imageUrl before:`, itemInMem.imageUrl);
-                console.log(`[Worker Debug] isImageBroken:`, isImageBroken);
-
+                // تحديث الصورة لو مفقودة
                 if (data.image_url && (!itemInMem.imageUrl || isImageBroken || itemInMem.needsWorkerImage)) {
-                    itemInMem.imageUrl         = data.image_url;
+                    itemInMem.imageUrl = data.image_url;
                     itemInMem.needsWorkerImage = false;
 
                     if (thumbWrap) {
-                        const imgEl          = document.createElement('img');
-                        imgEl.src            = data.image_url;
-                        imgEl.alt            = 'Product';
+                        const imgEl = document.createElement('img');
+                        imgEl.src = data.image_url;
+                        imgEl.alt = 'Product';
                         imgEl.referrerPolicy = 'no-referrer';
-                        imgEl.style.cssText  = 'width:100%;height:100%;object-fit:contain;background:#fff;';
+                        imgEl.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#fff;';
                         
-                        imgEl.onload = () => console.log(`[Worker Debug] Image loaded successfully in DOM:`, data.image_url);
+                        imgEl.onload = () => console.log(`[Worker Debug] Image loaded:`, data.image_url);
                         imgEl.onerror = () => {
-                            console.error(`[Worker Debug] Failed to load image in DOM! URL:`, data.image_url);
                             thumbWrap.innerHTML = '<span style="color:#94a3b8;font-size:9px;text-align:center;padding:4px;">No Img</span>';
                         };
 
-                        thumbWrap.innerHTML        = '';
-                        thumbWrap.style.border     = '2px solid #667eea';
+                        thumbWrap.innerHTML = '';
+                        thumbWrap.style.border = '2px solid #667eea';
                         thumbWrap.style.background = '#fff';
                         thumbWrap.appendChild(imgEl);
                     }
 
                     const dbProd = window.productsDB?.find(p => String(p.Code || '').trim() === cleanCode);
                     if (dbProd) dbProd.image_url = data.image_url;
-
                     persistScannerSession();
-                } else if (!data.image_url) {
-                    console.warn(`[Worker Debug] No image_url returned from worker for ${cleanCode}`);
-                } else {
-                    console.log(`[Worker Debug] Image already exists and works fine in memory for ${cleanCode}`);
                 }
 
+                // فحص وجود العرض
                 const hasOffer = data && data.success === true && (
                     data.hasOnlineOffer === true ||
                     data.onlineStatus === "HAS_ONLINE_OFFER" ||
@@ -45615,23 +45658,24 @@ const fetchOnlineOffer = () => {
                 );
 
                 if (hasOffer) {
-                    const badgeText     = data.offer || data.offerText || 'Online Offer';
-                    itemInMem.onlineOffer     = badgeText;
+                    const badgeText = data.offer || data.offerText || 'Online Offer';
+                    itemInMem.onlineOffer = badgeText;
                     itemInMem.onlineOfferData = data;
 
-                    const productUrl    = `https://www.al-dawaa.com/en/p/${cleanCode}`;
+                    const productUrl = `https://www.al-dawaa.com/en/p/${cleanCode}`;
                     const originalPrice = data.originalPrice != null ? Number(data.originalPrice) : null;
-                    const finalPrice    = data.finalPrice    != null ? Number(data.finalPrice)    : null;
-                    const hasPriceOffer     = originalPrice != null && finalPrice != null;
+                    const finalPrice = data.finalPrice != null ? Number(data.finalPrice) : null;
+                    const hasPriceOffer = originalPrice != null && finalPrice != null;
                     const showStrikethrough = hasPriceOffer && originalPrice > finalPrice;
 
                     const buildOfferBoxHTML = (compact) => {
                         const priceSize = compact ? '16px' : '19px';
                         if (hasPriceOffer) {
-                            const savings    = (originalPrice - finalPrice).toFixed(2);
-                            const savingPct  = data.savingPercentage
+                            const savings = (originalPrice - finalPrice).toFixed(2);
+                            const savingPct = data.savingPercentage
                                 ? Number(data.savingPercentage).toFixed(1)
                                 : ((originalPrice - finalPrice) / originalPrice * 100).toFixed(1);
+                            
                             return `
                                 <div style="display:flex;align-items:center;justify-content:center;">
                                     <span style="color:rgba(255,255,255,0.9);font-weight:800;font-size:12px;line-height:1.3;text-align:center;">
@@ -45639,36 +45683,10 @@ const fetchOnlineOffer = () => {
                                     </span>
                                 </div>
                                 <div style="display:flex;align-items:baseline;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:2px;">
-                                    ${showStrikethrough ? `
-                                        <span style="
-                                            color:rgba(255,255,255,0.45);
-                                            font-size:${compact ? '12px' : '13px'};
-                                            text-decoration:line-through;
-                                            text-decoration-color:rgba(255,100,100,0.8);
-                                            text-decoration-thickness:2px;
-                                            font-weight:700;
-                                        ">${originalPrice.toFixed(2)} SAR</span>
-                                    ` : ''}
-                                    <span style="
-                                        color:#4ade80;
-                                        font-size:${priceSize};
-                                        font-weight:900;
-                                        letter-spacing:0.3px;
-                                        text-shadow:0 0 12px rgba(74,222,128,0.6);
-                                    ">${finalPrice.toFixed(2)} SAR</span>
+                                    ${showStrikethrough ? `<span style="color:rgba(255,255,255,0.45);font-size:${compact ? '12px' : '13px'};text-decoration:line-through;font-weight:700;">${originalPrice.toFixed(2)} SAR</span>` : ''}
+                                    <span style="color:#4ade80;font-size:${priceSize};font-weight:900;text-shadow:0 0 12px rgba(74,222,128,0.6);">${finalPrice.toFixed(2)} SAR</span>
                                 </div>
-                                ${showStrikethrough ? `
-                                    <div style="
-                                        display:inline-flex;align-items:center;justify-content:center;
-                                        background:rgba(74,222,128,0.18);
-                                        border:1px solid rgba(74,222,128,0.4);
-                                        border-radius:999px;padding:2px 10px;margin-top:4px;gap:4px;
-                                    ">
-                                        <span style="color:#4ade80;font-size:11px;font-weight:800;">
-                                            وفّر ${savings} SAR · ${savingPct}%
-                                        </span>
-                                    </div>
-                                ` : ''}
+                                ${showStrikethrough ? `<div style="display:inline-flex;align-items:center;justify-content:center;background:rgba(74,222,128,0.18);border:1px solid rgba(74,222,128,0.4);border-radius:999px;padding:2px 10px;margin-top:4px;"><span style="color:#4ade80;font-size:11px;font-weight:800;">وفّر ${savings} SAR · ${savingPct}%</span></div>` : ''}
                             `;
                         } else {
                             return `<span style="color:white;font-weight:800;font-size:12px;">🌐 Online: ${escapeHtml(badgeText)}</span>`;
@@ -45677,41 +45695,38 @@ const fetchOnlineOffer = () => {
 
                     document.querySelectorAll(`[id="online-offer-${cleanCode}"]`).forEach(box => {
                         const isCompact = box.closest('#scannedItemsList') !== null;
-                        box.style.background   = "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)";
-                        box.style.border        = "none";
+                        box.style.background = "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)";
+                        box.style.border = "none";
                         box.style.flexDirection = hasPriceOffer ? "column" : "row";
-                        box.style.gap           = hasPriceOffer ? "6px" : "0";
-                        box.style.cursor        = "pointer";
-                        box.style.boxShadow     = "0 6px 16px rgba(124,58,237,0.35)";
+                        box.style.gap = hasPriceOffer ? "6px" : "0";
+                        box.style.cursor = "pointer";
+                        box.style.boxShadow = "0 6px 16px rgba(124,58,237,0.35)";
                         box.onclick = () => window.open(productUrl, '_blank');
                         box.innerHTML = buildOfferBoxHTML(isCompact);
                     });
 
                 } else {
-                    itemInMem.onlineOffer     = "No online offer";
+                    itemInMem.onlineOffer = "No online offer";
                     itemInMem.onlineOfferData = null;
-
                     document.querySelectorAll(`[id="online-offer-${cleanCode}"]`).forEach(box => {
-                        box.style.background   = "rgba(239,68,68,0.12)";
-                        box.style.border        = "1px solid rgba(239,68,68,0.45)";
-                        box.style.flexDirection = "row";
+                        box.style.background = "rgba(239,68,68,0.12)";
+                        box.style.border = "1px solid rgba(239,68,68,0.45)";
                         box.innerHTML = `<span style="color:#fecaca;font-weight:800;font-size:12px;">🌐 No online offer</span>`;
                     });
                 }
-
                 persistScannerSession();
             })
             .catch((e) => {
-                console.error(`[Worker Debug] Fetch error for ${cleanCode}:`, e);
+                console.error(`[Worker Debug] Error for ${cleanCode}:`, e);
                 document.querySelectorAll(`[id="online-offer-${cleanCode}"]`).forEach(box => {
                     box.style.background = "rgba(100,100,100,0.1)";
-                    box.style.border     = "1px dashed rgba(148,163,184,0.3)";
                     box.innerHTML = `<span style="color:#94a3b8;font-size:11px;font-weight:700;">⚠️ تعذّر الاتصال</span>`;
                 });
             });
     }, 100);
 };
-    fetchOnlineOffer();
+
+fetchOnlineOffer();
 
     function persistScannerSession() {
         try { sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); } catch (e) {}
