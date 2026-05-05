@@ -6905,74 +6905,76 @@ window.matchesFilters = function(product, filters) {
         
         setStockUiState("loading", { current: 0, total: total });
 
-        const batchSize = 40; // ⚠️ تم تقليله لـ 40 لأن Cloudflare Worker لديه حد أقصى 50 طلب فرعي
-        const concurrency = 5; // 🚀 معالجة 5 دفعات في نفس الوقت للسرعة القصوى
-        
-        for (let i = 0; i < total; i += (batchSize * concurrency)) {
-            if (currentFetchSession !== mySession) break;
+        const batchSize = 40; 
+        const maxConcurrency = 20; // 🚀 20 طلب متوازي في نفس اللحظة (سرعة صاروخية)
+        let activeRequests = 0;
+        let currentIndex = 0;
 
-            const parallelBatches = [];
-            for (let j = 0; j < concurrency; j++) {
-                const start = i + (j * batchSize);
-                if (start < total) {
-                    parallelBatches.push(allRelevantProducts.slice(start, start + batchSize));
-                }
-            }
+        return new Promise((resolve) => {
+            const runNext = async () => {
+                // التحقق من الجلسة أو انتهاء البيانات
+                if (currentFetchSession !== mySession) { resolve(); return; }
+                if (currentIndex >= total && activeRequests === 0) { resolve(); return; }
 
-            const batchPromises = parallelBatches.map(async (batch) => {
-                const codesToRequest = [];
-                batch.forEach(p => {
-                    const code = String(p?.Code ?? "").trim();
-                    const cacheKey = storeCode + "__" + code;
-                    if (stockCache.has(cacheKey)) {
-                        const cached = stockCache.get(cacheKey);
-                        p.inStock = cached.inStock; 
-                        p.actualStock = cached.actualStock;
-                        fetched++;
-                    } else if (code) {
-                        codesToRequest.push(code);
-                    }
-                });
+                while (activeRequests < maxConcurrency && currentIndex < total) {
+                    const batch = allRelevantProducts.slice(currentIndex, currentIndex + batchSize);
+                    currentIndex += batchSize;
+                    activeRequests++;
 
-                if (codesToRequest.length > 0) {
-                    const codesString = codesToRequest.map(encodeURIComponent).join(',');
-                    const fullUrl = `${workerBaseUrl}/api/stock?codes=${codesString}&store=${encodeURIComponent(storeCode)}`;
-                    
-                    try {
-                        const response = await fetch(fullUrl, { headers: { "x-session-token": SESSION_TOKEN } });
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (currentFetchSession === mySession && data && data.success && data.results) {
-                                data.results.forEach(resItem => {
-                                    const cacheKey = storeCode + "__" + resItem.code;
-                                    stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
-                                    const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
-                                    if (targetP) {
-                                        targetP.inStock = resItem.inStock;
-                                        targetP.actualStock = resItem.stockLevel;
-                                    }
-                                });
+                    // معالجة الدفعة بشكل منفصل (Asynchronous)
+                    (async (currentBatch) => {
+                        const codesToRequest = [];
+                        currentBatch.forEach(p => {
+                            const code = String(p?.Code ?? "").trim();
+                            const cacheKey = storeCode + "__" + code;
+                            if (stockCache.has(cacheKey)) {
+                                const cached = stockCache.get(cacheKey);
+                                p.inStock = cached.inStock; 
+                                p.actualStock = cached.actualStock;
+                                fetched++;
+                            } else if (code) {
+                                codesToRequest.push(code);
                             }
+                        });
+
+                        if (codesToRequest.length > 0) {
+                            const codesString = codesToRequest.map(encodeURIComponent).join(',');
+                            const fullUrl = `${workerBaseUrl}/api/stock?codes=${codesString}&store=${encodeURIComponent(storeCode)}`;
+                            
+                            try {
+                                const response = await fetch(fullUrl, { headers: { "x-session-token": SESSION_TOKEN } });
+                                if (response.ok) {
+                                    const data = await response.json();
+                                    if (currentFetchSession === mySession && data && data.success && data.results) {
+                                        data.results.forEach(resItem => {
+                                            const cacheKey = storeCode + "__" + resItem.code;
+                                            stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                                            const targetP = currentBatch.find(p => String(p.Code).trim() === resItem.code);
+                                            if (targetP) {
+                                                targetP.inStock = resItem.inStock;
+                                                targetP.actualStock = resItem.stockLevel;
+                                            }
+                                        });
+                                    }
+                                }
+                            } catch (err) { console.error("Batch Error:", err); }
+                            fetched += codesToRequest.length;
                         }
-                    } catch (err) { console.error("Batch Fetch Error:", err); }
-                    fetched += codesToRequest.length;
+
+                        activeRequests--;
+                        setStockUiState("loading", { current: Math.min(fetched, total), total: total });
+                        
+                        if (!isMassive) {
+                            try { originalApplyFilters(); } catch (e) {}
+                        }
+                        
+                        runNext(); // شغل اللي بعده فوراً
+                    })(batch);
                 }
-            });
+            };
 
-            await Promise.all(batchPromises);
-            setStockUiState("loading", { current: Math.min(fetched, total), total: total });
-            
-            if (!isMassive) {
-                try { originalApplyFilters(); } catch (e) {}
-            }
-
-            // استراحة بسيطة بين المجموعات المتوازية
-            await new Promise(r => setTimeout(r, 200));
-        }
-
-        if (currentFetchSession === mySession) {
-            finishFetchSession(filters);
-        }
+            runNext();
+        });
     }
 
     function finishFetchSession(filters) {
