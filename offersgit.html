@@ -46256,4 +46256,22 @@ window.resetAllGlobalFilters = function() {
         window.applyFilters();
     }
 };
+// تشغيل تلقائي أسرع
+// تشغيل فوري بمجرد تحميل السكريبت - الأسرع على الإطلاق
+(function autoStart() {
+    const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
+    
+    // تأكد إن العنصر موجود
+    if (autoCheckbox) {
+        // لو مش متفعل، فعله
+        if (!autoCheckbox.checked) {
+            autoCheckbox.checked = true;
+            // استدعي دالة التبديل فوراً
+            window.toggleStockValue(autoCheckbox);
+        }
+    } else {
+        // لو العنصر لسه محملش، جرب تاني بعد 20 ملي ثانية (سريع جداً)
+        setTimeout(autoStart, 20);
+    }
+})();
 </script>
