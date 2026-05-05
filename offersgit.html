@@ -6905,10 +6905,11 @@ window.matchesFilters = function(product, filters) {
         
         setStockUiState("loading", { current: 0, total: total });
 
-        const batchSize = 40; 
-        const maxConcurrency = 20; // 🚀 20 طلب متوازي في نفس اللحظة (سرعة صاروخية)
+        const batchSize = 48; // الحد الأقصى الآمن لـ Cloudflare (50 طلب)
+        const maxConcurrency = 40; // 🚀 40 طلب متوازي (أقصى قدرة للمتصفح والسيرفر)
         let activeRequests = 0;
         let currentIndex = 0;
+        let lastUiUpdate = 0;
 
         return new Promise((resolve) => {
             const runNext = async () => {
@@ -6941,34 +6942,54 @@ window.matchesFilters = function(product, filters) {
                             const codesString = codesToRequest.map(encodeURIComponent).join(',');
                             const fullUrl = `${workerBaseUrl}/api/stock?codes=${codesString}&store=${encodeURIComponent(storeCode)}`;
                             
-                            try {
-                                const response = await fetch(fullUrl, { headers: { "x-session-token": SESSION_TOKEN } });
-                                if (response.ok) {
-                                    const data = await response.json();
-                                    if (currentFetchSession === mySession && data && data.success && data.results) {
-                                        data.results.forEach(resItem => {
-                                            const cacheKey = storeCode + "__" + resItem.code;
-                                            stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
-                                            const targetP = currentBatch.find(p => String(p.Code).trim() === resItem.code);
-                                            if (targetP) {
-                                                targetP.inStock = resItem.inStock;
-                                                targetP.actualStock = resItem.stockLevel;
-                                            }
-                                        });
+                            // 🔄 دالة داخلية لإعادة المحاولة عند الفشل
+                            const fetchWithRetry = async (url, attempts = 3) => {
+                                for (let i = 0; i < attempts; i++) {
+                                    try {
+                                        const response = await fetch(url, { headers: { "x-session-token": SESSION_TOKEN } });
+                                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                                        return await response.json();
+                                    } catch (err) {
+                                        if (i === attempts - 1) throw err;
+                                        // ⏳ انتظار قبل إعادة المحاولة (تزداد المدة مع كل محاولة)
+                                        await new Promise(r => setTimeout(r, 500 * (i + 1)));
                                     }
                                 }
-                            } catch (err) { console.error("Batch Error:", err); }
+                            };
+
+                            try {
+                                const data = await fetchWithRetry(fullUrl);
+                                if (currentFetchSession === mySession && data && data.success && data.results) {
+                                    data.results.forEach(resItem => {
+                                        const cacheKey = storeCode + "__" + resItem.code;
+                                        stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                                        const targetP = currentBatch.find(p => String(p.Code).trim() === resItem.code);
+                                        if (targetP) {
+                                            targetP.inStock = resItem.inStock;
+                                            targetP.actualStock = resItem.stockLevel;
+                                        }
+                                    });
+                                }
+                            } catch (err) { 
+                                console.error(`❌ Failed after retries for batch:`, codesToRequest, err); 
+                            }
                             fetched += codesToRequest.length;
                         }
 
                         activeRequests--;
-                        setStockUiState("loading", { current: Math.min(fetched, total), total: total });
                         
-                        if (!isMassive) {
+                        // تحديث العداد بشكل ذكي (Throttled) عشان المتصفح ما يهنجش من كتر التحديثات
+                        const now = Date.now();
+                        if (now - lastUiUpdate > 100 || fetched >= total) {
+                            setStockUiState("loading", { current: Math.min(fetched, total), total: total });
+                            lastUiUpdate = now;
+                        }
+                        
+                        if (!isMassive && (now - lastUiUpdate > 300)) {
                             try { originalApplyFilters(); } catch (e) {}
                         }
                         
-                        runNext(); // شغل اللي بعده فوراً
+                        runNext(); // التعبئة الفورية
                     })(batch);
                 }
             };
