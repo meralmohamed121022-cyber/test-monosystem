@@ -5346,21 +5346,26 @@ body > div:has(> label[for="codesFileInput"]),
 
 <div class="filters-container-main" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
    <!-- Stock Toggle -->
-<div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; transition: all 0.4s ease; width: 100%;">
+<div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100px; transition: all 0.4s ease; width: 100%; gap: 10px;">
     
-    <label class="stock-switch" style="position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; margin: 0;">
-        <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
-        <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
-    </label>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 10px; font-weight: 800; color: #94a3b8;">OFF</span>
+        
+        <label class="stock-switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+            <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
+            <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
+        </label>
+        
+        <span style="font-size: 10px; font-weight: 800; color: #94a3b8;">ON</span>
+    </div>
 
-    <span id="stockStatusText" style="margin-top: 10px; font-size: 11px; font-weight: 700; text-align: center; min-height: 16px;"></span>
+    <span id="stockStatusText" style="font-size: 11px; font-weight: 700; color: #64748b; text-align: center; min-height: 16px;"></span>
 
     <select id="stockFilterToggle" style="display: none;">
         <option value="all" selected>all</option>
         <option value="instock">instock</option>
     </select>
 </div>
-
     <!-- 2. Grid for the rest of the filters (3 items per row) -->
     <div class="filters-grid-layout">
         <!-- Offer Type -->
@@ -6785,14 +6790,16 @@ function setStockUiState(mode, extra = {}) {
 
     if (mode === "off") {
         statusText.innerHTML = "";
+        statusText.style.color = "#64748b"; // لون نصي هادئ
         card.style.backgroundColor = "#fdfdfd";
         slider.style.backgroundColor = "#cbd5e1";
     } else if (mode === "loading") {
-        statusText.innerHTML = `<div class="stock-loading-bar"></div>`;
+        statusText.innerHTML = `<div class="stock-loading-bar" style="margin: 0 auto;"></div>`;
         card.style.backgroundColor = "#fffbeb";
         slider.style.backgroundColor = "#f59e0b";
     } else if (mode === "on") {
         statusText.innerHTML = "";
+        statusText.style.color = "#16a34a"; // لون متناسب مع حالة التشغيل
         card.style.backgroundColor = "#ecfdf5";
         slider.style.backgroundColor = "#16a34a";
     }
