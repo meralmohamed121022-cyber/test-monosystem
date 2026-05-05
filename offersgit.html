@@ -6234,8 +6234,8 @@ async function fetchProductsFromSupabase() {
         console.log("⏳ جاري تحميل قاعدة بيانات الأدوية من GitHub...");
 
         const [res1, res2] = await Promise.all([
-            fetch(url1),
-            fetch(url2)
+            fetch(url1 + "?t=" + Date.now()), // إضافة timestamp لضمان عدم الكاش
+            fetch(url2 + "?t=" + Date.now())
         ]);
 
         if (!res1.ok || !res2.ok) {
@@ -6247,11 +6247,13 @@ async function fetchProductsFromSupabase() {
             res2.json()
         ]);
 
+        // دمج البيانات والتأكد إنها Arrays
         const combinedData = [
             ...(Array.isArray(data1) ? data1 : []),
             ...(Array.isArray(data2) ? data2 : [])
         ];
 
+        // تنظيف البيانات وعمل Map
         productsDB = combinedData.map(p => ({
             ...p,
             "Code": String(p?.["Code"] ?? p?.code ?? "").trim(),
@@ -6263,20 +6265,31 @@ async function fetchProductsFromSupabase() {
             "Category Level C": p?.["Category Level C"] ?? p?.category_level_c ?? p?.categorylevelc ?? "",
             "Category Level D": p?.["Category Level D"] ?? p?.category_level_d ?? p?.categoryleveld ?? "",
             "Unit Price": parseFloat(p?.["Unit Price"] ?? p?.unit_price ?? p?.unitprice ?? 0) || 0,
-            "itemurl": p?.["itemurl"] ?? p?.itemurl ?? p?.["ItemURL"] ?? ""
-        })).filter(p => p.Code);
+            "itemurl": p?.["itemurl"] ?? p?.itemurl ?? p?.["ItemURL"] ?? "",
+            "inStock": undefined,    // ⬅️ ريسيت لحالة الاستوك عند كل تحميل جديد
+            "actualStock": 0         // ⬅️ ريسيت الكمية
+        })).filter(p => p.Code && p.Code.length >= 4); // استبعاد الأكواد البايظة
 
         window.productsDB = productsDB;
 
-        console.log(`✅ نجاح: تم تحميل ${productsDB.length} منتج ودمجهم.`);
-        console.log("✅ window.productsDB synced:", window.productsDB.length);
+        console.log(`✅ نجاح: تم تحميل ${productsDB.length} منتج.`);
 
+        // تصفير الكاش القديم لفلتر الاستوك عشان ميبنيش على داتا قديمة
+        if (typeof stockCache !== 'undefined' && stockCache.clear) {
+            stockCache.clear();
+        }
+
+        // تنفيذ الدوال التابعة بالترتيب الصحيح
         if (typeof initOffersMap === "function") initOffersMap();
         if (typeof buildSearchCache === "function") buildSearchCache();
         if (typeof clearAllFilters === "function") clearAllFilters();
         if (typeof initializeFilters === "function") initializeFilters();
         if (typeof initFuzzySearch === "function") initFuzzySearch();
-        if (typeof applyFilters === "function") applyFilters();
+        
+        // ⚠️ مهم: شغل applyFilters بعد التأكد إن كل حاجة جاهزة
+        setTimeout(() => {
+            if (typeof applyFilters === "function") applyFilters();
+        }, 100);
 
     } catch (err) {
         console.error("❌ فشل تحميل الداتا:", err);
@@ -6287,7 +6300,7 @@ async function fetchProductsFromSupabase() {
             setLatestScannerMessage(`
                 <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
                     فشل تحميل قاعدة البيانات<br>
-                    ${typeof escapeHtml === "function" ? escapeHtml(err?.message || "Unknown error") : (err?.message || "Unknown error")}
+                    ${err?.message || "Unknown error"}
                 </div>
             `);
         }
@@ -6295,6 +6308,7 @@ async function fetchProductsFromSupabase() {
         if (loader) loader.style.display = "none";
     }
 }
+
 // ========== IMAGES DB ==========
 const categoryImagesDB = {
     "APHRODISIAC":            { icon: "img", hero: "img" },
