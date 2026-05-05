@@ -6850,7 +6850,11 @@ window.matchesFilters = function(product, filters) {
         const stockToggle = document.getElementById("stockFilterToggleCheckbox");
         if (stockToggle && stockToggle.checked) {
             const db = Array.isArray(window.productsDB) ? window.productsDB : [];
-            const productsToFetch = db.filter(p => originalMatchesFilters(p, capturedFilters) && typeof p.inStock === "undefined");
+            // 🔥 تعديل: جلب الاستوكات لكل الأكواد اللي عليها عروض (عشان لما يفلتر براند تاني يكون الداتا موجودة)
+            const productsToFetch = db.filter(p => {
+                const hasOffer = getOffer(p.Code) !== null;
+                return hasOffer && typeof p.inStock === "undefined";
+            });
 
             if (productsToFetch.length > 0) {
                 fetchStockForTargetedProducts(productsToFetch, capturedFilters);
@@ -6873,8 +6877,7 @@ window.matchesFilters = function(product, filters) {
         }
 
         const allRelevantProducts = window.productsDB.filter(p => {
-            const hasActiveOffer = getOffer(p.Code) !== null;
-            return hasActiveOffer && originalMatchesFilters(p, filters);
+            return getOffer(p.Code) !== null;
         });
 
         const total = allRelevantProducts.length;
@@ -46325,12 +46328,7 @@ window.resetAllGlobalFilters = function() {
         }
     });
 
-    // 4. تصفير فلتر الاستوك
-    if (typeof window.clearAllStockFilters === 'function') {
-        window.clearAllStockFilters();
-    }
-
-    // 5. تحديث الشاشة لتطبيق المسح
+    // 4. تحديث الشاشة لتطبيق المسح
     if (typeof window.applyFilters === 'function') {
         window.applyFilters();
     }
