@@ -46281,10 +46281,6 @@ window.resetAllGlobalFilters = function() {
         window.applyFilters();
     }
 };
-document.addEventListener("DOMContentLoaded", function() {
-    const checkbox = document.getElementById("stockFilterToggleCheckbox");
-    if (checkbox && checkbox.checked) {
-        setStockUiState("on");
-    }
-});
+// ✅ حط ده بدله
+setStockUiState("on");
 </script>
