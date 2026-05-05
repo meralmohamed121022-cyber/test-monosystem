@@ -6769,69 +6769,115 @@ window.matchesFilters = function(product, filters) {
         }, 4000);
     }
 
-    function setStockUiState(mode, extra = {}) {
-        const statusText = document.getElementById("stockStatusText");
-        const card = document.getElementById("stockFilterCard");
-        const slider = document.getElementById("sliderInner");
-        const storeCode = getStoreCode() || "--";
+function setStockUiState(mode, extra = {}) {
+    const statusText = document.getElementById("stockStatusText");
+    const card = document.getElementById("stockFilterCard");
+    const slider = document.getElementById("sliderInner");
+    const storeCode = getStoreCode() || "--";
 
-        if (!statusText || !card || !slider) return;
+    if (!statusText || !card || !slider) return;
 
-        if (mode === "off") {
-            statusText.innerHTML = "Show All Items";
-            statusText.style.color = "#7f8c8d";
-            card.style.backgroundColor = "#fdfdfd"; slider.style.backgroundColor = "#ccc";
-        } else if (mode === "loading") {
-            if (extra.total > 0 && extra.total > 150) {
-                statusText.innerHTML = `⏳ Loading (${storeCode})<br><span style="font-size:11px; color:#b45309;">${extra.current || 0} / ${extra.total}</span>`;
-            } else {
-                statusText.innerHTML = `⏳ Loading Stock (${storeCode})...`;
-            }
-            statusText.style.color = "#d97706";
-            card.style.backgroundColor = "#fffbeb"; slider.style.backgroundColor = "#f59e0b";
-        } else if (mode === "on") {
-            const countText = typeof extra.count === "number" ? " - " + extra.count + " items" : "";
-            statusText.innerHTML = `✅ IN STOCK ONLY (${storeCode})${countText}`;
-            statusText.style.color = "#166534";
-            card.style.backgroundColor = "#ecfdf5"; slider.style.backgroundColor = "#16a34a";
+    // ريسيت للأنيميشن
+    card.style.animation = "none";
+
+    if (mode === "off") {
+        statusText.innerHTML = `<span style="opacity: 0.8;">🌐</span> Show All Items`;
+        statusText.style.color = "#7f8c8d";
+        card.style.backgroundColor = "#fdfdfd"; 
+        card.style.borderColor = "#eee";
+        slider.style.backgroundColor = "#cbd5e1";
+        
+    } else if (mode === "loading") {
+        const percent = extra.total > 0 ? Math.round((extra.current / extra.total) * 100) : 0;
+        
+        if (extra.total > 0) {
+            statusText.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                    <span style="color: #d97706; font-weight: 800; font-size: 13px;">⏳ Scanning Stock (${storeCode})</span>
+                    <div style="font-size: 10px; color: #b45309; background: rgba(217, 119, 6, 0.1); padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(217, 119, 6, 0.2); font-weight: 700;">
+                        ${extra.current.toLocaleString()} / ${extra.total.toLocaleString()} <span>(${percent}%)</span>
+                    </div>
+                </div>
+            `;
+        } else {
+            statusText.innerHTML = `<div class="scanner-mini-loader" style="width:12px;height:12px;display:inline-block;border-color:#d97706;border-top-color:transparent;"></div> Connecting ${storeCode}...`;
+        }
+        
+        statusText.style.color = "#d97706";
+        card.style.backgroundColor = "#fffbeb"; 
+        card.style.borderColor = "#fcd34d";
+        slider.style.backgroundColor = "#f59e0b";
+        card.style.animation = "activePulse 2s infinite";
+
+    } else if (mode === "on") {
+        const count = typeof extra.count === "number" ? extra.count.toLocaleString() : "0";
+        statusText.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                <span style="color: #166534; font-weight: 800; font-size: 13px;">✅ IN STOCK (${storeCode})</span>
+                <div style="font-size: 10px; background: #dcfce7; color: #15803d; padding: 2px 12px; border-radius: 12px; border: 1px solid #bbf7d0; font-weight: 700;">
+                    ${count} Items Found
+                </div>
+            </div>
+        `;
+        statusText.style.color = "#166534";
+        card.style.backgroundColor = "#ecfdf5"; 
+        card.style.borderColor = "#86efac";
+        slider.style.backgroundColor = "#16a34a";
+    }
+}
+
+// --- تحسين منطق الفلترة لضمان عدم تعليق الصفحة ---
+const originalMatchesFilters = typeof window.matchesFilters === "function" 
+    ? window.matchesFilters : function () { return true; };
+
+window.matchesFilters = function (product, filters) {
+    // توحيد مصدر الفلاتر لضمان الدقة
+    const safeFilters = filters || window.currentFilters || window.capturedFilters || {};
+    
+    // 1. الفلترة الأساسية (براند، كاتيجوري، إلخ)
+    if (!originalMatchesFilters(product, safeFilters)) return false;
+
+    // 2. فلترة الاستوك (لو الزرار شغال)
+    const stockToggle = document.getElementById("stockFilterToggleCheckbox");
+    if (stockToggle && stockToggle.checked) {
+        // لو لسه ميعرفش حالة الاستوك، بنرجعه "كأنه مش موجود" مؤقتاً عشان الريكويست يسحبه
+        if (typeof product.inStock === "undefined") return false; 
+        
+        // الشرط الصارم: لازم يكون متاح (true) وكميته أكبر من صفر
+        return product.inStock === true && Number(product.actualStock || 0) > 0; 
+    }
+    
+    return true;
+};
+
+const originalApplyFilters = typeof window.applyFilters === "function" 
+    ? window.applyFilters : function () {};
+
+window.applyFilters = function () {
+    // تشغيل الفلترة الأصلية للرندر
+    try { originalApplyFilters(); } catch (e) { console.error("Filter Render Error:", e); }
+
+    const stockToggle = document.getElementById("stockFilterToggleCheckbox");
+    if (stockToggle && stockToggle.checked) {
+        const db = Array.isArray(window.productsDB) ? window.productsDB : [];
+        
+        // بنحدد بس الأصناف اللي محتاجة فحص (مطابقة للفلاتر بس حالتها مجهولة)
+        // ده بيمنع إعادة طلب الأصناف اللي اتفحصت قبل كدة
+        const currentFilters = window.currentFilters || window.capturedFilters || {};
+        const productsToFetch = db.filter(p => 
+            originalMatchesFilters(p, currentFilters) && 
+            typeof p.inStock === "undefined"
+        );
+
+        if (productsToFetch.length > 0) {
+            // نبعت الفلتر المعتمد للدالة عشان الدقة
+            fetchStockForTargetedProducts(productsToFetch, currentFilters);
+        } else {
+            // لو كله اتفحص، ننهي الجلسة ونعرض العدد النهائي
+            finishFetchSession(currentFilters);
         }
     }
-
-    const originalMatchesFilters = typeof window.matchesFilters === "function" 
-        ? window.matchesFilters : function () { return true; };
-
-    window.matchesFilters = function (product, filters) {
-        const safeFilters = filters || window.currentFilters || capturedFilters || {};
-        capturedFilters = safeFilters; 
-
-        if (!originalMatchesFilters(product, safeFilters)) return false;
-
-        const stockToggle = document.getElementById("stockFilterToggleCheckbox");
-        if (stockToggle && stockToggle.checked) {
-            if (typeof product.inStock === "undefined") return false; 
-            return product.inStock === true && Number(product.actualStock) > 0; 
-        }
-        return true;
-    };
-
-    const originalApplyFilters = typeof window.applyFilters === "function" 
-        ? window.applyFilters : function () {};
-
-    window.applyFilters = function () {
-        try { originalApplyFilters(); } catch (e) {}
-
-        const stockToggle = document.getElementById("stockFilterToggleCheckbox");
-        if (stockToggle && stockToggle.checked) {
-            const db = Array.isArray(window.productsDB) ? window.productsDB : [];
-            const productsToFetch = db.filter(p => originalMatchesFilters(p, capturedFilters) && typeof p.inStock === "undefined");
-
-            if (productsToFetch.length > 0) {
-                fetchStockForTargetedProducts(productsToFetch, capturedFilters);
-            } else {
-                finishFetchSession(capturedFilters);
-            }
-        }
-    };
+};
 
 async function fetchStockForTargetedProducts(products, filters) {
     currentFetchSession++; 
