@@ -46256,17 +46256,4 @@ window.resetAllGlobalFilters = function() {
         window.applyFilters();
     }
 };
-(function autoStart() {
-    // التأكد من أن قاعدة بيانات المنتجات ليست فارغة
-    if (window.productsDB && window.productsDB.length > 1000) {
-        const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
-        if (autoCheckbox && !autoCheckbox.checked) {
-            autoCheckbox.checked = true;
-            toggleStockValue(autoCheckbox);
-        }
-    } else {
-        // لو الداتا لسه مجاتش، استنى 100 ملي ثانية وحاول تاني
-        setTimeout(autoStart, 100);
-    }
-})();
 </script>
