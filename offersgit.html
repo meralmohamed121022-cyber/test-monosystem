@@ -6769,115 +6769,69 @@ window.matchesFilters = function(product, filters) {
         }, 4000);
     }
 
-function setStockUiState(mode, extra = {}) {
-    const statusText = document.getElementById("stockStatusText");
-    const card = document.getElementById("stockFilterCard");
-    const slider = document.getElementById("sliderInner");
-    const storeCode = getStoreCode() || "--";
+    function setStockUiState(mode, extra = {}) {
+        const statusText = document.getElementById("stockStatusText");
+        const card = document.getElementById("stockFilterCard");
+        const slider = document.getElementById("sliderInner");
+        const storeCode = getStoreCode() || "--";
 
-    if (!statusText || !card || !slider) return;
+        if (!statusText || !card || !slider) return;
 
-    // ريسيت للأنيميشن
-    card.style.animation = "none";
-
-    if (mode === "off") {
-        statusText.innerHTML = `<span style="opacity: 0.8;">🌐</span> Show All Items`;
-        statusText.style.color = "#7f8c8d";
-        card.style.backgroundColor = "#fdfdfd"; 
-        card.style.borderColor = "#eee";
-        slider.style.backgroundColor = "#cbd5e1";
-        
-    } else if (mode === "loading") {
-        const percent = extra.total > 0 ? Math.round((extra.current / extra.total) * 100) : 0;
-        
-        if (extra.total > 0) {
-            statusText.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                    <span style="color: #d97706; font-weight: 800; font-size: 13px;">⏳ Scanning Stock (${storeCode})</span>
-                    <div style="font-size: 10px; color: #b45309; background: rgba(217, 119, 6, 0.1); padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(217, 119, 6, 0.2); font-weight: 700;">
-                        ${extra.current.toLocaleString()} / ${extra.total.toLocaleString()} <span>(${percent}%)</span>
-                    </div>
-                </div>
-            `;
-        } else {
-            statusText.innerHTML = `<div class="scanner-mini-loader" style="width:12px;height:12px;display:inline-block;border-color:#d97706;border-top-color:transparent;"></div> Connecting ${storeCode}...`;
-        }
-        
-        statusText.style.color = "#d97706";
-        card.style.backgroundColor = "#fffbeb"; 
-        card.style.borderColor = "#fcd34d";
-        slider.style.backgroundColor = "#f59e0b";
-        card.style.animation = "activePulse 2s infinite";
-
-    } else if (mode === "on") {
-        const count = typeof extra.count === "number" ? extra.count.toLocaleString() : "0";
-        statusText.innerHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span style="color: #166534; font-weight: 800; font-size: 13px;">✅ IN STOCK (${storeCode})</span>
-                <div style="font-size: 10px; background: #dcfce7; color: #15803d; padding: 2px 12px; border-radius: 12px; border: 1px solid #bbf7d0; font-weight: 700;">
-                    ${count} Items Found
-                </div>
-            </div>
-        `;
-        statusText.style.color = "#166534";
-        card.style.backgroundColor = "#ecfdf5"; 
-        card.style.borderColor = "#86efac";
-        slider.style.backgroundColor = "#16a34a";
-    }
-}
-
-// --- تحسين منطق الفلترة لضمان عدم تعليق الصفحة ---
-const originalMatchesFilters = typeof window.matchesFilters === "function" 
-    ? window.matchesFilters : function () { return true; };
-
-window.matchesFilters = function (product, filters) {
-    // توحيد مصدر الفلاتر لضمان الدقة
-    const safeFilters = filters || window.currentFilters || window.capturedFilters || {};
-    
-    // 1. الفلترة الأساسية (براند، كاتيجوري، إلخ)
-    if (!originalMatchesFilters(product, safeFilters)) return false;
-
-    // 2. فلترة الاستوك (لو الزرار شغال)
-    const stockToggle = document.getElementById("stockFilterToggleCheckbox");
-    if (stockToggle && stockToggle.checked) {
-        // لو لسه ميعرفش حالة الاستوك، بنرجعه "كأنه مش موجود" مؤقتاً عشان الريكويست يسحبه
-        if (typeof product.inStock === "undefined") return false; 
-        
-        // الشرط الصارم: لازم يكون متاح (true) وكميته أكبر من صفر
-        return product.inStock === true && Number(product.actualStock || 0) > 0; 
-    }
-    
-    return true;
-};
-
-const originalApplyFilters = typeof window.applyFilters === "function" 
-    ? window.applyFilters : function () {};
-
-window.applyFilters = function () {
-    // تشغيل الفلترة الأصلية للرندر
-    try { originalApplyFilters(); } catch (e) { console.error("Filter Render Error:", e); }
-
-    const stockToggle = document.getElementById("stockFilterToggleCheckbox");
-    if (stockToggle && stockToggle.checked) {
-        const db = Array.isArray(window.productsDB) ? window.productsDB : [];
-        
-        // بنحدد بس الأصناف اللي محتاجة فحص (مطابقة للفلاتر بس حالتها مجهولة)
-        // ده بيمنع إعادة طلب الأصناف اللي اتفحصت قبل كدة
-        const currentFilters = window.currentFilters || window.capturedFilters || {};
-        const productsToFetch = db.filter(p => 
-            originalMatchesFilters(p, currentFilters) && 
-            typeof p.inStock === "undefined"
-        );
-
-        if (productsToFetch.length > 0) {
-            // نبعت الفلتر المعتمد للدالة عشان الدقة
-            fetchStockForTargetedProducts(productsToFetch, currentFilters);
-        } else {
-            // لو كله اتفحص، ننهي الجلسة ونعرض العدد النهائي
-            finishFetchSession(currentFilters);
+        if (mode === "off") {
+            statusText.innerHTML = "Show All Items";
+            statusText.style.color = "#7f8c8d";
+            card.style.backgroundColor = "#fdfdfd"; slider.style.backgroundColor = "#ccc";
+        } else if (mode === "loading") {
+            if (extra.total > 0 && extra.total > 150) {
+                statusText.innerHTML = `⏳ Loading (${storeCode})<br><span style="font-size:11px; color:#b45309;">${extra.current || 0} / ${extra.total}</span>`;
+            } else {
+                statusText.innerHTML = `⏳ Loading Stock (${storeCode})...`;
+            }
+            statusText.style.color = "#d97706";
+            card.style.backgroundColor = "#fffbeb"; slider.style.backgroundColor = "#f59e0b";
+        } else if (mode === "on") {
+            const countText = typeof extra.count === "number" ? " - " + extra.count + " items" : "";
+            statusText.innerHTML = `✅ IN STOCK ONLY (${storeCode})${countText}`;
+            statusText.style.color = "#166534";
+            card.style.backgroundColor = "#ecfdf5"; slider.style.backgroundColor = "#16a34a";
         }
     }
-};
+
+    const originalMatchesFilters = typeof window.matchesFilters === "function" 
+        ? window.matchesFilters : function () { return true; };
+
+    window.matchesFilters = function (product, filters) {
+        const safeFilters = filters || window.currentFilters || capturedFilters || {};
+        capturedFilters = safeFilters; 
+
+        if (!originalMatchesFilters(product, safeFilters)) return false;
+
+        const stockToggle = document.getElementById("stockFilterToggleCheckbox");
+        if (stockToggle && stockToggle.checked) {
+            if (typeof product.inStock === "undefined") return false; 
+            return product.inStock === true && Number(product.actualStock) > 0; 
+        }
+        return true;
+    };
+
+    const originalApplyFilters = typeof window.applyFilters === "function" 
+        ? window.applyFilters : function () {};
+
+    window.applyFilters = function () {
+        try { originalApplyFilters(); } catch (e) {}
+
+        const stockToggle = document.getElementById("stockFilterToggleCheckbox");
+        if (stockToggle && stockToggle.checked) {
+            const db = Array.isArray(window.productsDB) ? window.productsDB : [];
+            const productsToFetch = db.filter(p => originalMatchesFilters(p, capturedFilters) && typeof p.inStock === "undefined");
+
+            if (productsToFetch.length > 0) {
+                fetchStockForTargetedProducts(productsToFetch, capturedFilters);
+            } else {
+                finishFetchSession(capturedFilters);
+            }
+        }
+    };
 
 async function fetchStockForTargetedProducts(products, filters) {
     currentFetchSession++; 
@@ -6886,38 +6840,25 @@ async function fetchStockForTargetedProducts(products, filters) {
     const storeCode = getStoreCode();
     if (!storeCode) return;
 
-    // 1️⃣ البحث في كامل قاعدة البيانات (حل مشكلة الـ 100 كود)
-    const allRelevantProducts = window.productsDB.filter(p => {
-        const hasActiveOffer = getOffer(p.Code) !== null;
-        return hasActiveOffer && originalMatchesFilters(p, filters);
-    });
-
-    const total = allRelevantProducts.length;
-    if (total === 0) {
-        finishFetchSession(filters);
-        return;
-    }
-
+    const total = products.length;
     let fetched = 0;
     const isMassive = total > 300; 
     
     setStockUiState("loading", { current: 0, total: total });
 
-    const batchSize = 100; // حجم الدفعة مناسب جداً للـ Worker
+    const batchSize = 40; 
     const fetchPromises = [];
     
     for (let i = 0; i < total; i += batchSize) {
-        const batch = allRelevantProducts.slice(i, i + batchSize);
+        const batch = products.slice(i, i + batchSize);
+        
         const codesToRequest = [];
-
         batch.forEach(p => {
             const code = String(p?.Code ?? "").trim();
             const cacheKey = storeCode + "__" + code;
-            
             if (stockCache.has(cacheKey)) {
                 const cached = stockCache.get(cacheKey);
-                p.inStock = cached.inStock; 
-                p.actualStock = cached.actualStock;
+                p.inStock = cached.inStock; p.actualStock = cached.actualStock;
                 fetched++;
             } else if (code) {
                 codesToRequest.push(code);
@@ -6927,43 +6868,38 @@ async function fetchStockForTargetedProducts(products, filters) {
         if (codesToRequest.length > 0) {
             const codesString = codesToRequest.map(encodeURIComponent).join(',');
 
+            // ✅ التعديل هنا
             const req = fetch(workerBaseUrl + "/api/stock?codes=" + codesString + "&store=" + encodeURIComponent(storeCode), {
                 headers: { "x-session-token": SESSION_TOKEN }
             })
-            .then(res => res.json())
-            .then(data => {
-                if (currentFetchSession !== mySession) return;
-                
-                if (data && data.success && data.results) {
-                    // تحويل الـ batch لماب لتسريع التحديث جداً
-                    const batchMap = new Map(batch.map(item => [String(item.Code).trim(), item]));
+                .then(res => res.json())
+                .then(data => {
+                    if (currentFetchSession !== mySession) return;
                     
-                    data.results.forEach(resItem => {
-                        const cacheKey = storeCode + "__" + resItem.code;
-                        stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
-                        
-                        // تحديث الصنف في الماب (أسرع من .find)
-                        const targetP = batchMap.get(String(resItem.code));
-                        if (targetP) {
-                            targetP.inStock = resItem.inStock;
-                            targetP.actualStock = resItem.stockLevel;
-                        }
-                    });
-                }
-                fetched += codesToRequest.length;
-                setStockUiState("loading", { current: fetched, total: total });
-                
-                if (!isMassive) {
-                    try { originalApplyFilters(); } catch (e) {}
-                }
-            })
-            .catch(err => {
-                fetched += codesToRequest.length;
-                console.error("Stock Fetch Error:", err);
-            });
+                    if (data && data.success && data.results) {
+                        data.results.forEach(resItem => {
+                            const cacheKey = storeCode + "__" + resItem.code;
+                            stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                            
+                            const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
+                            if (targetP) {
+                                targetP.inStock = resItem.inStock;
+                                targetP.actualStock = resItem.stockLevel;
+                            }
+                        });
+                    }
+                    fetched += codesToRequest.length;
+                    setStockUiState("loading", { current: fetched, total: total });
+                    
+                    if (!isMassive) {
+                        try { originalApplyFilters(); } catch (e) {}
+                    }
+                })
+                .catch(err => {
+                    fetched += codesToRequest.length;
+                });
             fetchPromises.push(req);
         } else {
-            // تحديث العداد حتى لو البيانات كلها من الكاش
             setStockUiState("loading", { current: fetched, total: total });
         }
     }
@@ -6974,7 +6910,7 @@ async function fetchStockForTargetedProducts(products, filters) {
         finishFetchSession(filters);
     }
 }
-function finishFetchSession(filters) {
+    function finishFetchSession(filters) {
         try { originalApplyFilters(); } catch (e) {}
         const db = Array.isArray(window.productsDB) ? window.productsDB : [];
         const finalCount = db.filter(p => originalMatchesFilters(p, filters) && p.inStock === true && Number(p.actualStock) > 0).length;
@@ -39070,9 +39006,6 @@ function renderProducts(filters = {}) {
   
   if(filters.searchTerm) filters.searchTerm = filters.searchTerm.toLowerCase();
   
-  // 🔥 [NEW] شيك لو فلتر الاستوك متفعل حالياً
-  const isStockFilterActive = document.getElementById("stockFilterToggleCheckbox")?.checked;
-  
   // 🔥 GET FILTERED PRODUCTS
   let filteredProducts = productsDB.filter(product => {
     // ✅ أول حاجة: شيك على matchesFilters
@@ -39096,27 +39029,25 @@ function renderProducts(filters = {}) {
   // 🔥 INITIAL LOAD CHECK
   const hasUploadedCodesFilter = uploadedCodesFilter && uploadedCodesFilter.length > 0;
   
-  // ⚡ [MODIFIED] لو الاستوك شغال (isStockFilterActive)، بنخلي isInitialLoad دايماً false 
-  // عشان الكود يعرض كل المنتجات المتاحة وميقصش أول 30 بس.
-  const isInitialLoad = !isStockFilterActive && 
-                        !filters.searchTerm && 
-                        !filters.offerType?.length && 
-                        !filters.brand?.length && 
-                        !filters.manufacture?.length && 
-                        !filters.categoryA?.length && 
-                        !filters.categoryB?.length && 
-                        !filters.itemClass?.length && 
-                        !filters.categoryC?.length && 
-                        !filters.categoryD?.length &&
-                        !hasUploadedCodesFilter;
+  const isInitialLoad = !filters.searchTerm && 
+                       !filters.offerType?.length && 
+                       !filters.brand?.length && 
+                       !filters.manufacture?.length && 
+                       !filters.categoryA?.length && 
+                       !filters.categoryB?.length && 
+                       !filters.itemClass?.length && 
+                       !filters.categoryC?.length && 
+                       !filters.categoryD?.length &&
+                       !hasUploadedCodesFilter;
 
-  console.log(`📊 ${isInitialLoad ? '🚀 INITIAL' : '✅ FULL/FILTERED'}: ${filteredProducts.length} products`);
+  console.log(`📊 ${isInitialLoad ? '🚀 INITIAL' : '✅ FILTERED'}: ${filteredProducts.length} products`);
 
   updateDynamicFilters(filters);
   
   if (filteredProducts.length === 0) {
     container.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">No products found</div>';
     if(loader) loader.style.display = "none";
+    // تحديث العداد حتى لو مفيش نتائج عشان الشريط يختفي لو مفيش عناصر
     updateSelectedCount(); 
     return;
   }
@@ -39126,7 +39057,7 @@ function renderProducts(filters = {}) {
     renderMagazineMode(filteredProducts);
     window.currentFilteredProducts = filteredProducts;
     restoreSelections();
-    updateSelectedCount(); 
+    updateSelectedCount(); // 🔥 إظهار الشريط في وضع المجلة
     if(loader) loader.style.display = "none";
     return;
   }
@@ -39136,7 +39067,7 @@ function renderProducts(filters = {}) {
     window.currentFilteredProducts = filteredProducts;
     createPrintSelectionBar();
     restoreSelections();
-    updateSelectedCount(); 
+    updateSelectedCount(); // 🔥 إظهار الشريط في وضع الـ Brief
     if(loader) loader.style.display = "none";
     return;
   }
@@ -39144,8 +39075,6 @@ function renderProducts(filters = {}) {
   window.fullProductsCount = filteredProducts.length;
   
   let showLoadAllButton = false;
-  // ⚡ [LOGIC] لو هي تحميل أولي (والاستوك مش شغال)، بنعرض 30 بس. 
-  // لو الاستوك شغال، الشرط ده مش هيتحقق وهيعرض الكل.
   if (isInitialLoad && filteredProducts.length > 30) {
     showLoadAllButton = true;
     filteredProducts = filteredProducts.slice(0, 30);
@@ -39200,13 +39129,11 @@ function renderProducts(filters = {}) {
     const loadAllBtn = document.createElement('button');
     loadAllBtn.id = 'loadAllBtn';
     loadAllBtn.innerHTML = `🔥 Load All Products (${window.fullProductsCount} items)`;
-    loadAllBtn.className = "btn-reset-art"; // استخدام كلاسك الجاهز للجمالية
-    loadAllBtn.style.padding = "16px 48px";
+    loadAllBtn.style.cssText = `display: block; padding: 16px 48px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 15px; font-weight: 700; font-size: 18px; cursor: pointer; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;`;
     
     loadAllBtn.onclick = () => {
       loadAllBtnContainer.remove();
-      // لما يدوس هنا بنجبر الفلتر يفتح الكل حتى لو مفيش استوك
-      renderProducts({...filters, forceAll: true});
+      renderProducts(filters);
     };
     
     loadAllBtnContainer.appendChild(loadAllBtn);
@@ -39215,12 +39142,13 @@ function renderProducts(filters = {}) {
   
   window.currentFilteredProducts = filteredProducts;
   
+  // ✅ التأكد من وجود الشريط وتحديث حالته فوراً
   if (!document.getElementById('printSelectionBar')) {
       createPrintSelectionBar();
   }
   
   restoreSelections();
-  updateSelectedCount(); 
+  updateSelectedCount(); // 🔥 تحديث العداد وإظهار الـ Bar لو فيه مختارين
   
   if(loader) loader.style.display = "none";
   console.log(`✅ Rendered ${filteredProducts.length} products`);
@@ -46328,6 +46256,4 @@ window.resetAllGlobalFilters = function() {
         window.applyFilters();
     }
 };
-// --- التشغيل التلقائي السريع والشامل ---
-
 </script>
