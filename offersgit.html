@@ -46257,46 +46257,50 @@ window.resetAllGlobalFilters = function() {
     }
 };
 // --- التشغيل التلقائي السريع والشامل ---
+// --- التشغيل التلقائي النهائي والآمن ---
 (function autoStartStrict() {
     // 1. التأكد من توفر قاعدة البيانات
-    if (window.productsDB && window.productsDB.length > 100) {
+    if (window.productsDB && window.productsDB.length > 0) {
         
         const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
         
+        // لو الزرار موجود ومش متفعل
         if (autoCheckbox && !autoCheckbox.checked) {
-            autoCheckbox.checked = true; // تفعيل الزر بصرياً
             
-            // 2. إجبار النظام على الفلترة على قاعدة البيانات كاملة
-            // بدلاً من استدعاء toggleStockValue العادي، نقوم بحقن الفلتر
+            // 2. تحديث الشكل البصري للزرار والتسميات
+            autoCheckbox.checked = true;
             const hiddenSelect = document.getElementById("stockFilterToggle");
             if (hiddenSelect) hiddenSelect.value = "instock";
             
-            // تحديث الألوان
             const labelAll = document.getElementById("labelAllItems");
             const labelInStock = document.getElementById("labelInStock");
             if (labelAll) labelAll.style.color = "#94a3b8";
             if (labelInStock) labelInStock.style.color = "#1e293b";
             
-            // تحديث واجهة المستخدم فوراً لتظهر أنها تحمل
             if (typeof setStockUiState === "function") {
                 setStockUiState("loading");
             }
-            
-            // 3. تأخير بسيط جداً لضمان رسم الـ UI، ثم إجبار الفلترة
+
+            // 3. تأخير 300 ملي ثانية (مهم جداً)
+            // ليه 300؟ عشان ندي فرصة لنظام الـ Pagination عندك إنه يرسم الـ 40 كارت الأوليين في الشاشة
             setTimeout(() => {
                 try {
-                    // هذه الدالة ستبحث في db.filter(p => matchesFilters...) 
-                    // وتجلب الـ API لكل ما هو ناقص
-                    window.applyFilters();
+                    if (typeof window.applyFilters === "function") {
+                        // نداء مباشر لدالة الفلترة الأساسية عشان تراجع الداتا وتطلب الاستوك
+                        window.applyFilters();
+                    } else if (typeof window.toggleStockValue === "function") {
+                        // كبديل احتياطي لو applyFilters مش جاهزة
+                        window.toggleStockValue(autoCheckbox);
+                    }
                 } catch(e) {
                     console.error("AutoStart Error:", e);
                 }
-            }, 50);
+            }, 300); 
             
         }
     } else {
-        // إذا لم تكن قاعدة البيانات جاهزة، حاول مجدداً بسرعة
-        setTimeout(autoStartStrict, 50);
+        // لو الداتا لسه مجاتش (productsDB لسه فاضية)، حاول تاني كمان 100 ملي ثانية
+        setTimeout(autoStartStrict, 100);
     }
 })();
 </script>
