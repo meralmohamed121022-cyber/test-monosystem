@@ -6905,24 +6905,30 @@ window.matchesFilters = function(product, filters) {
         
         setStockUiState("loading", { current: 0, total: total });
 
-        const batchSize = 48; // الحد الأقصى الآمن لـ Cloudflare (50 طلب)
-        const maxConcurrency = 40; // 🚀 40 طلب متوازي (أقصى قدرة للمتصفح والسيرفر)
+        const batchSize = 48; 
+        const maxConcurrency = 15; // 🎯 تقليل التوازي قليلاً (15 بدل 40) لضمان استقرار السيرفر وعدم ضياع البيانات
         let activeRequests = 0;
         let currentIndex = 0;
         let lastUiUpdate = 0;
 
         return new Promise((resolve) => {
             const runNext = async () => {
-                // التحقق من الجلسة أو انتهاء البيانات
+                // 1️⃣ التحقق من الجلسة
                 if (currentFetchSession !== mySession) { resolve(); return; }
-                if (currentIndex >= total && activeRequests === 0) { resolve(); return; }
+                
+                // 2️⃣ التحقق من النهاية (عندما تنتهي كل الأصناف وكل الطلبات)
+                if (currentIndex >= total && activeRequests === 0) {
+                    finishFetchSession(filters); // ✅ إنهاء الجلسة وتحديث الواجهة للون الأخضر
+                    resolve(); 
+                    return; 
+                }
 
+                // 3️⃣ بدء طلبات جديدة حتى نصل للحد الأقصى للتوازي
                 while (activeRequests < maxConcurrency && currentIndex < total) {
                     const batch = allRelevantProducts.slice(currentIndex, currentIndex + batchSize);
                     currentIndex += batchSize;
                     activeRequests++;
 
-                    // معالجة الدفعة بشكل منفصل (Asynchronous)
                     (async (currentBatch) => {
                         const codesToRequest = [];
                         currentBatch.forEach(p => {
@@ -6942,7 +6948,6 @@ window.matchesFilters = function(product, filters) {
                             const codesString = codesToRequest.map(encodeURIComponent).join(',');
                             const fullUrl = `${workerBaseUrl}/api/stock?codes=${codesString}&store=${encodeURIComponent(storeCode)}`;
                             
-                            // 🔄 دالة داخلية لإعادة المحاولة عند الفشل
                             const fetchWithRetry = async (url, attempts = 3) => {
                                 for (let i = 0; i < attempts; i++) {
                                     try {
@@ -6951,7 +6956,6 @@ window.matchesFilters = function(product, filters) {
                                         return await response.json();
                                     } catch (err) {
                                         if (i === attempts - 1) throw err;
-                                        // ⏳ انتظار قبل إعادة المحاولة (تزداد المدة مع كل محاولة)
                                         await new Promise(r => setTimeout(r, 500 * (i + 1)));
                                     }
                                 }
@@ -6970,26 +6974,19 @@ window.matchesFilters = function(product, filters) {
                                         }
                                     });
                                 }
-                            } catch (err) { 
-                                console.error(`❌ Failed after retries for batch:`, codesToRequest, err); 
-                            }
+                            } catch (err) { console.error(`❌ Permanent failure:`, err); }
                             fetched += codesToRequest.length;
                         }
 
                         activeRequests--;
                         
-                        // تحديث العداد بشكل ذكي (Throttled) عشان المتصفح ما يهنجش من كتر التحديثات
                         const now = Date.now();
-                        if (now - lastUiUpdate > 100 || fetched >= total) {
+                        if (now - lastUiUpdate > 150 || fetched >= total) {
                             setStockUiState("loading", { current: Math.min(fetched, total), total: total });
                             lastUiUpdate = now;
                         }
                         
-                        if (!isMassive && (now - lastUiUpdate > 300)) {
-                            try { originalApplyFilters(); } catch (e) {}
-                        }
-                        
-                        runNext(); // التعبئة الفورية
+                        runNext(); 
                     })(batch);
                 }
             };
