@@ -6942,19 +6942,12 @@ async function fetchStockForTargetedProducts(products, filters) {
         setStockUiState("on", { count: finalCount });
     }
 
-    window.toggleStockValue = function (checkbox) {
-        const hiddenSelect = document.getElementById("stockFilterToggle");
-        if (checkbox.checked) {
-            if (hiddenSelect) hiddenSelect.value = "instock";
-            window.applyFilters(); 
-        } else {
-            if (hiddenSelect) hiddenSelect.value = "all";
-            currentFetchSession++; 
-            setStockUiState("off");
-            window.applyFilters(); 
-        }
-    };
-
+// في آخر الـ script بتاعك
+const autoCheckbox = document.getElementById("stockFilterToggleCheckbox");
+if (autoCheckbox) {
+    autoCheckbox.checked = true;
+    toggleStockValue(autoCheckbox);
+}
     window.clearAllStockFilters = function () {
         const checkbox = document.getElementById("stockFilterToggleCheckbox");
         const hiddenSelect = document.getElementById("stockFilterToggle");
