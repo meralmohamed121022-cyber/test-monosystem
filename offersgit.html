@@ -6741,17 +6741,28 @@ window.matchesFilters = function(product, filters) {
 
     function getStoreCode() {
         const urlParams = new URLSearchParams(window.location.search);
-        const raw = urlParams.get("ph") || localStorage.getItem("pharmacy_number") || sessionStorage.getItem("pharmacy_number") || "";
-        const cleanNum = String(raw).replace(/\D/g, "");
+        const raw = urlParams.get("ph") || 
+                    localStorage.getItem("pharmacy_number") || 
+                    sessionStorage.getItem("pharmacy_number") || "";
+        
+        const cleanNum = String(raw).replace(/\D/g, "");  // ✅ إصلاح: /\D/g
         if (!cleanNum) return null;
+        
         const storeNum = parseInt(cleanNum, 10);
         if (!Number.isFinite(storeNum)) return null;
+        
         return storeNum < 1000 ? "P" + String(storeNum).padStart(3, "0") : String(storeNum);
     }
 
     function showWelcomeMessage() {
         const storeCode = getStoreCode();
-        if (!storeCode) return;
+        console.log("🏥 Store detected:", storeCode);  // ✅ للتأكد
+        
+        if (!storeCode) {
+            console.warn("⚠️ No pharmacy store code found");
+            return;
+        }
+        
         if (document.getElementById('pharmacyWelcomeToast')) return;
 
         const toast = document.createElement('div');
@@ -6783,6 +6794,7 @@ window.matchesFilters = function(product, filters) {
         }, 4000);
     }
 
+    // باقي الكود زي ما هو تماماً...
     function setStockUiState(mode, extra = {}) {
         const statusText = document.getElementById("stockStatusText");
         const card = document.getElementById("stockFilterCard");
@@ -6811,6 +6823,7 @@ window.matchesFilters = function(product, filters) {
         }
     }
 
+    // ... باقي الدوال زي ما هي بدون تغيير
     const originalMatchesFilters = typeof window.matchesFilters === "function" 
         ? window.matchesFilters : function () { return true; };
 
@@ -6847,103 +6860,100 @@ window.matchesFilters = function(product, filters) {
         }
     };
 
-async function fetchStockForTargetedProducts(products, filters) {
-    currentFetchSession++; 
-    const mySession = currentFetchSession;
-    
-    const storeCode = getStoreCode();
-    if (!storeCode) return;
-
-    // 🔥 الحل الجذري: ابحث في كامل قاعدة البيانات عن الأصناف المطابقة للفلاتر وعليها عروض
-    // ده بيضمن إن الـ 2000 كود يدخلوا الفحص مش بس اللي معروضين قدامك
-    const allRelevantProducts = window.productsDB.filter(p => {
-        const hasActiveOffer = getOffer(p.Code) !== null;
-        return hasActiveOffer && originalMatchesFilters(p, filters);
-    });
-
-    const total = allRelevantProducts.length;
-    let fetched = 0;
-    const isMassive = total > 300; 
-    
-    setStockUiState("loading", { current: 0, total: total });
-
-    // ✅ التعديل ليتناسب مع تحديث الوركر Batch Size = 100
-    const batchSize = 100; 
-    const fetchPromises = [];
-    
-    for (let i = 0; i < total; i += batchSize) {
-        const batch = allRelevantProducts.slice(i, i + batchSize);
+    async function fetchStockForTargetedProducts(products, filters) {
+        currentFetchSession++; 
+        const mySession = currentFetchSession;
         
-        const codesToRequest = [];
-        batch.forEach(p => {
-            const code = String(p?.Code ?? "").trim();
-            const cacheKey = storeCode + "__" + code;
-            
-            // لو موجود في الكاش محلياً، حدثه فوراً وزود عداد الـ fetched
-            if (stockCache.has(cacheKey)) {
-                const cached = stockCache.get(cacheKey);
-                p.inStock = cached.inStock; 
-                p.actualStock = cached.actualStock;
-                fetched++;
-            } else if (code) {
-                codesToRequest.push(code);
-            }
+        const storeCode = getStoreCode();
+        console.log("🔍 Stock fetch for store:", storeCode);  // ✅ للتأكد
+        
+        if (!storeCode) {
+            console.warn("⚠️ No store code, skipping stock fetch");
+            return;
+        }
+
+        const allRelevantProducts = window.productsDB.filter(p => {
+            const hasActiveOffer = getOffer(p.Code) !== null;
+            return hasActiveOffer && originalMatchesFilters(p, filters);
         });
 
-        if (codesToRequest.length > 0) {
-            const codesString = codesToRequest.map(encodeURIComponent).join(',');
+        const total = allRelevantProducts.length;
+        let fetched = 0;
+        const isMassive = total > 300; 
+        
+        setStockUiState("loading", { current: 0, total: total });
 
-            // إرسال الطلب للوركر مع الهيدرز المطلوبة
-            const req = fetch(workerBaseUrl + "/api/stock?codes=" + codesString + "&store=" + encodeURIComponent(storeCode), {
-                headers: { "x-session-token": SESSION_TOKEN }
-            })
-            .then(res => res.json())
-            .then(data => {
-                // التأكد إننا لسه في نفس جلسة البحث (عشان لو اليوزر قفل وفتح بسرعة)
-                if (currentFetchSession !== mySession) return;
+        const batchSize = 100; 
+        const fetchPromises = [];
+        
+        for (let i = 0; i < total; i += batchSize) {
+            const batch = allRelevantProducts.slice(i, i + batchSize);
+            
+            const codesToRequest = [];
+            batch.forEach(p => {
+                const code = String(p?.Code ?? "").trim();
+                const cacheKey = storeCode + "__" + code;
                 
-                if (data && data.success && data.results) {
-                    data.results.forEach(resItem => {
-                        const cacheKey = storeCode + "__" + resItem.code;
-                        stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
-                        
-                        // تحديث الصنف المباشر في الـ batch
-                        const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
-                        if (targetP) {
-                            targetP.inStock = resItem.inStock;
-                            targetP.actualStock = resItem.stockLevel;
-                        }
-                    });
+                if (stockCache.has(cacheKey)) {
+                    const cached = stockCache.get(cacheKey);
+                    p.inStock = cached.inStock; 
+                    p.actualStock = cached.actualStock;
+                    fetched++;
+                } else if (code) {
+                    codesToRequest.push(code);
                 }
-                
-                fetched += codesToRequest.length;
-                setStockUiState("loading", { current: fetched, total: total });
-                
-                // تحديث الشاشة لو العدد مش ضخم عشان م يحصلش تهنيج
-                if (!isMassive) {
-                    try { originalApplyFilters(); } catch (e) {}
-                }
-            })
-            .catch(err => {
-                fetched += codesToRequest.length;
-                console.error("Stock Fetch Error:", err);
             });
-            fetchPromises.push(req);
-        } else {
-            // لو الدفعة دي كلها كانت في الكاش، بنحدث الـ UI بس بالعداد الجديد
-            setStockUiState("loading", { current: fetched, total: total });
+
+            if (codesToRequest.length > 0) {
+                const codesString = codesToRequest.map(encodeURIComponent).join(',');
+                const fullUrl = `${workerBaseUrl}/api/stock?codes=${codesString}&store=${encodeURIComponent(storeCode)}`;
+                console.log("📡 Stock URL:", fullUrl);  // ✅ للتأكد من الرابط
+                
+                const req = fetch(fullUrl, {
+                    headers: { "x-session-token": SESSION_TOKEN }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (currentFetchSession !== mySession) return;
+                    
+                    if (data && data.success && data.results) {
+                        data.results.forEach(resItem => {
+                            const cacheKey = storeCode + "__" + resItem.code;
+                            stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                            
+                            const targetP = batch.find(p => String(p.Code).trim() === resItem.code);
+                            if (targetP) {
+                                targetP.inStock = resItem.inStock;
+                                targetP.actualStock = resItem.stockLevel;
+                            }
+                        });
+                    }
+                    
+                    fetched += codesToRequest.length;
+                    setStockUiState("loading", { current: fetched, total: total });
+                    
+                    if (!isMassive) {
+                        try { originalApplyFilters(); } catch (e) {}
+                    }
+                })
+                .catch(err => {
+                    fetched += codesToRequest.length;
+                    console.error("Stock Fetch Error:", err);
+                });
+                fetchPromises.push(req);
+            } else {
+                setStockUiState("loading", { current: fetched, total: total });
+            }
+        }
+
+        await Promise.all(fetchPromises);
+
+        if (currentFetchSession === mySession) {
+            finishFetchSession(filters);
         }
     }
 
-    // انتظر انتهاء كل الـ Batches
-    await Promise.all(fetchPromises);
-
-    // إنهاء الجلسة وتحديث الواجهة النهائي
-    if (currentFetchSession === mySession) {
-        finishFetchSession(filters);
-    }
-}
-function finishFetchSession(filters) {
+    function finishFetchSession(filters) {
         try { originalApplyFilters(); } catch (e) {}
         const db = Array.isArray(window.productsDB) ? window.productsDB : [];
         const finalCount = db.filter(p => originalMatchesFilters(p, filters) && p.inStock === true && Number(p.actualStock) > 0).length;
