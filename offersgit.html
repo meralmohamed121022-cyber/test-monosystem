@@ -6863,10 +6863,10 @@ window.matchesFilters = function(product, filters) {
             const percent = Math.floor((current / total) * 100);
             
             statusText.innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; gap:8px; width:100%;">
-                    <span style="font-weight:900; font-size:1.2em; color:#d97706;">${storeCode} (${percent}%)</span>
-                    <div style="width:100%; height:12px; background:#fef3c7; border-radius:12px; overflow:hidden; border:1.5px solid #fcd34d; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="width:${percent}%; height:100%; background:linear-gradient(90deg, #f59e0b, #d97706); transition:width 0.2s ease; box-shadow: 0 0 10px rgba(217, 119, 6, 0.4);"></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:5px; width:100%;">
+                    <span style="font-weight:900; font-size:1.1em; color:#d97706;">${storeCode} (${percent}%)</span>
+                    <div style="width:100%; height:6px; background:#fef3c7; border-radius:10px; overflow:hidden; border:1px solid #fcd34d;">
+                        <div style="width:${percent}%; height:100%; background:linear-gradient(90deg, #f59e0b, #d97706); transition:width 0.3s ease;"></div>
                     </div>
                 </div>
             `;
@@ -6970,8 +6970,8 @@ window.matchesFilters = function(product, filters) {
         
         setStockUiState("loading", { current: 0, total: total });
 
-        const batchSize = 100; 
-        const maxConcurrency = 35; // 🎯 تم رفع السرعة للقصوى (35 طلب متوازي بدلاً من 15) لإنهاء العملية في ثوانٍ معدودة
+        const batchSize = 48; 
+        const maxConcurrency = 15; // 🎯 تقليل التوازي قليلاً (15 بدل 40) لضمان استقرار السيرفر وعدم ضياع البيانات
         let activeRequests = 0;
         let currentIndex = 0;
         let lastUiUpdate = 0;
