@@ -7771,27 +7771,39 @@
             if (!raw) return;
             const parsed = JSON.parse(raw);
             const today = getTodayString();
-            // Get current period ID (defined globally around line 58820)
-            const currentPeriodId = (typeof currentDataInstance !== 'undefined') ? currentDataInstance.id : 'default';
+            
+            // Robust check for current period ID
+            let currentPeriodId = 'default';
+            const periodObj = window.currentDataInstance || (typeof currentDataInstance !== 'undefined' ? currentDataInstance : null);
+            if (periodObj && periodObj.id) currentPeriodId = periodObj.id;
 
             if (parsed.date === today && parsed.periodId === currentPeriodId) {
-              console.log("📦 [Cache] Loading valid data for:", today, "Period:", currentPeriodId);
+              console.log(`📦 [Stock Cache] Found valid cache for today (${today}) and period (${currentPeriodId})`);
               if (parsed.data) {
+                let count = 0;
                 Object.keys(parsed.data).forEach(key => {
                   stockCache.set(key, parsed.data[key]);
+                  count++;
                 });
+                console.log(`✅ [Stock Cache] Successfully restored ${count} items.`);
+                
+                // Proactively sync what we already have
+                syncProductsWithCache();
               }
             } else {
-              console.log("🧹 [Cache] Expired or different period, resetting.");
+              console.log(`🧹 [Stock Cache] Cache invalid (Date: ${parsed.date} vs ${today}, Period: ${parsed.periodId} vs ${currentPeriodId}). Clearing.`);
               localStorage.removeItem(CACHE_KEY);
             }
-          } catch (e) { console.error("❌ [Cache] Load error:", e); }
+          } catch (e) { console.error("❌ [Stock Cache] Load error:", e); }
         }
 
         function saveCacheToLocal() {
           try {
             const today = getTodayString();
-            const currentPeriodId = (typeof currentDataInstance !== 'undefined') ? currentDataInstance.id : 'default';
+            let currentPeriodId = 'default';
+            const periodObj = window.currentDataInstance || (typeof currentDataInstance !== 'undefined' ? currentDataInstance : null);
+            if (periodObj && periodObj.id) currentPeriodId = periodObj.id;
+
             const dataObj = {};
             stockCache.forEach((val, key) => {
               dataObj[key] = val;
@@ -7801,7 +7813,29 @@
               periodId: currentPeriodId,
               data: dataObj
             }));
-          } catch (e) { console.error("❌ [Cache] Save error:", e); }
+            console.log(`💾 [Stock Cache] Saved ${stockCache.size} items to localStorage.`);
+          } catch (e) { console.error("❌ [Stock Cache] Save error:", e); }
+        }
+
+        function syncProductsWithCache() {
+          const db = Array.isArray(window.productsDB) ? window.productsDB : [];
+          const storeCode = getStoreCode();
+          if (db.length > 0 && storeCode && stockCache.size > 0) {
+            let syncCount = 0;
+            db.forEach(p => {
+              const codeStr = String(p.Code).trim();
+              if (typeof p.inStock === "undefined") {
+                const cacheKey = storeCode + "__" + codeStr;
+                if (stockCache.has(cacheKey)) {
+                  const cached = stockCache.get(cacheKey);
+                  p.inStock = cached.inStock;
+                  p.actualStock = cached.actualStock;
+                  syncCount++;
+                }
+              }
+            });
+            if (syncCount > 0) console.log(`🔄 [Stock Cache] Synced ${syncCount} products from memory.`);
+          }
         }
 
         // Initialize cache from localStorage
@@ -7946,7 +7980,10 @@
             const db = Array.isArray(window.productsDB) ? window.productsDB : [];
             const activeCodes = getActiveOfferCodesSet();
 
-            // جلب الأكواد اللي "عليها عرض حالي" فقط وفقط لو لسه معندناش الستوك بتاعها
+            // 1. Sync from Cache immediately to avoid "Loading" state if data is already known
+            syncProductsWithCache();
+
+            // 2. Identify what actually needs fetching
             const productsToFetch = db.filter(p => {
               const codeStr = String(p.Code).trim();
               return activeCodes.has(codeStr) && typeof p.inStock === "undefined";
