@@ -7758,6 +7758,54 @@
 
         const workerBaseUrl = "https://online.meralmohamed121022.workers.dev";
         const stockCache = new Map();
+        const CACHE_KEY = "STOCK_CACHE_DATA_V1";
+
+        function getTodayString() {
+          const d = new Date();
+          return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+
+        function loadCacheFromLocal() {
+          try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            const today = getTodayString();
+            // Get current period ID (defined globally around line 58820)
+            const currentPeriodId = (typeof currentDataInstance !== 'undefined') ? currentDataInstance.id : 'default';
+
+            if (parsed.date === today && parsed.periodId === currentPeriodId) {
+              console.log("📦 [Cache] Loading valid data for:", today, "Period:", currentPeriodId);
+              if (parsed.data) {
+                Object.keys(parsed.data).forEach(key => {
+                  stockCache.set(key, parsed.data[key]);
+                });
+              }
+            } else {
+              console.log("🧹 [Cache] Expired or different period, resetting.");
+              localStorage.removeItem(CACHE_KEY);
+            }
+          } catch (e) { console.error("❌ [Cache] Load error:", e); }
+        }
+
+        function saveCacheToLocal() {
+          try {
+            const today = getTodayString();
+            const currentPeriodId = (typeof currentDataInstance !== 'undefined') ? currentDataInstance.id : 'default';
+            const dataObj = {};
+            stockCache.forEach((val, key) => {
+              dataObj[key] = val;
+            });
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              date: today,
+              periodId: currentPeriodId,
+              data: dataObj
+            }));
+          } catch (e) { console.error("❌ [Cache] Save error:", e); }
+        }
+
+        // Initialize cache from localStorage
+        loadCacheFromLocal();
         let currentFetchSession = 0;
         let capturedFilters = {};
 
@@ -8003,6 +8051,7 @@
                             targetP.actualStock = resItem.stockLevel;
                           }
                         });
+                        saveCacheToLocal(); // ✅ Save to localStorage after each successful batch
                       }
                     } catch (err) { console.error(`❌ Permanent failure:`, err); }
                     fetched += codesToRequest.length;
@@ -8026,6 +8075,7 @@
         }
 
         function finishFetchSession(filters) {
+          saveCacheToLocal(); // ✅ Final save when session finishes
           try { originalApplyFilters(); } catch (e) { }
           const db = Array.isArray(window.productsDB) ? window.productsDB : [];
           const finalCount = db.filter(p => originalMatchesFilters(p, filters) && p.inStock === true && Number(p.actualStock) > 0).length;
