@@ -39717,28 +39717,27 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
     const priceBox = document.getElementById(priceId);
     const RIYAL_SVG = "https://www.sama.gov.sa/ar-sa/Currency/Documents/Saudi_Riyal_Symbol-2.svg";
 
-    // 0️⃣ تحسين: لو المنتج تم جلب بيانات الستوك بتاعته بالفعل من خلال الـ Bulk Sync، لا داعي لطلبه مرة أخرى
+    // 0️⃣ تحسين: لو المنتج تم جلب بيانات الستوك والعروض بتاعته بالفعل، لا داعي لطلبه مرة أخرى
     const existingP = window.productsDB?.find(p => String(p.Code).trim() === String(code));
-    if (existingP && typeof existingP.inStock !== "undefined") {
-        // تحديث الواجهة فوراً من البيانات المخزنة
+    
+    // ✅ التحقق إذا كان لدينا الستوك والعرض أونلاين بالفعل
+    if (existingP && typeof existingP.inStock !== "undefined" && typeof existingP.onlineOffer !== "undefined") {
         if (existingP.inStock) {
-            const offer = getOffer(code);
             onlineBox.style.background = "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)";
             onlineBox.style.display = "flex"; 
-            onlineBox.innerHTML = `<span style="color:white; font-weight:800; font-size:10px; text-align:center; line-height:1.2;">🌐 Online: ${offer?.offer || 'In Stock'}</span>`;
+            onlineBox.innerHTML = `<span style="color:white; font-weight:800; font-size:10px; text-align:center; line-height:1.2;">🌐 Online: ${existingP.onlineOffer || 'In Stock'}</span>`;
         } else {
             onlineBox.innerHTML = `<span style="color:#94a3b8; font-size:10px;">🌐 No Online Offer</span>`;
             setTimeout(() => { onlineBox.style.display = 'none'; }, 2000);
         }
-        // تحديث السعر لو متاح
         priceBox.innerHTML = `<span style="color: #0f172a; font-size: 18px; font-weight: 800;">${dbPrice.toFixed(2)} <img src="${RIYAL_SVG}" style="width:14px!important;height:14px!important;display:inline-block!important;"/></span>`;
         return;
     }
 
-    // 1️⃣ استدعاء كود الصيدلية الموحد (مثل P066) لضمان دقة البيانات بناءً على تسجيل الدخول
+    // 1️⃣ استدعاء كود الصيدلية الموحد
     const storeCode = typeof getStoreCode === 'function' ? getStoreCode() : null;
 
-    // 2️⃣ بناء الرابط مع تمرير الـ store للوركر لجلب بيانات فرعك المحدد وليس البيانات العامة
+    // 2️⃣ بناء الرابط
     let apiUrl = `https://online.meralmohamed121022.workers.dev/api/product?code=${code}&t=${Date.now()}`;
     if (storeCode) {
         apiUrl += `&store=${encodeURIComponent(storeCode)}`;
@@ -39751,18 +39750,25 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
         const data = await response.json();
 
         if (data.success) {
-            // 3️⃣ تحديث بوكس العروض أونلاين بناءً على توافر العرض
+            // ✅ حفظ العرض أونلاين في الكائن لعدم طلبه مجدداً
+            if (existingP) {
+                existingP.onlineOffer = data.hasOnlineOffer ? (data.offer || 'In Stock') : null;
+                existingP.inStock = data.inStock;
+                existingP.actualStock = data.stockLevel;
+            }
+
+            // 3️⃣ تحديث بوكس العروض أونلاين
             if (data.hasOnlineOffer) {
                 onlineBox.style.background = "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)";
                 onlineBox.style.border = "none";
                 onlineBox.style.display = "flex"; 
-                onlineBox.innerHTML = `<span style="color:white; font-weight:800; font-size:10px; text-align:center; line-height:1.2;">🌐 Online: ${data.offer}</span>`;
+                onlineBox.innerHTML = `<span style="color:white; font-weight:800; font-size:10px; text-align:center; line-height:1.2;">🌐 Online: ${data.offer || 'In Stock'}</span>`;
             } else {
                 onlineBox.innerHTML = `<span style="color:#94a3b8; font-size:10px;">🌐 No Online Offer</span>`;
                 setTimeout(() => { onlineBox.style.display = 'none'; }, 2000);
             }
 
-            // 4️⃣ معالجة الأسعار (مقارنة السعر أونلاين بالسعر المخزن في قاعدة البيانات)
+            // 4️⃣ معالجة الأسعار
             const finalP = data.finalPrice || data.originalPrice || dbPrice;
             const originalP = data.originalPrice || dbPrice;
             const isDiscounted = finalP < originalP;
@@ -39775,21 +39781,10 @@ async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
                 </span>
             `;
 
-            // 5️⃣ تحديث حالة الاستوك الفعلي في قاعدة البيانات المحلية لضمان عمل الفلاتر بشكل صحيح
-            if (data.stockLevel !== undefined) {
-                const product = window.productsDB?.find(p => String(p.Code).trim() === String(code));
-                if (product) {
-                    product.inStock = data.inStock;
-                    product.actualStock = data.stockLevel;
-                }
-                console.log(`✅ Stock Synced for ${code} in ${storeCode}: ${data.stockLevel}`);
-            }
-
         } else {
             throw new Error("API Response Error");
         }
     } catch (e) {
-        // في حالة الفشل، يتم عرض السعر الافتراضي من قاعدة البيانات لضمان عدم تعطل الواجهة
         if (priceBox) {
             priceBox.innerHTML = `<span style="color: #0f172a; font-size: 18px; font-weight: 800;">${dbPrice.toFixed(2)} <img src="${RIYAL_SVG}" style="width:14px!important;height:14px!important;display:inline-block!important;"/></span>`;
         }
