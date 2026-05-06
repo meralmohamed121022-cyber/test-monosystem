@@ -36,13 +36,37 @@
     /* Instant hiding for scanner mode */
     html.direct-scanner #loaderScreen, 
     html.direct-scanner #gatewayView, 
-    html.direct-scanner #mainOffersContainer, 
-    html.direct-scanner #fixedHeader { 
+    html.direct-scanner #fixedHeader,
+    html.direct-scanner #toolsSidebarToggle,
+    html.direct-scanner #toolsSidebar,
+    html.direct-scanner .hero-banner,
+    html.direct-scanner .promo-media-section,
+    html.direct-scanner .global-search-wrapper,
+    html.direct-scanner .filters-container-main { 
       display: none !important; 
     }
-    /* Instant showing for scanner modal */
+    
+    /* Ensure the parent container is technically visible to allow children to show */
+    html.direct-scanner #mainOffersContainer {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+    /* Hide everything else inside main container except the scanner */
+    html.direct-scanner #mainOffersContainer > *:not(#scannerModalOverlay) {
+      display: none !important;
+    }
+
+    /* Force show the scanner modal with maximum priority */
     html.direct-scanner #scannerModalOverlay { 
       display: flex !important; 
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 9999999 !important;
     }
   </style>
 </head>
@@ -47350,12 +47374,12 @@
       // 2. تشغيل السكانر بمجرد ما الصفحة تقرأ العناصر
       window.addEventListener("DOMContentLoaded", () => {
         if (window.location.hash.includes('scanner')) {
-          // فتح السكانر بسرعة (300 ملي ثانية كافية جداً لتشغيل الكاميرا)
+          // فتح السكانر بسرعة فائقة (50 ملي ثانية كافية بعد تحميل المكتبة)
           setTimeout(() => {
             if (typeof openBarcodeScanner === 'function') {
               openBarcodeScanner();
             }
-          }, 300);
+          }, 50);
         }
       });
       window.resetAllGlobalFilters = function () {
