@@ -2295,9 +2295,56 @@ svg {
   box-sizing: border-box !important;
 }
 
-#searchSuggestions > div.suggestion-item:hover {
-  background: rgba(102, 126, 234, 0.15) !important;
-  transform: translateX(5px) !important;
+/* ====== 📦 MODERN STOCK SWITCH STYLING ====== */
+.stock-switch {
+    transition: transform 0.2s ease;
+}
+
+.stock-switch:hover {
+    transform: scale(1.05);
+}
+
+.stock-slider {
+    background: #cbd5e1 !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+}
+
+.stock-slider:before {
+    position: absolute;
+    content: "";
+    height: 27px;
+    width: 27px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+input:checked + .stock-slider {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important;
+    box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+}
+
+input:checked + .stock-slider:before {
+    transform: translateX(35px);
+    box-shadow: -2px 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Animations for labels */
+#labelOn, #labelOff {
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] #stockFilterCard {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+[data-theme="dark"] #stockStatusText {
+    color: #e2e8f0 !important;
 }
 
 #searchSuggestions > div:not(:first-child) {
@@ -5323,34 +5370,33 @@ body > div:has(> label[for="codesFileInput"]),
 
 <div class="filters-container-main" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
     
-    <!-- 1. Modern Stock Availability Toggle (Full Width) -->
-    <div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; transition: all 0.4s ease; width: 100%;">
-        <label style="display: flex; align-items: center; gap: 8px; color: #2c3e50; font-weight: 900; margin-bottom: 15px; font-size: 0.9em; justify-content: center; text-transform: uppercase;">
-            <span>📦</span> Stock Availability
-        </label>
+    <!-- 1. Modern Stock Availability Toggle (Simplified) -->
+    <div id="stockFilterCard" class="filter-group" style="background: #fdfdfd; border: 1px solid #eee; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100px; transition: all 0.4s ease; width: 100%;">
         
         <!-- Wrapper for Toggle & Labels -->
-        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%;">
             <!-- Left Label -->
-            <span id="labelAllItems" style="font-size: 13px; font-weight: 800; color: #1e293b; transition: color 0.3s; letter-spacing: 0.5px;">ALL ITEMS</span>
+            <span id="labelOff" style="font-size: 16px; font-weight: 900; color: #94a3b8; transition: color 0.3s; letter-spacing: 1px;">OFF</span>
             
             <!-- The Toggle Switch -->
-            <label class="stock-switch" style="position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; margin: 0;">
-                <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;">
-                <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;"></span>
+            <label class="stock-switch" style="position: relative; display: inline-block; width: 70px; height: 35px; flex-shrink: 0; margin: 0;">
+                <input type="checkbox" id="stockFilterToggleCheckbox" onchange="toggleStockValue(this)" style="opacity: 0; width: 0; height: 0;" checked>
+                <span id="sliderInner" class="stock-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #16a34a; transition: .4s; border-radius: 34px;"></span>
             </label>
             
             <!-- Right Label -->
-            <span id="labelInStock" style="font-size: 13px; font-weight: 800; color: #94a3b8; transition: color 0.3s; letter-spacing: 0.5px;">IN STOCK</span>
+            <span id="labelOn" style="font-size: 16px; font-weight: 900; color: #166534; transition: color 0.3s; letter-spacing: 1px;">ON</span>
         </div>
 
-        <!-- Status Text (Store info & count) -->
-        <span id="stockStatusText" style="margin-top: 12px; font-size: 11px; font-weight: 700; color: #64748b; text-align: center; height: 16px;">Showing all items</span>
+        <!-- Status Text (Pharmacy info & count) -->
+        <div id="stockStatusText" style="margin-top: 15px; font-size: 14px; font-weight: 800; color: #1e293b; text-align: center; direction: rtl; line-height: 1.6;">
+            <!-- Will be updated by JS -->
+        </div>
 
         <!-- Hidden Select for logic compatibility -->
         <select id="stockFilterToggle" style="display: none;">
-            <option value="all" selected>all</option>
-            <option value="instock">instock</option>
+            <option value="all">all</option>
+            <option value="instock" selected>instock</option>
         </select>
     </div>
 
@@ -6799,27 +6845,30 @@ window.matchesFilters = function(product, filters) {
         const statusText = document.getElementById("stockStatusText");
         const card = document.getElementById("stockFilterCard");
         const slider = document.getElementById("sliderInner");
+        const labelOn = document.getElementById("labelOn");
+        const labelOff = document.getElementById("labelOff");
         const storeCode = getStoreCode() || "--";
 
         if (!statusText || !card || !slider) return;
 
         if (mode === "off") {
-            statusText.innerHTML = "Show All Items";
-            statusText.style.color = "#7f8c8d";
-            card.style.backgroundColor = "#fdfdfd"; slider.style.backgroundColor = "#ccc";
+            statusText.innerHTML = `رقم الصيدلية: ${storeCode}`;
+            if (labelOn) labelOn.style.color = "#94a3b8";
+            if (labelOff) labelOff.style.color = "#e74c3c";
+            card.style.backgroundColor = "#fdfdfd"; 
+            slider.style.backgroundColor = "#ccc";
         } else if (mode === "loading") {
-            if (extra.total > 0 && extra.total > 150) {
-                statusText.innerHTML = `⏳ Loading (${storeCode})<br><span style="font-size:11px; color:#b45309;">${extra.current || 0} / ${extra.total}</span>`;
-            } else {
-                statusText.innerHTML = `⏳ Loading Stock (${storeCode})...`;
-            }
+            statusText.innerHTML = `⏳ جاري التحميل (${storeCode})...`;
             statusText.style.color = "#d97706";
-            card.style.backgroundColor = "#fffbeb"; slider.style.backgroundColor = "#f59e0b";
+            card.style.backgroundColor = "#fffbeb"; 
+            slider.style.backgroundColor = "#f59e0b";
         } else if (mode === "on") {
-            const countText = typeof extra.count === "number" ? " - " + extra.count + " items" : "";
-            statusText.innerHTML = `✅ IN STOCK ONLY (${storeCode})${countText}`;
-            statusText.style.color = "#166534";
-            card.style.backgroundColor = "#ecfdf5"; slider.style.backgroundColor = "#16a34a";
+            const count = typeof extra.count === "number" ? extra.count : "--";
+            statusText.innerHTML = `رقم الصيدلية: ${storeCode}<br>عدد الاصناف: ${count}`;
+            if (labelOn) labelOn.style.color = "#166534";
+            if (labelOff) labelOff.style.color = "#94a3b8";
+            card.style.backgroundColor = "#ecfdf5"; 
+            slider.style.backgroundColor = "#16a34a";
         }
     }
 
@@ -7025,7 +7074,21 @@ window.matchesFilters = function(product, filters) {
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-        setStockUiState("off");
+        const checkbox = document.getElementById("stockFilterToggleCheckbox");
+        const hiddenSelect = document.getElementById("stockFilterToggle");
+        
+        // Default to ON
+        if (checkbox) checkbox.checked = true;
+        if (hiddenSelect) hiddenSelect.value = "instock";
+        
+        setStockUiState("on");
+        
+        // Trigger filters after a short delay to ensure DB is ready
+        setTimeout(() => {
+            if (typeof window.applyFilters === "function") {
+                window.applyFilters();
+            }
+        }, 500);
     });
     window.addEventListener("load", function () {
         if (!document.getElementById("pharmacyWelcomeToast")) {
