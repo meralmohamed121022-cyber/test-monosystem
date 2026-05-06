@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>MONO SYSTEM</title>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
-    
+    <link rel="icon"
+        href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
+    <link rel="apple-touch-icon"
+        href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
+
     <style>
-    @media screen and (max-width: 0px) { 
-    }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @media screen and (max-width: 0px) {}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --bg-primary: #0a1628;
             --bg-secondary: #1a2942;
@@ -26,6 +34,7 @@
             --nav-bg-end: #1a3a52;
             --glass-bg: rgba(13, 33, 55, 0.85);
         }
+
         body.day-mode {
             --bg-primary: #f0f4f8;
             --bg-secondary: #ffffff;
@@ -37,7 +46,11 @@
             --nav-bg-end: #f7fafc;
             --glass-bg: rgba(255, 255, 255, 0.9);
         }
-        html { scroll-behavior: smooth; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
@@ -49,449 +62,1089 @@
             position: relative;
         }
 
-#userInfoBadge {
-    position: fixed;
-    top: 20px; 
-    left: 50%; 
-    transform: translateX(-50%);
-    background: var(--glass-bg); 
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--accent-orange); 
-    color: var(--accent-orange-light);
-    padding: 8px 20px; 
-    border-radius: 20px; 
-    font-weight: bold;
-    font-size: 14px; 
-    z-index: 25000; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    display: none; 
-    align-items: center; 
-    gap: 8px;
-}
+        #userInfoBadge {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange-light);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 25000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
         .custom-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 30000;
-            display: flex; justify-content: center; align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 30000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             backdrop-filter: blur(10px);
         }
+
         .custom-modal-box {
-            background: var(--glass-bg); border: 1px solid var(--border-color);
-            padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
-            text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             color: var(--text-primary);
         }
-        .custom-modal-box input, .custom-modal-box select {
-            width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px;
-            border: 1px solid var(--accent-orange); background: rgba(255,255,255,0.1);
-            color: var(--text-primary); font-size: 16px; outline: none;
+
+        .custom-modal-box input,
+        .custom-modal-box select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid var(--accent-orange);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
         }
-        .custom-modal-box select option { background: var(--bg-secondary); color: white; }
-        
+
+        .custom-modal-box select option {
+            background: var(--bg-secondary);
+            color: white;
+        }
+
         .custom-modal-box button {
-            color: white; border: none; padding: 12px 25px; border-radius: 10px; 
-            font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            margin-top: 10px;
         }
-        .custom-modal-box button:hover { transform: scale(1.03); }
 
-        .hidden { display: none !important; }
+        .custom-modal-box button:hover {
+            transform: scale(1.03);
+        }
 
-.floating-btn {
-    position: absolute !important;
-    z-index: 25000 !important;
-    width: 50px; 
-    height: 50px;
-    border-radius: 50%; 
-    border: 2px solid white; 
-    display: flex; 
-    align-items: center;
-    justify-content: center; 
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transition: transform 0.3s, opacity 0.3s;
-}
+        .hidden {
+            display: none !important;
+        }
 
-.floating-btn:active { transform: scale(0.9); }
+        .floating-btn {
+            position: absolute !important;
+            z-index: 25000 !important;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, opacity 0.3s;
+        }
 
-.mode-toggle { 
-    top: 20px !important; 
-    left: 20px !important; 
-    background: var(--accent-orange) !important; 
-    color: white !important; 
-}
+        .floating-btn:active {
+            transform: scale(0.9);
+        }
 
-.logout-btn { 
-    top: 20px !important; 
-    right: 20px !important; 
-    background: #e74c3c !important; 
-    color: white !important; 
-}
+        .mode-toggle {
+            top: 20px !important;
+            left: 20px !important;
+            background: var(--accent-orange) !important;
+            color: white !important;
+        }
 
-#userInfoBadge {
-    position: absolute !important; 
-    top: 20px !important; 
-    left: 50% !important; 
-    transform: translateX(-50%) !important;
-    z-index: 25000 !important;
-}
-        .scroll-toggle { bottom: 100px; right: 20px; background: var(--nav-bg-start); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .logout-btn {
+            top: 20px !important;
+            right: 20px !important;
+            background: #e74c3c !important;
+            color: white !important;
+        }
+
+        #userInfoBadge {
+            position: absolute !important;
+            top: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 25000 !important;
+        }
+
+        .scroll-toggle {
+            bottom: 100px;
+            right: 20px;
+            background: var(--nav-bg-start);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
 
         #iframeContainer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-primary); z-index: 21000;
-            display: none; flex-direction: column; opacity: 0;
-            transition: opacity 0.4s ease; padding-bottom: 70px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 21000;
+            display: none;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            padding-bottom: 70px;
         }
-        #iframeContainer.show { display: flex; opacity: 1; }
-        
+
+        #iframeContainer.show {
+            display: flex;
+            opacity: 1;
+        }
+
         #iframeBackBtn {
-            background: transparent; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            padding: 8px; transition: 0.3s; position: relative;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: 0.3s;
+            position: relative;
         }
-        #iframeBackBtn:active { transform: scale(0.9); }
+
+        #iframeBackBtn:active {
+            transform: scale(0.9);
+        }
+
         .back-arrow {
-            width: 0; height: 0;
-            border-top: 14px solid transparent; border-bottom: 14px solid transparent;
-            border-right: 18px solid #4ade80; transition: 0.3s;
+            width: 0;
+            height: 0;
+            border-top: 14px solid transparent;
+            border-bottom: 14px solid transparent;
+            border-right: 18px solid #4ade80;
+            transition: 0.3s;
             filter: drop-shadow(0 2px 8px rgba(74, 222, 128, 0.4));
         }
-        #iframeBackBtn:hover .back-arrow { border-right-color: #22c55e; transform: translateX(-3px); }
 
-        #embeddedFrame { flex: 1; width: 100%; min-width: 100%; height: 100%; border: none; background: white; overflow-x: hidden; display: block; }
-        
-        #iframeError {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; background: var(--glass-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--border-color); border-radius: 20px;
-            padding: 40px 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            display: none; z-index: 16000; max-width: 400px; width: 90%;
+        #iframeBackBtn:hover .back-arrow {
+            border-right-color: #22c55e;
+            transform: translateX(-3px);
         }
-        #iframeError.show { display: flex; flex-direction: column; align-items: center; }
-        #iframeError i { font-size: 60px; color: var(--accent-orange); margin-bottom: 20px; }
-        #iframeError h3 { font-size: 20px; margin-bottom: 10px; color: var(--text-primary); }
-        #iframeError p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
 
-        #homePage { padding: 20px; padding-top: 90px; max-width: 800px; margin: 0 auto; }
+        #embeddedFrame {
+            flex: 1;
+            width: 100%;
+            min-width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            overflow-x: hidden;
+            display: block;
+        }
+
+        #iframeError {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 16000;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        #iframeError.show {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #iframeError i {
+            font-size: 60px;
+            color: var(--accent-orange);
+            margin-bottom: 20px;
+        }
+
+        #iframeError h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        #iframeError p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        #homePage {
+            padding: 20px;
+            padding-top: 90px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
         .banner-container {
-            position: relative; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 25px;
-            min-height: 220px; background: var(--bg-secondary); display: flex;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
+            min-height: 220px;
+            background: var(--bg-secondary);
+            display: flex;
         }
-        .banner-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .banner-slide {
-            flex: 0 0 100%; width: 100%; height: 220px; position: relative;
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 25px; cursor: pointer;
-        }
-        .banner-content { position: relative; z-index: 2; color: white; }
-        .banner-slide h2 {
-            font-size: 24px; margin-bottom: 8px; text-transform: uppercase;
-            letter-spacing: 1px; color: var(--accent-orange); text-shadow: 1px 1px 2px black;
-        }
-        .banner-slide p { font-size: 14px; max-width: 80%; line-height: 1.4; }
-.banner-slide::after {
-    content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
-    background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.1));
-    z-index: 1;
-    pointer-events: none; 
-}
 
-.banner-bg-media {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    object-fit: cover; z-index: 0; 
-    cursor: zoom-in; 
-}
-        .content-grid { display: flex; flex-direction: column; gap: 20px; }
+        .banner-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .banner-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 220px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 25px;
+            cursor: pointer;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+
+        .banner-slide h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-orange);
+            text-shadow: 1px 1px 2px black;
+        }
+
+        .banner-slide p {
+            font-size: 14px;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .banner-slide::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1));
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .banner-bg-media {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            cursor: zoom-in;
+        }
+
+        .content-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .content-card {
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 15px; overflow: visible;
-            backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 15px;
+            overflow: visible;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-header h3 { color: var(--accent-orange-light); font-size: 18px; font-weight: 700; }
-        
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-header h3 {
+            color: var(--accent-orange-light);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
         .media-container {
-            position: relative; width: 100%; height: auto;
-            border-radius: 12px; overflow: hidden; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;
+            position: relative;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .media-container img {
-            width: 100%; height: auto; display: block;
-            object-fit: cover; border-radius: 12px; cursor: pointer;
-            user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
-        .media-container video { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+
+        .media-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
         .zoom-icon {
-            position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.7);
-            color: var(--accent-orange); width: 35px; height: 35px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            pointer-events: none; font-size: 16px; border: 1px solid rgba(255,255,255,0.2); z-index: 10;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--accent-orange);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            font-size: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
         }
+
         .gallery-dots {
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 8px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; z-index: 10;
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 20px;
+            z-index: 10;
         }
-        .gallery-dot { width: 8px; height: 8px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; }
-        .gallery-dot.active { background: var(--accent-orange); transform: scale(1.2); }
-        .card-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin-top: 10px; }
+
+        .gallery-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .gallery-dot.active {
+            background: var(--accent-orange);
+            transform: scale(1.2);
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
 
         #lightbox {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.95); z-index: 10000;
-            display: none; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        #lightbox.show { display: flex; opacity: 1; }
+
+        #lightbox.show {
+            display: flex;
+            opacity: 1;
+        }
+
         #lightbox img {
-            max-width: 95%; max-height: 90%; border-radius: 5px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.1); object-fit: contain;
-            touch-action: none; cursor: grab; transition: transform 0.1s ease-out;
+            max-width: 95%;
+            max-height: 90%;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            object-fit: contain;
+            touch-action: none;
+            cursor: grab;
+            transition: transform 0.1s ease-out;
         }
-        #lightbox img:active { cursor: grabbing; }
-        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 35px; cursor: pointer; z-index: 10001; }
-        
-        .lightbox-prev, .lightbox-next {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            color: white; font-size: 40px; font-weight: bold; cursor: pointer;
-            z-index: 10002; padding: 20px; user-select: none;
-            background: rgba(0,0,0,0.3); border-radius: 10px;
+
+        #lightbox img:active {
+            cursor: grabbing;
         }
-        .lightbox-prev { left: 10px; }
-        .lightbox-next { right: 10px; }
-        .lightbox-prev:hover, .lightbox-next:hover { color: var(--accent-orange); background: rgba(0,0,0,0.6); }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 35px;
+            cursor: pointer;
+            z-index: 10001;
+        }
+
+        .lightbox-prev,
+        .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10002;
+            padding: 20px;
+            user-select: none;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .lightbox-prev {
+            left: 10px;
+        }
+
+        .lightbox-next {
+            right: 10px;
+        }
+
+        .lightbox-prev:hover,
+        .lightbox-next:hover {
+            color: var(--accent-orange);
+            background: rgba(0, 0, 0, 0.6);
+        }
 
         #bottomNav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--glass-bg); backdrop-filter: blur(20px);
-            padding: 10px 0; display: flex; justify-content: space-around;
-            border-top: 1px solid var(--border-color); z-index: 21000;
-            transition: transform 0.4s ease; padding-bottom: max(10px, env(safe-area-inset-bottom));
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border-color);
+            z-index: 21000;
+            transition: transform 0.4s ease;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
         }
-        #bottomNav.hidden { transform: translateY(100%); }
+
+        #bottomNav.hidden {
+            transform: translateY(100%);
+        }
+
         .nav-btn {
-            background: none; border: none; color: var(--text-secondary);
-            display: flex; flex-direction: column; align-items: center;
-            gap: 5px; cursor: pointer; transition: 0.3s;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .nav-btn i { font-size: 20px; opacity: 0.7; }
-        .nav-btn span { font-size: 10px; font-weight: 600; opacity: 0.7; }
-        .nav-btn.active i, .nav-btn.active span { color: var(--accent-orange); opacity: 1; }
-        .nav-btn.active i { transform: translateY(-3px); }
+
+        .nav-btn i {
+            font-size: 20px;
+            opacity: 0.7;
+        }
+
+        .nav-btn span {
+            font-size: 10px;
+            font-weight: 600;
+            opacity: 0.7;
+        }
+
+        .nav-btn.active i,
+        .nav-btn.active span {
+            color: var(--accent-orange);
+            opacity: 1;
+        }
+
+        .nav-btn.active i {
+            transform: translateY(-3px);
+        }
 
         #sectionsMenu {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) scale(0.9);
-            width: 92%; max-width: 400px; background: var(--glass-bg);
-            backdrop-filter: blur(25px); border: 1px solid var(--border-color);
-            border-radius: 24px; padding: 20px; opacity: 0; pointer-events: none;
-            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1); z-index: 22000;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: flex; flex-wrap: wrap; gap: 12px;
-            justify-content: center; max-height: 70vh; overflow-y: auto;
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            width: 92%;
+            max-width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 22000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            max-height: 70vh;
+            overflow-y: auto;
         }
-        #sectionsMenu.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
-        .menu-header { width: 100%; text-align: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-        .menu-header span { color: var(--accent-orange); font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+
+        #sectionsMenu.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .menu-header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .menu-header span {
+            color: var(--accent-orange);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
         .section-btn {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 8px; width: calc(50% - 6px); min-height: 110px; padding: 15px 10px;
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);
-            border-radius: 20px; color: var(--text-primary); cursor: pointer;
-            transition: all 0.3s ease; position: relative; overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: calc(50% - 6px);
+            min-height: 110px;
+            padding: 15px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .section-btn:hover { background: rgba(255, 107, 53, 0.15); border-color: var(--accent-orange); transform: translateY(-3px); }
-        .section-btn:active { transform: scale(0.96); }
-        .section-btn i { font-size: 26px; color: var(--text-secondary); transition: 0.3s; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2)); }
-        .section-btn:hover i { color: var(--accent-orange); transform: scale(1.1); }
-        .section-btn span { font-size: 13px; font-weight: 600; text-align: center; line-height: 1.2; }
-        .section-btn.full-width { width: 100%; flex-direction: row; min-height: 65px; gap: 15px; padding: 10px 20px; }
-        
-        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 21500; display: none; backdrop-filter: blur(4px); transition: opacity 0.3s; }
-        #overlay.show { display: block; }
-        
+
+        .section-btn:hover {
+            background: rgba(255, 107, 53, 0.15);
+            border-color: var(--accent-orange);
+            transform: translateY(-3px);
+        }
+
+        .section-btn:active {
+            transform: scale(0.96);
+        }
+
+        .section-btn i {
+            font-size: 26px;
+            color: var(--text-secondary);
+            transition: 0.3s;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
+        }
+
+        .section-btn:hover i {
+            color: var(--accent-orange);
+            transform: scale(1.1);
+        }
+
+        .section-btn span {
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .section-btn.full-width {
+            width: 100%;
+            flex-direction: row;
+            min-height: 65px;
+            gap: 15px;
+            padding: 10px 20px;
+        }
+
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 21500;
+            display: none;
+            backdrop-filter: blur(4px);
+            transition: opacity 0.3s;
+        }
+
+        #overlay.show {
+            display: block;
+        }
+
         #loadingOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-primary); z-index: 20000;
-            display: none; align-items: center; justify-content: center;
-            flex-direction: column; gap: 20px; transition: opacity 0.3s; opacity: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 20000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            transition: opacity 0.3s;
+            opacity: 0;
         }
-        
-        .🤚 { --skin-color: #E4C560; --tap-speed: 0.6s; --tap-stagger: 0.1s; position: relative; width: 80px; height: 60px; }
-        .🤚:before { content: ''; display: block; width: 180%; height: 75%; position: absolute; top: 70%; right: 20%; background-color: black; border-radius: 40px 10px; filter: blur(10px); opacity: 0.3; }
-        .🌴 { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-color: var(--skin-color); border-radius: 10px 40px; }
-        .👍 { position: absolute; width: 120%; height: 38px; background-color: var(--skin-color); bottom: -18%; right: 1%; transform-origin: calc(100% - 20px) 20px; transform: rotate(-20deg); border-radius: 30px 20px 20px 10px; border-bottom: 2px solid rgba(0, 0, 0, 0.1); border-left: 2px solid rgba(0, 0, 0, 0.1); }
-        .👍:after { width: 20%; height: 60%; content: ''; background-color: rgba(255, 255, 255, 0.3); position: absolute; bottom: -8%; left: 5px; border-radius: 60% 10% 10% 30%; border-right: 2px solid rgba(0, 0, 0, 0.05); }
-        .👉 { position: absolute; width: 80%; height: 35px; background-color: var(--skin-color); bottom: 32%; right: 64%; transform-origin: 100% 20px; animation-duration: calc(var(--tap-speed) * 2); animation-timing-function: ease-in-out; animation-iteration-count: infinite; transform: rotate(10deg); }
-        .👉:before { content: ''; position: absolute; width: 140%; height: 30px; background-color: var(--skin-color); bottom: 8%; right: 65%; transform-origin: calc(100% - 20px) 20px; transform: rotate(-60deg); border-radius: 20px; }
-        .👉:nth-child(1) { animation-delay: 0; filter: brightness(70%); animation-name: tap-upper-1; }
-        .👉:nth-child(2) { animation-delay: var(--tap-stagger); filter: brightness(80%); animation-name: tap-upper-2; }
-        .👉:nth-child(3) { animation-delay: calc(var(--tap-stagger) * 2); filter: brightness(90%); animation-name: tap-upper-3; }
-        .👉:nth-child(4) { animation-delay: calc(var(--tap-stagger) * 3); filter: brightness(100%); animation-name: tap-upper-4; }
-        @keyframes tap-upper-1 { 0%, 50%, 100% { transform: rotate(10deg) scale(0.4); } 40% { transform: rotate(50deg) scale(0.4); } }
-        @keyframes tap-upper-2 { 0%, 50%, 100% { transform: rotate(10deg) scale(0.6); } 40% { transform: rotate(50deg) scale(0.6); } }
-        @keyframes tap-upper-3 { 0%, 50%, 100% { transform: rotate(10deg) scale(0.8); } 40% { transform: rotate(50deg) scale(0.8); } }
-        @keyframes tap-upper-4 { 0%, 50%, 100% { transform: rotate(10deg) scale(1); } 40% { transform: rotate(50deg) scale(1); } }
+
+        .🤚 {
+            --skin-color: #E4C560;
+            --tap-speed: 0.6s;
+            --tap-stagger: 0.1s;
+            position: relative;
+            width: 80px;
+            height: 60px;
+        }
+
+        .🤚:before {
+            content: '';
+            display: block;
+            width: 180%;
+            height: 75%;
+            position: absolute;
+            top: 70%;
+            right: 20%;
+            background-color: black;
+            border-radius: 40px 10px;
+            filter: blur(10px);
+            opacity: 0.3;
+        }
+
+        .🌴 {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--skin-color);
+            border-radius: 10px 40px;
+        }
+
+        .👍 {
+            position: absolute;
+            width: 120%;
+            height: 38px;
+            background-color: var(--skin-color);
+            bottom: -18%;
+            right: 1%;
+            transform-origin: calc(100% - 20px) 20px;
+            transform: rotate(-20deg);
+            border-radius: 30px 20px 20px 10px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            border-left: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .👍:after {
+            width: 20%;
+            height: 60%;
+            content: '';
+            background-color: rgba(255, 255, 255, 0.3);
+            position: absolute;
+            bottom: -8%;
+            left: 5px;
+            border-radius: 60% 10% 10% 30%;
+            border-right: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .👉 {
+            position: absolute;
+            width: 80%;
+            height: 35px;
+            background-color: var(--skin-color);
+            bottom: 32%;
+            right: 64%;
+            transform-origin: 100% 20px;
+            animation-duration: calc(var(--tap-speed) * 2);
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            transform: rotate(10deg);
+        }
+
+        .👉:before {
+            content: '';
+            position: absolute;
+            width: 140%;
+            height: 30px;
+            background-color: var(--skin-color);
+            bottom: 8%;
+            right: 65%;
+            transform-origin: calc(100% - 20px) 20px;
+            transform: rotate(-60deg);
+            border-radius: 20px;
+        }
+
+        .👉:nth-child(1) {
+            animation-delay: 0;
+            filter: brightness(70%);
+            animation-name: tap-upper-1;
+        }
+
+        .👉:nth-child(2) {
+            animation-delay: var(--tap-stagger);
+            filter: brightness(80%);
+            animation-name: tap-upper-2;
+        }
+
+        .👉:nth-child(3) {
+            animation-delay: calc(var(--tap-stagger) * 2);
+            filter: brightness(90%);
+            animation-name: tap-upper-3;
+        }
+
+        .👉:nth-child(4) {
+            animation-delay: calc(var(--tap-stagger) * 3);
+            filter: brightness(100%);
+            animation-name: tap-upper-4;
+        }
+
+        @keyframes tap-upper-1 {
+
+            0%,
+            50%,
+            100% {
+                transform: rotate(10deg) scale(0.4);
+            }
+
+            40% {
+                transform: rotate(50deg) scale(0.4);
+            }
+        }
+
+        @keyframes tap-upper-2 {
+
+            0%,
+            50%,
+            100% {
+                transform: rotate(10deg) scale(0.6);
+            }
+
+            40% {
+                transform: rotate(50deg) scale(0.6);
+            }
+        }
+
+        @keyframes tap-upper-3 {
+
+            0%,
+            50%,
+            100% {
+                transform: rotate(10deg) scale(0.8);
+            }
+
+            40% {
+                transform: rotate(50deg) scale(0.8);
+            }
+        }
+
+        @keyframes tap-upper-4 {
+
+            0%,
+            50%,
+            100% {
+                transform: rotate(10deg) scale(1);
+            }
+
+            40% {
+                transform: rotate(50deg) scale(1);
+            }
+        }
 
         #floatingBackBtn {
-            position: fixed; top: 60px; left: 10px; z-index: 20000;
-            background: rgba(13, 33, 55, 0.7); backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color); width: 50px; height: 50px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.3s;
+            position: fixed;
+            top: 60px;
+            left: 10px;
+            z-index: 20000;
+            background: rgba(13, 33, 55, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
         }
-        #floatingBackBtn:hover { transform: scale(1.1); background: var(--accent-orange); }
-        #floatingBackBtn .back-arrow { margin-right: -4px; border-right-color: #4ade80; }
-        
+
+        #floatingBackBtn:hover {
+            transform: scale(1.1);
+            background: var(--accent-orange);
+        }
+
+        #floatingBackBtn .back-arrow {
+            margin-right: -4px;
+            border-right-color: #4ade80;
+        }
+
         .banner-dots {
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 8px; z-index: 10;
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
         }
-        .banner-dot { width: 8px; height: 8px; background: rgba(255, 255, 255, 0.4); border-radius: 50%; transition: all 0.3s ease; cursor: pointer; }
-        .banner-dot.active { background: var(--accent-orange); width: 20px; border-radius: 10px; }
+
+        .banner-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .banner-dot.active {
+            background: var(--accent-orange);
+            width: 20px;
+            border-radius: 10px;
+        }
+
         .logout-art {
-    background: var(--glass-bg) !important;
-    border: 1px solid var(--accent-orange) !important;
-    animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    max-width: 350px !important;
-}
+            background: var(--glass-bg) !important;
+            border: 1px solid var(--accent-orange) !important;
+            animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 350px !important;
+        }
 
-.art-icon {
-    width: 70px;
-    height: 70px;
-    background: rgba(255, 107, 53, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 30px;
-    color: var(--accent-orange);
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
-}
+        .art-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 30px;
+            color: var(--accent-orange);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+        }
 
-.logout-art h2 {
-    color: var(--text-primary);
-    font-size: 22px;
-    margin-bottom: 8px;
-}
+        .logout-art h2 {
+            color: var(--text-primary);
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
 
-.logout-art p {
-    color: var(--text-secondary);
-    font-size: 14px;
-    margin-bottom: 25px;
-}
+        .logout-art p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
 
-.modal-buttons {
-    display: flex;
-    gap: 12px;
-}
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
 
-.btn-confirm {
-    background: linear-gradient(135deg, #ff4b2b, #ff416c) !important;
-    flex: 1;
-    border-radius: 12px !important;
-}
+        .btn-confirm {
+            background: linear-gradient(135deg, #ff4b2b, #ff416c) !important;
+            flex: 1;
+            border-radius: 12px !important;
+        }
 
-.btn-cancel {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid var(--border-color) !important;
-    flex: 1;
-    color: var(--text-secondary) !important;
-    border-radius: 12px !important;
-}
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-color) !important;
+            flex: 1;
+            color: var(--text-secondary) !important;
+            border-radius: 12px !important;
+        }
 
-@keyframes modalSlideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-.nav-btn.new-feature {
-    position: relative;
-}
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
 
-.badge-new {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #ff4b2b;
-    color: white;
-    font-size: 8px;
-    padding: 2px 5px;
-    border-radius: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-    animation: pulse-red 1.5s infinite;
-    box-shadow: 0 0 10px rgba(255, 75, 43, 0.5);
-}
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
-@keyframes pulse-red {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 43, 0.7); }
-    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 75, 43, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 43, 0); }
-}
+        .nav-btn.new-feature {
+            position: relative;
+        }
 
-.glow-effect {
-    animation: icon-glow 2s infinite alternate;
-}
+        .badge-new {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4b2b;
+            color: white;
+            font-size: 8px;
+            padding: 2px 5px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: pulse-red 1.5s infinite;
+            box-shadow: 0 0 10px rgba(255, 75, 43, 0.5);
+        }
 
-@keyframes icon-glow {
-    from { color: var(--text-secondary); }
-    to { color: var(--accent-orange); filter: drop-shadow(0 0 5px var(--accent-orange)); }
-}
-.scanner-direct-btn {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 55px;
-    height: 55px;
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 15px;
-    cursor: pointer;
-    z-index: 20001;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+        @keyframes pulse-red {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 75, 43, 0.7);
+            }
 
-.scanner-direct-btn i {
-    font-size: 24px;
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
-}
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 10px rgba(255, 75, 43, 0);
+            }
 
-.scanner-direct-btn:hover {
-    transform: translateY(-50%) scale(1.1);
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);
-}
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 75, 43, 0);
+            }
+        }
 
-.scanner-direct-btn:active {
-    transform: translateY(-50%) scale(0.9);
-}
+        .glow-effect {
+            animation: icon-glow 2s infinite alternate;
+        }
 
-.btn-tooltip {
-    font-size: 9px;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-top: 2px;
-}
+        @keyframes icon-glow {
+            from {
+                color: var(--text-secondary);
+            }
 
-@media (max-width: 768px) {
-    .scanner-direct-btn {
-        right: 10px;
-        width: 48px;
-        height: 48px;
-    }
-    .scanner-direct-btn i {
-        font-size: 20px;
-    }
-}
+            to {
+                color: var(--accent-orange);
+                filter: drop-shadow(0 0 5px var(--accent-orange));
+            }
+        }
+
+        .scanner-direct-btn {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            cursor: pointer;
+            z-index: 20001;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .scanner-direct-btn i {
+            font-size: 24px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+
+        .scanner-direct-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);
+        }
+
+        .scanner-direct-btn:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        .btn-tooltip {
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .scanner-direct-btn {
+                right: 10px;
+                width: 48px;
+                height: 48px;
+            }
+
+            .scanner-direct-btn i {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <div id="userInfoBadge">
@@ -499,7 +1152,8 @@
         <span id="pharmacyDisplay">Pharmacy --</span>
     </div>
 
-    <audio id="offerAlarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+    <audio id="offerAlarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"
+        preload="auto"></audio>
 
     <div id="loginOverlay" class="custom-modal-overlay">
         <div class="custom-modal-box">
@@ -508,29 +1162,23 @@
                 Login
             </h2>
             <p style="font-size: 14px; margin-top: 10px; color: var(--text-secondary);">
-                Enter your pharmacy number     
+                Enter your pharmacy number
             </p>
             <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)">
             <button onclick="doLogin()" style="background: var(--accent-orange);">
                 Login <i class="fas fa-sign-in-alt"></i>
             </button>
 
-            <a 
-                href="https://wa.me/966541932559?text=Hello%20I%20need%20support"
-                target="_blank"
-                style="
+            <a href="https://wa.me/966541932559?text=Hello%20I%20need%20support" target="_blank" style="
                     display: flex; align-items: center; justify-content: center; gap: 10px;
                     width: 100%; margin-top: 12px; padding: 12px 18px; border-radius: 12px;
                     text-decoration: none; font-size: 16px; font-weight: bold;
                     background: linear-gradient(135deg, #25D366, #128C7E); color: white;
                     box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25);
                     border: 1px solid rgba(255,255,255,0.15); transition: 0.3s;
-                "
-                onmouseover="this.style.transform='scale(1.02)'"
-                onmouseout="this.style.transform='scale(1)'"
-            >
+                " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
-                Contact  
+                Contact
             </a>
         </div>
     </div>
@@ -539,21 +1187,24 @@
         <div class="custom-modal-box" style="border: 2px solid red;">
             <h1 style="color: red; font-size: 26px; margin-bottom: 10px;"><i class="fas fa-bell"></i> تنبيه العروض!</h1>
             <p id="alarmOfferName" style="font-size:18px; margin-bottom:20px; color: white;"></p>
-            
+
             <input type="hidden" id="currentReminderId">
 
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                <label style="display:block; margin-bottom:10px; color:var(--accent-orange); font-weight: bold;">تأجيل التنبيه (غفوة):</label>
+                <label style="display:block; margin-bottom:10px; color:var(--accent-orange); font-weight: bold;">تأجيل
+                    التنبيه (غفوة):</label>
                 <select id="snoozeSelect">
                     <option value="1">غفوة لمدة ساعة</option>
                     <option value="2">غفوة لمدة ساعتين</option>
                     <option value="custom">تحديد وقت مخصص...</option>
                 </select>
                 <input type="datetime-local" id="customSnoozeTime" style="display:none;">
-                <button onclick="snoozeAlarm()" style="background: #f39c12;"><i class="fas fa-clock"></i> تأجيل التنبيه</button>
+                <button onclick="snoozeAlarm()" style="background: #f39c12;"><i class="fas fa-clock"></i> تأجيل
+                    التنبيه</button>
             </div>
 
-            <button onclick="stopAlarm()" style="background: #28a745;"><i class="fas fa-check-circle"></i> إيقاف الصوت والتنبيه</button>
+            <button onclick="stopAlarm()" style="background: #28a745;"><i class="fas fa-check-circle"></i> إيقاف الصوت
+                والتنبيه</button>
         </div>
     </div>
 
@@ -561,8 +1212,9 @@
         <button id="floatingBackBtn" onclick="closeIframe()">
             <div class="back-arrow"></div>
         </button>
-        <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="autoplay; fullscreen" scrolling="yes" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
-        
+        <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="autoplay; fullscreen" scrolling="yes"
+            sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
+
         <div id="iframeError">
             <i class="fas fa-exclamation-triangle"></i>
             <h3>Connection Error</h3>
@@ -580,26 +1232,28 @@
 
     <button class="floating-btn mode-toggle" id="modeToggle" onclick="toggleMode()"><i class="fas fa-moon"></i></button>
     <button class="floating-btn logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
-    <button class="floating-btn scroll-toggle" id="scrollBtn" onclick="toggleNavAndScroll()"><i class="fas fa-arrow-down"></i></button>
+    <button class="floating-btn scroll-toggle" id="scrollBtn" onclick="toggleNavAndScroll()"><i
+            class="fas fa-arrow-down"></i></button>
 
     <div id="homePage">
         <div class="banner-container" id="bannerContainer"></div>
         <div class="content-grid" id="contentGrid"></div>
     </div>
 
-<nav id="bottomNav">
-   
-    <button class="nav-btn" onclick="toggleSections()"><i class="fas fa-th-large"></i><span>Sections</span></button>
-  <button class="nav-btn new-feature" onclick="openLink('expiry.html')">
-        <span class="badge-new">New</span>
-        <i class="fas fa-calendar-check glow-effect"></i>
-        <span>Expiry</span>
-    </button>
-    <button class="nav-btn active" onclick="goHome()"><i class="fas fa-home"></i><span>Home</span></button>
-    
-    <button class="nav-btn" onclick="openLink('offersgit.html')"><i class="fas fa-tags"></i><span>Offers</span></button>
-    <button class="nav-btn" onclick="openLink('dev.htm')"><i class="fas fa-user-tie"></i><span>Dev</span></button>
-</nav>
+    <nav id="bottomNav">
+
+        <button class="nav-btn" onclick="toggleSections()"><i class="fas fa-th-large"></i><span>Sections</span></button>
+        <button class="nav-btn new-feature" onclick="openLink('expiry.html')">
+            <span class="badge-new">New</span>
+            <i class="fas fa-calendar-check glow-effect"></i>
+            <span>Expiry</span>
+        </button>
+        <button class="nav-btn active" onclick="goHome()"><i class="fas fa-home"></i><span>Home</span></button>
+
+        <button class="nav-btn" onclick="openLink('offersgit.html')"><i
+                class="fas fa-tags"></i><span>Offers</span></button>
+        <button class="nav-btn" onclick="openLink('dev.htm')"><i class="fas fa-user-tie"></i><span>Dev</span></button>
+    </nav>
 
     <div id="sectionsMenu">
         <div class="menu-header"><span>Select Mode</span></div>
@@ -625,34 +1279,34 @@
             <div class="👉"></div>
             <div class="👉"></div>
             <div class="👉"></div>
-            <div class="🌴"></div>		
+            <div class="🌴"></div>
             <div class="👍"></div>
         </div>
         <div style="color:white; font-weight:bold; margin-top: 15px;">Loading Content...</div>
     </div>
-<div id="logoutModal" class="custom-modal-overlay" style="display:none;">
-    <div class="custom-modal-box logout-art">
-        <div class="art-icon">
-            <i class="fas fa-sign-out-alt"></i>
-        </div>
-        <h2>Sign Out</h2>
-        <p>Are you sure you want to exit the system?</p>
-        <div class="modal-buttons">
-            <button onclick="confirmLogout()" class="btn-confirm">Sign Out</button>
-            <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
+    <div id="logoutModal" class="custom-modal-overlay" style="display:none;">
+        <div class="custom-modal-box logout-art">
+            <div class="art-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2>Sign Out</h2>
+            <p>Are you sure you want to exit the system?</p>
+            <div class="modal-buttons">
+                <button onclick="confirmLogout()" class="btn-confirm">Sign Out</button>
+                <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
+            </div>
         </div>
     </div>
-</div>
-<button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
-    <i class="fas fa-barcode"></i>
-    <span class="btn-tooltip">Scanner</span>
-</button>
+    <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
+        <i class="fas fa-barcode"></i>
+        <span class="btn-tooltip">Scanner</span>
+    </button>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-"use strict";
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+        "use strict";
 
-const swCode = `
+        const swCode = `
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
         self.registration.showNotification(event.data.title, {
@@ -665,738 +1319,739 @@ self.addEventListener('message', (event) => {
 });
 `;
 
-if ('serviceWorker' in navigator) {
-    const blob = new Blob([swCode], { type: 'text/javascript' });
-    const swUrl = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(swUrl)
-        .then(() => console.log('Service Worker Active (Single File Mode)'))
-        .catch(err => console.error('SW Error:', err));
-}
-
-const START_OFFERS = [
-    { id: 'offer_alert_1', title: 'CITIZEN OFFERS', start_date: '2026-04-06T00:00:00' },
-    { id: 'offer_alert_2', title: 'CATEGORY OFFERS', start_date: '2026-04-15T00:00:00' },
-    { id: 'offer_alert_3', title: 'MONTHLY OFFERS', start_date: '2026-04-25T00:00:00' }
-];
-
-const LOCAL_BANNERS = [
-     {
-        id: 'banner_1', title: 'owner items', desc: 'RONZAC', link: 'offersgit.html',
-        imageUrl: 'https://stgprevapi.al-dawaa.com/medias/6-AR-gorner-1600x400.png?context=bWFzdGVyfGltYWdlc3w4NzgwMDF8aW1hZ2UvcG5nfGFEYzRMMmcxTUM4NU5UWTNOekkwTlRNMU9ETTRMell0UVZJdFoyOXlibVZ5TFRFMk1EQjROREF3TG5CdVp3fDc3OGQ2MTk0OTFkMTI3NzZhNjU0YmI1YTRlYjZjMjM3ZGJhOTI2ZDgzZDA0Mzc3ZDYyOTQyMGZlM2I0NDNiN2Q',
-        videoUrl: '', color: ''
-    }
-];
-
-const LOCAL_CONTENTS = [
-    {
-        id: 'content_1', type: 'image', title: '', desc: '',
-        images: ['https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/nsaids.jpeg'],
-        videoUrl: ''
-    }
-];
-
-const supabaseUrl = 'https://uzydzvfcrlqmtondugte.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo'; 
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-const WORKER_BANNERS_URL = "https://online.meralmohamed121022.workers.dev/api/banners?lang=ar";
-
-let APPDATA = { banners: [], content: [] };
-let currentPharmacy = localStorage.getItem('pharmacy_number');
-let userReminders = [];
-let alarmCheckInterval;
-let autoSnoozeTimeout;
-let stopAudioTimeout;
-
-let globalImageGallery = [];
-let currentLightboxIndex = 0;
-
-function buildGlobalGallery() {
-    globalImageGallery = Array.from(document.querySelectorAll('.zoomable-img')).map(img => img.src);
-}
-
-function requestNotificationPermission() {
-    if ("Notification" in window) {
-        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") console.log("Notification permission granted.");
-            });
+        if ('serviceWorker' in navigator) {
+            const blob = new Blob([swCode], { type: 'text/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl)
+                .then(() => console.log('Service Worker Active (Single File Mode)'))
+                .catch(err => console.error('SW Error:', err));
         }
-    }
-}
 
-function showBrowserNotification(title, body) {
-    if ("Notification" in window && Notification.permission === "granted") {
-        const notification = new Notification(title, {
-            body: body,
-            icon: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
-            vibrate: [200, 100, 200]
-        });
-        notification.onclick = function() { window.focus(); this.close(); };
-    }
-}
+        const START_OFFERS = [
+            { id: 'offer_alert_1', title: 'CITIZEN OFFERS', start_date: '2026-04-06T00:00:00' },
+            { id: 'offer_alert_2', title: 'CATEGORY OFFERS', start_date: '2026-04-15T00:00:00' },
+            { id: 'offer_alert_3', title: 'MONTHLY OFFERS', start_date: '2026-04-25T00:00:00' }
+        ];
 
-document.getElementById('snoozeSelect').addEventListener('change', function() {
-    document.getElementById('customSnoozeTime').style.display = this.value === 'custom' ? 'block' : 'none';
-});
+        const LOCAL_BANNERS = [
+            {
+                id: 'banner_1', title: 'owner items', desc: 'RONZAC', link: 'offersgit.html',
+                imageUrl: 'https://stgprevapi.al-dawaa.com/medias/6-AR-gorner-1600x400.png?context=bWFzdGVyfGltYWdlc3w4NzgwMDF8aW1hZ2UvcG5nfGFEYzRMMmcxTUM4NU5UWTNOekkwTlRNMU9ETTRMell0UVZJdFoyOXlibVZ5TFRFMk1EQjROREF3TG5CdVp3fDc3OGQ2MTk0OTFkMTI3NzZhNjU0YmI1YTRlYjZjMjM3ZGJhOTI2ZDgzZDA0Mzc3ZDYyOTQyMGZlM2I0NDNiN2Q',
+                videoUrl: '', color: ''
+            }
+        ];
 
-window.addEventListener('DOMContentLoaded', async () => {
-    loadTheme();
-    await checkAuth(); 
-    window.addEventListener('load', () => {
-        if (typeof window.applyFilters === "function") {
-            console.log("Auto-triggering Stock Filter...");
-            setTimeout(() => {
-                const hiddenSelect = document.getElementById('stockFilterToggle');
-                if (hiddenSelect) { hiddenSelect.value = 'instock'; window.applyFilters(); }
-            }, 1000); 
+        const LOCAL_CONTENTS = [
+            {
+                id: 'content_1', type: 'image', title: '', desc: '',
+                images: ['https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/nsaids.jpeg'],
+                videoUrl: ''
+            }
+        ];
+
+        const supabaseUrl = 'https://uzydzvfcrlqmtondugte.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const WORKER_BANNERS_URL = "https://online.meralmohamed121022.workers.dev/api/banners?lang=ar";
+
+        let APPDATA = { banners: [], content: [] };
+        let currentPharmacy = localStorage.getItem('pharmacy_number');
+        let userReminders = [];
+        let alarmCheckInterval;
+        let autoSnoozeTimeout;
+        let stopAudioTimeout;
+
+        let globalImageGallery = [];
+        let currentLightboxIndex = 0;
+
+        function buildGlobalGallery() {
+            globalImageGallery = Array.from(document.querySelectorAll('.zoomable-img')).map(img => img.src);
         }
-    });
 
-    const lb = document.getElementById('lightbox');
-    if (lb) {
-        let lbStartX = 0;
-        lb.addEventListener('touchstart', e => {
-            if (e.touches.length === 1) lbStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-        lb.addEventListener('touchend', e => {
-            if (e.changedTouches.length === 1) {
-                let diff = lbStartX - e.changedTouches[0].screenX;
-                if (Math.abs(diff) > 50) {
-                    if (diff > 0) changeLightboxImage(1);
-                    else changeLightboxImage(-1);
+        function requestNotificationPermission() {
+            if ("Notification" in window) {
+                if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") console.log("Notification permission granted.");
+                    });
                 }
             }
-        });
-    }
-});
-
-function checkAuth() {
-    const badge = document.getElementById('userInfoBadge');
-    if (!currentPharmacy) {
-        document.getElementById('loginOverlay').style.display = 'flex';
-        document.querySelector('.logout-btn').style.display = 'none';
-        if (badge) badge.style.display = 'none';
-    } else {
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.querySelector('.logout-btn').style.display = 'flex';
-        const display = document.getElementById('pharmacyDisplay');
-        if (display) display.innerText = `Pharmacy ${currentPharmacy}`;
-        if (badge) badge.style.display = 'flex';
-        initSystem();
-    }
-}
-
-async function doLogin() {
-    const val = document.getElementById('pharmacyInput').value.trim();
-    if(val) {
-        currentPharmacy = val;
-        localStorage.setItem('pharmacy_number', val);
-        requestNotificationPermission();
-        try {
-            await supabaseClient.from('login_logs').upsert(
-                { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() }, 
-                { onConflict: 'pharmacy_number' }
-            );
-        } catch (e) { console.error("Failed to log login:", e); }
-        checkAuth();
-    } else { alert("يرجى إدخال رقم الصيدلية!"); }
-}
-
-function logout() { document.getElementById('logoutModal').style.display = 'flex'; }
-function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
-
-async function confirmLogout() {
-    localStorage.removeItem('pharmacy_number');
-    currentPharmacy = null;
-    if(alarmCheckInterval) clearInterval(alarmCheckInterval);
-    userReminders = [];
-    const audio = document.getElementById('offerAlarmSound');
-    if(audio) { audio.pause(); audio.currentTime = 0; }
-    document.getElementById('logoutModal').style.display = 'none';
-    document.getElementById('alarmActionModal').style.display = 'none';
-    checkAuth(); 
-}
-
-async function initSystem() {
-  const loader = document.getElementById('loadingOverlay');
-  if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
-  try {
-    APPDATA.banners = Array.isArray(LOCAL_BANNERS) ? [...LOCAL_BANNERS] : [];
-    APPDATA.content = Array.isArray(LOCAL_CONTENTS) ? [...LOCAL_CONTENTS] : [];
-    try {
-      const response = await fetch(WORKER_BANNERS_URL);
-      if (response.ok) {
-        const result = await response.json();
-        if (result && result.success && result.banners && result.banners.length > 0) {
-          const dawaaBanners = result.banners.map((b, index) => ({
-            id: `dawaa_banner_${index}`, title: "", desc: "", link: "https://www.al-dawaa.com/ar/",
-            imageUrl: b.url, videoUrl: "", color: ""
-          }));
-          APPDATA.banners = [...APPDATA.banners, ...dawaaBanners];
         }
-      }
-    } catch (workerError) { console.warn("تم تخطي بنرات الدواء:", workerError); }
-    
-    renderBanners();
-    renderContent();
-    
-    if (loader) {
-      loader.style.opacity = '0';
-      setTimeout(() => { loader.style.display = 'none'; }, 300);
-    }
-    
-    requestNotificationPermission();
-    await autoScheduleReminders();
-    await fetchReminders();
-    startAlarmChecker();
-  } catch (err) {
-    console.error('System Critical Error:', err);
-    if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.display = 'none'; }, 300); }
-  }
-}
 
-async function autoScheduleReminders() {
-    if(!currentPharmacy) return;
-    for (let offer of START_OFFERS) {
-        const offerStartTime = new Date(offer.start_date);
-        const triggerTimes = [
-            { id: offer.id + '_30min', time: new Date(offerStartTime.getTime() - (30 * 60000)) }, 
-            { id: offer.id + '_exact', time: offerStartTime } 
-        ];
-        for (let t of triggerTimes) {
-            const { data: existing } = await supabaseClient.from('reminders').select('id').eq('pharmacy_number', currentPharmacy).eq('offer_id', t.id); 
-            if (!existing || existing.length === 0) {
-                await supabaseClient.from('reminders').insert([{
-                    pharmacy_number: currentPharmacy, offer_id: t.id, offer_title: offer.title, trigger_time: t.time.toISOString(), status: 'pending'
-                }]);
+        function showBrowserNotification(title, body) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                const notification = new Notification(title, {
+                    body: body,
+                    icon: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
+                    vibrate: [200, 100, 200]
+                });
+                notification.onclick = function () { window.focus(); this.close(); };
             }
         }
-    }
-}
 
-async function fetchReminders() {
-    if(!currentPharmacy) return;
-    const { data, error } = await supabaseClient.from('reminders').select('*').eq('pharmacy_number', currentPharmacy).in('status', ['pending', 'snoozed']); 
-    if(!error && data) userReminders = data;
-}
+        document.getElementById('snoozeSelect').addEventListener('change', function () {
+            document.getElementById('customSnoozeTime').style.display = this.value === 'custom' ? 'block' : 'none';
+        });
 
-async function stopAlarm() {
-    const idInput = document.getElementById('currentReminderId');
-    const id = idInput.value;
-    const audio = document.getElementById('offerAlarmSound');
-    clearTimeout(stopAudioTimeout); clearTimeout(autoSnoozeTimeout);
-    if (audio) { audio.pause(); audio.currentTime = 0; }
-    document.getElementById('alarmActionModal').style.display = 'none';
+        window.addEventListener('DOMContentLoaded', async () => {
+            loadTheme();
+            await checkAuth();
+            window.addEventListener('load', () => {
+                if (typeof window.applyFilters === "function") {
+                    console.log("Auto-triggering Stock Filter...");
+                    setTimeout(() => {
+                        const hiddenSelect = document.getElementById('stockFilterToggle');
+                        if (hiddenSelect) { hiddenSelect.value = 'instock'; window.applyFilters(); }
+                    }, 1000);
+                }
+            });
 
-    if (id) {
-        try {
-            const { error } = await supabaseClient.from('reminders').update({ status: 'completed' }).eq('id', id);
-            if (error) throw error;
-            userReminders = userReminders.filter(r => r.id !== id);
-            idInput.value = "";
-        } catch (err) {
-            console.error("Failed to finalize alarm in database:", err);
-            userReminders = userReminders.filter(r => r.id !== id);
+            const lb = document.getElementById('lightbox');
+            if (lb) {
+                let lbStartX = 0;
+                lb.addEventListener('touchstart', e => {
+                    if (e.touches.length === 1) lbStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+                lb.addEventListener('touchend', e => {
+                    if (e.changedTouches.length === 1) {
+                        let diff = lbStartX - e.changedTouches[0].screenX;
+                        if (Math.abs(diff) > 50) {
+                            if (diff > 0) changeLightboxImage(1);
+                            else changeLightboxImage(-1);
+                        }
+                    }
+                });
+            }
+        });
+
+        function checkAuth() {
+            const badge = document.getElementById('userInfoBadge');
+            if (!currentPharmacy) {
+                document.getElementById('loginOverlay').style.display = 'flex';
+                document.querySelector('.logout-btn').style.display = 'none';
+                if (badge) badge.style.display = 'none';
+            } else {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.querySelector('.logout-btn').style.display = 'flex';
+                const display = document.getElementById('pharmacyDisplay');
+                if (display) display.innerText = `Pharmacy ${currentPharmacy}`;
+                if (badge) badge.style.display = 'flex';
+                initSystem();
+            }
         }
-    }
-}
 
-async function snoozeAlarm(isAuto = false) {
-    const id = document.getElementById('currentReminderId').value;
-    const snoozeVal = document.getElementById('snoozeSelect').value;
-    let newTriggerTime = new Date();
-
-    clearTimeout(stopAudioTimeout); clearTimeout(autoSnoozeTimeout);
-
-    if (snoozeVal === '1') { newTriggerTime.setHours(newTriggerTime.getHours() + 1); } 
-    else if (snoozeVal === '2') { newTriggerTime.setHours(newTriggerTime.getHours() + 2); } 
-    else if (snoozeVal === 'custom') {
-        const customVal = document.getElementById('customSnoozeTime').value;
-        if (!customVal && !isAuto) {
-            alert('يرجى تحديد الوقت والتاريخ المخصص أولاً!');
-            autoSnoozeTimeout = setTimeout(() => { document.getElementById('snoozeSelect').value = "1"; snoozeAlarm(true); }, 60000);
-            return;
+        async function doLogin() {
+            const val = document.getElementById('pharmacyInput').value.trim();
+            if (val) {
+                currentPharmacy = val;
+                localStorage.setItem('pharmacy_number', val);
+                requestNotificationPermission();
+                try {
+                    await supabaseClient.from('login_logs').upsert(
+                        { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() },
+                        { onConflict: 'pharmacy_number' }
+                    );
+                } catch (e) { console.error("Failed to log login:", e); }
+                checkAuth();
+            } else { alert("يرجى إدخال رقم الصيدلية!"); }
         }
-        newTriggerTime = new Date(customVal);
-    }
 
-    const audio = document.getElementById('offerAlarmSound');
-    if (audio) { audio.pause(); audio.currentTime = 0; }
-    document.getElementById('alarmActionModal').style.display = 'none';
+        function logout() { document.getElementById('logoutModal').style.display = 'flex'; }
+        function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
 
-    if(id) {
-        await supabaseClient.from('reminders').update({ status: 'snoozed', trigger_time: newTriggerTime.toISOString() }).eq('id', id);
-        await fetchReminders(); 
-    }
-}
+        async function confirmLogout() {
+            localStorage.removeItem('pharmacy_number');
+            currentPharmacy = null;
+            if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+            userReminders = [];
+            const audio = document.getElementById('offerAlarmSound');
+            if (audio) { audio.pause(); audio.currentTime = 0; }
+            document.getElementById('logoutModal').style.display = 'none';
+            document.getElementById('alarmActionModal').style.display = 'none';
+            checkAuth();
+        }
 
-let bannerIntervals = [];
-let currentBannerIndices = [];
+        async function initSystem() {
+            const loader = document.getElementById('loadingOverlay');
+            if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
+            try {
+                APPDATA.banners = Array.isArray(LOCAL_BANNERS) ? [...LOCAL_BANNERS] : [];
+                APPDATA.content = Array.isArray(LOCAL_CONTENTS) ? [...LOCAL_CONTENTS] : [];
+                try {
+                    const response = await fetch(WORKER_BANNERS_URL);
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result && result.success && result.banners && result.banners.length > 0) {
+                            const dawaaBanners = result.banners.map((b, index) => ({
+                                id: `dawaa_banner_${index}`, title: "", desc: "", link: "https://www.al-dawaa.com/ar/",
+                                imageUrl: b.url, videoUrl: "", color: ""
+                            }));
+                            APPDATA.banners = [...APPDATA.banners, ...dawaaBanners];
+                        }
+                    }
+                } catch (workerError) { console.warn("تم تخطي بنرات الدواء:", workerError); }
 
-function renderBanners() {
-    const container = document.getElementById('bannerContainer');
-    if (!container) return;
-    if (!APPDATA.banners || APPDATA.banners.length === 0) { container.style.display = 'none'; return; }
+                renderBanners();
+                renderContent();
 
-    container.style.display = 'block'; container.innerHTML = ''; 
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.display = 'none'; }, 300);
+                }
 
-    const chunkSize = 6; const chunks = [];
-    for (let i = 0; i < APPDATA.banners.length; i += chunkSize) { chunks.push(APPDATA.banners.slice(i, i + chunkSize)); }
+                requestNotificationPermission();
+                await autoScheduleReminders();
+                await fetchReminders();
+                startAlarmChecker();
+            } catch (err) {
+                console.error('System Critical Error:', err);
+                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.display = 'none'; }, 300); }
+            }
+        }
 
-    if (bannerIntervals.length > 0) { bannerIntervals.forEach(clearInterval); bannerIntervals = []; }
-    currentBannerIndices = new Array(chunks.length).fill(0);
+        async function autoScheduleReminders() {
+            if (!currentPharmacy) return;
+            for (let offer of START_OFFERS) {
+                const offerStartTime = new Date(offer.start_date);
+                const triggerTimes = [
+                    { id: offer.id + '_30min', time: new Date(offerStartTime.getTime() - (30 * 60000)) },
+                    { id: offer.id + '_exact', time: offerStartTime }
+                ];
+                for (let t of triggerTimes) {
+                    const { data: existing } = await supabaseClient.from('reminders').select('id').eq('pharmacy_number', currentPharmacy).eq('offer_id', t.id);
+                    if (!existing || existing.length === 0) {
+                        await supabaseClient.from('reminders').insert([{
+                            pharmacy_number: currentPharmacy, offer_id: t.id, offer_title: offer.title, trigger_time: t.time.toISOString(), status: 'pending'
+                        }]);
+                    }
+                }
+            }
+        }
 
-    chunks.forEach((chunk, chunkIdx) => {
-        let slidesHtml = '';
-        chunk.forEach((banner) => {
-            const hasImage = banner.imageUrl && banner.imageUrl.trim() !== '';
-            const hasVideo = banner.videoUrl && banner.videoUrl.trim() !== '';
-            const hasColor = banner.color && banner.color.trim() !== '';
-            if (!hasImage && !hasVideo && !hasColor) return;
-            
-            let mediaHTML = '';
-            if (hasVideo) {
-                mediaHTML = `<video class="banner-bg-media" autoplay muted loop playsinline disablePictureInPicture style="width:100%; height:auto; display:block;">
+        async function fetchReminders() {
+            if (!currentPharmacy) return;
+            const { data, error } = await supabaseClient.from('reminders').select('*').eq('pharmacy_number', currentPharmacy).in('status', ['pending', 'snoozed']);
+            if (!error && data) userReminders = data;
+        }
+
+        async function stopAlarm() {
+            const idInput = document.getElementById('currentReminderId');
+            const id = idInput.value;
+            const audio = document.getElementById('offerAlarmSound');
+            clearTimeout(stopAudioTimeout); clearTimeout(autoSnoozeTimeout);
+            if (audio) { audio.pause(); audio.currentTime = 0; }
+            document.getElementById('alarmActionModal').style.display = 'none';
+
+            if (id) {
+                try {
+                    const { error } = await supabaseClient.from('reminders').update({ status: 'completed' }).eq('id', id);
+                    if (error) throw error;
+                    userReminders = userReminders.filter(r => r.id !== id);
+                    idInput.value = "";
+                } catch (err) {
+                    console.error("Failed to finalize alarm in database:", err);
+                    userReminders = userReminders.filter(r => r.id !== id);
+                }
+            }
+        }
+
+        async function snoozeAlarm(isAuto = false) {
+            const id = document.getElementById('currentReminderId').value;
+            const snoozeVal = document.getElementById('snoozeSelect').value;
+            let newTriggerTime = new Date();
+
+            clearTimeout(stopAudioTimeout); clearTimeout(autoSnoozeTimeout);
+
+            if (snoozeVal === '1') { newTriggerTime.setHours(newTriggerTime.getHours() + 1); }
+            else if (snoozeVal === '2') { newTriggerTime.setHours(newTriggerTime.getHours() + 2); }
+            else if (snoozeVal === 'custom') {
+                const customVal = document.getElementById('customSnoozeTime').value;
+                if (!customVal && !isAuto) {
+                    alert('يرجى تحديد الوقت والتاريخ المخصص أولاً!');
+                    autoSnoozeTimeout = setTimeout(() => { document.getElementById('snoozeSelect').value = "1"; snoozeAlarm(true); }, 60000);
+                    return;
+                }
+                newTriggerTime = new Date(customVal);
+            }
+
+            const audio = document.getElementById('offerAlarmSound');
+            if (audio) { audio.pause(); audio.currentTime = 0; }
+            document.getElementById('alarmActionModal').style.display = 'none';
+
+            if (id) {
+                await supabaseClient.from('reminders').update({ status: 'snoozed', trigger_time: newTriggerTime.toISOString() }).eq('id', id);
+                await fetchReminders();
+            }
+        }
+
+        let bannerIntervals = [];
+        let currentBannerIndices = [];
+
+        function renderBanners() {
+            const container = document.getElementById('bannerContainer');
+            if (!container) return;
+            if (!APPDATA.banners || APPDATA.banners.length === 0) { container.style.display = 'none'; return; }
+
+            container.style.display = 'block'; container.innerHTML = '';
+
+            const chunkSize = 6; const chunks = [];
+            for (let i = 0; i < APPDATA.banners.length; i += chunkSize) { chunks.push(APPDATA.banners.slice(i, i + chunkSize)); }
+
+            if (bannerIntervals.length > 0) { bannerIntervals.forEach(clearInterval); bannerIntervals = []; }
+            currentBannerIndices = new Array(chunks.length).fill(0);
+
+            chunks.forEach((chunk, chunkIdx) => {
+                let slidesHtml = '';
+                chunk.forEach((banner) => {
+                    const hasImage = banner.imageUrl && banner.imageUrl.trim() !== '';
+                    const hasVideo = banner.videoUrl && banner.videoUrl.trim() !== '';
+                    const hasColor = banner.color && banner.color.trim() !== '';
+                    if (!hasImage && !hasVideo && !hasColor) return;
+
+                    let mediaHTML = '';
+                    if (hasVideo) {
+                        mediaHTML = `<video class="banner-bg-media" autoplay muted loop playsinline disablePictureInPicture style="width:100%; height:auto; display:block;">
                                 <source src="${banner.videoUrl}" type="video/mp4">
                              </video>`;
-            } else if (hasImage) {
-                mediaHTML = `<img class="banner-bg-media zoomable-img" src="${banner.imageUrl}" alt="${banner.title || ''}" 
+                    } else if (hasImage) {
+                        mediaHTML = `<img class="banner-bg-media zoomable-img" src="${banner.imageUrl}" alt="${banner.title || ''}" 
                                 style="width:100%; height:auto; display:block; object-fit:contain; border-radius:12px; cursor:zoom-in;" 
                                 onclick="openLightbox('${banner.imageUrl}');">`;
-            }
-            const bgStyle = (!hasImage && !hasVideo) ? `background: ${banner.color};` : '';
-            slidesHtml += `<div class="banner-slide" style="${bgStyle} flex: 0 0 100%; position: relative;">${mediaHTML}</div>`;
-        });
+                    }
+                    const bgStyle = (!hasImage && !hasVideo) ? `background: ${banner.color};` : '';
+                    slidesHtml += `<div class="banner-slide" style="${bgStyle} flex: 0 0 100%; position: relative;">${mediaHTML}</div>`;
+                });
 
-        if (slidesHtml) {
-            const sliderBlock = document.createElement('div');
-            sliderBlock.className = 'slider-block';
-            sliderBlock.style.cssText = 'position: relative; overflow: hidden; margin-bottom: 25px; border-radius: 12px; background: transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.1);';
-            
-            let dotsHtml = '';
-            if (chunk.length > 1) {
-                for (let i = 0; i < chunk.length; i++) { dotsHtml += `<div class="banner-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${chunkIdx}, ${i})"></div>`; }
-                dotsHtml = `<div class="banner-dots" id="bannerDots-${chunkIdx}" style="position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 5px; z-index: 10;">${dotsHtml}</div>`;
-            }
+                if (slidesHtml) {
+                    const sliderBlock = document.createElement('div');
+                    sliderBlock.className = 'slider-block';
+                    sliderBlock.style.cssText = 'position: relative; overflow: hidden; margin-bottom: 25px; border-radius: 12px; background: transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.1);';
 
-            sliderBlock.innerHTML = `<div class="banner-wrapper" id="bannerWrapper-${chunkIdx}" style="display: flex; transition: transform 0.4s ease;">${slidesHtml}</div>${dotsHtml}`;
-            container.appendChild(sliderBlock);
+                    let dotsHtml = '';
+                    if (chunk.length > 1) {
+                        for (let i = 0; i < chunk.length; i++) { dotsHtml += `<div class="banner-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${chunkIdx}, ${i})"></div>`; }
+                        dotsHtml = `<div class="banner-dots" id="bannerDots-${chunkIdx}" style="position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 5px; z-index: 10;">${dotsHtml}</div>`;
+                    }
 
-            let startX = 0;
-            sliderBlock.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX, {passive: true});
-            sliderBlock.addEventListener('touchend', e => {
-                let endX = e.changedTouches[0].screenX;
-                let diff = startX - endX;
-                if (Math.abs(diff) > 50) {
-                    let currentIdx = currentBannerIndices[chunkIdx];
-                    if (diff > 0) goToSlide(chunkIdx, (currentIdx + 1) % chunk.length);
-                    else goToSlide(chunkIdx, (currentIdx - 1 + chunk.length) % chunk.length);
+                    sliderBlock.innerHTML = `<div class="banner-wrapper" id="bannerWrapper-${chunkIdx}" style="display: flex; transition: transform 0.4s ease;">${slidesHtml}</div>${dotsHtml}`;
+                    container.appendChild(sliderBlock);
+
+                    let startX = 0;
+                    sliderBlock.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX, { passive: true });
+                    sliderBlock.addEventListener('touchend', e => {
+                        let endX = e.changedTouches[0].screenX;
+                        let diff = startX - endX;
+                        if (Math.abs(diff) > 50) {
+                            let currentIdx = currentBannerIndices[chunkIdx];
+                            if (diff > 0) goToSlide(chunkIdx, (currentIdx + 1) % chunk.length);
+                            else goToSlide(chunkIdx, (currentIdx - 1 + chunk.length) % chunk.length);
+                        }
+                    });
+
+                    if (chunk.length > 1) {
+                        const interval = setInterval(() => {
+                            currentBannerIndices[chunkIdx] = (currentBannerIndices[chunkIdx] + 1) % chunk.length;
+                            goToSlide(chunkIdx, currentBannerIndices[chunkIdx]);
+                        }, 5000);
+                        bannerIntervals.push(interval);
+                    }
                 }
             });
+            setTimeout(buildGlobalGallery, 200);
+        }
 
-            if (chunk.length > 1) {
-                const interval = setInterval(() => {
-                    currentBannerIndices[chunkIdx] = (currentBannerIndices[chunkIdx] + 1) % chunk.length;
-                    goToSlide(chunkIdx, currentBannerIndices[chunkIdx]);
-                }, 5000); 
-                bannerIntervals.push(interval);
+        function goToSlide(chunkIdx, slideIdx) {
+            const wrapper = document.getElementById(`bannerWrapper-${chunkIdx}`);
+            if (!wrapper) return;
+            currentBannerIndices[chunkIdx] = slideIdx;
+            wrapper.style.transform = `translateX(-${slideIdx * 100}%)`;
+            const dotsContainer = document.getElementById(`bannerDots-${chunkIdx}`);
+            if (dotsContainer) {
+                Array.from(dotsContainer.children).forEach((dot, i) => { dot.classList.toggle('active', i === slideIdx); });
             }
         }
-    });
-    setTimeout(buildGlobalGallery, 200);
-}
 
-function goToSlide(chunkIdx, slideIdx) {
-    const wrapper = document.getElementById(`bannerWrapper-${chunkIdx}`);
-    if (!wrapper) return;
-    currentBannerIndices[chunkIdx] = slideIdx;
-    wrapper.style.transform = `translateX(-${slideIdx * 100}%)`;
-    const dotsContainer = document.getElementById(`bannerDots-${chunkIdx}`);
-    if (dotsContainer) {
-        Array.from(dotsContainer.children).forEach((dot, i) => { dot.classList.toggle('active', i === slideIdx); });
-    }
-}
+        function renderContent() {
+            const grid = document.getElementById('contentGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            if (!APPDATA.content || APPDATA.content.length === 0) {
+                grid.innerHTML = `<p style="text-align:center; color:var(--text-secondary); margin-top:20px;">. .</p>`;
+                return;
+            }
 
-function renderContent() {
-    const grid = document.getElementById('contentGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    if (!APPDATA.content || APPDATA.content.length === 0) {
-        grid.innerHTML = `<p style="text-align:center; color:var(--text-secondary); margin-top:20px;">. .</p>`;
-        return;
-    }
-
-    APPDATA.content.forEach((item, idx) => {
-        if (item.type === 'video' && (!item.videoUrl || item.videoUrl.trim() === '')) return;
-        const card = document.createElement('div');
-        card.className = 'content-card';
-        let mediaHTML = '';
-        if (item.type === 'image') {
-            const imgs = item.images;
-            let imgSlides = ''; let dots = '';
-            if (imgs.length > 0) {
-                imgs.forEach((url, i) => {
-                    const display = i === 0 ? 'block' : 'none';
-                    imgSlides += `<img src="${url}" style="display:${display};" class="gallery-img-${idx} zoomable-img" data-card-idx="${idx}" onclick="openLightbox('${url}')">`;
-                    if(imgs.length > 1) { dots += `<div class="gallery-dot ${i===0?'active':''}" onclick="changeGallerySlide(${idx}, ${i})"></div>`; }
-                });
-                mediaHTML = `
+            APPDATA.content.forEach((item, idx) => {
+                if (item.type === 'video' && (!item.videoUrl || item.videoUrl.trim() === '')) return;
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                let mediaHTML = '';
+                if (item.type === 'image') {
+                    const imgs = item.images;
+                    let imgSlides = ''; let dots = '';
+                    if (imgs.length > 0) {
+                        imgs.forEach((url, i) => {
+                            const display = i === 0 ? 'block' : 'none';
+                            imgSlides += `<img src="${url}" style="display:${display};" class="gallery-img-${idx} zoomable-img" data-card-idx="${idx}" onclick="openLightbox('${url}')">`;
+                            if (imgs.length > 1) { dots += `<div class="gallery-dot ${i === 0 ? 'active' : ''}" onclick="changeGallerySlide(${idx}, ${i})"></div>`; }
+                        });
+                        mediaHTML = `
                     <div class="media-container">
                         ${imgSlides}
                         <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
                         <div class="gallery-dots" id="dots-${idx}" style="display: ${imgs.length > 1 ? 'flex' : 'none'};">${dots}</div>
                     </div>`;
-            }
-        } else if (item.type === 'video') {
-            mediaHTML = `
+                    }
+                } else if (item.type === 'video') {
+                    mediaHTML = `
                 <div class="media-container" style="height: 220px;">
                     <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
                         <source src="${item.videoUrl}" type="video/mp4">
                     </video>
                 </div>`;
-        }
+                }
 
-        card.innerHTML = `<div class="card-header"><h3>${item.title}</h3></div>${mediaHTML}<p class="card-desc">${item.desc}</p>`;
-        grid.appendChild(card);
-    });
+                card.innerHTML = `<div class="card-header"><h3>${item.title}</h3></div>${mediaHTML}<p class="card-desc">${item.desc}</p>`;
+                grid.appendChild(card);
+            });
 
-    setTimeout(() => {
-        const allImages = document.querySelectorAll('.zoomable-img');
-        allImages.forEach(img => { enablePinchZoomOnImage(img); });
-        buildGlobalGallery();
-    }, 100);
-}
-
-function changeGallerySlide(cardIdx, imgIdx) {
-    const images = document.querySelectorAll(`.gallery-img-${cardIdx}`);
-    images.forEach(img => { img.style.display = 'none'; });
-    if(images[imgIdx]) images[imgIdx].style.display = 'block';
-    const dots = document.getElementById(`dots-${cardIdx}`);
-    if (dots) {
-        Array.from(dots.children).forEach(d => { d.classList.remove('active'); });
-        if(dots.children[imgIdx]) dots.children[imgIdx].classList.add('active');
-    }
-}
-
-function openLightbox(url) {
-    const lb = document.getElementById('lightbox');
-    const img = document.getElementById('lightboxImg');
-    if (!lb || !img) return;
-    
-    currentLightboxIndex = globalImageGallery.indexOf(url);
-    if (currentLightboxIndex === -1) {
-        globalImageGallery.push(url);
-        currentLightboxIndex = globalImageGallery.length - 1;
-    }
-    
-    img.src = url;
-    img.style.transform = 'scale(1)';
-    img.style.transition = 'transform 0.3s ease';
-    
-    lb.style.display = 'flex';
-    lb.classList.add('show');
-    enablePinchZoomOnImage(img);
-    
-    document.addEventListener('keydown', lightboxKeyHandler);
-}
-
-function changeLightboxImage(direction, event) {
-    if (event) event.stopPropagation();
-    if (globalImageGallery.length === 0) return;
-
-    currentLightboxIndex += direction;
-    if (currentLightboxIndex < 0) currentLightboxIndex = globalImageGallery.length - 1;
-    if (currentLightboxIndex >= globalImageGallery.length) currentLightboxIndex = 0;
-
-    const img = document.getElementById('lightboxImg');
-    img.style.transform = 'scale(1)';
-    img.src = globalImageGallery[currentLightboxIndex];
-}
-
-function lightboxKeyHandler(e) {
-    if (e.key === 'ArrowRight') changeLightboxImage(1);
-    if (e.key === 'ArrowLeft') changeLightboxImage(-1);
-    if (e.key === 'Escape') closeLightbox({target: {id: 'lightbox'}});
-}
-
-function closeLightbox(event) {
-    if (event && event.target.id !== 'lightbox' && !event.target.classList.contains('lightbox-close')) {
-        if (event.target.classList.contains('lightbox-prev') || event.target.classList.contains('lightbox-next')) return;
-        return;
-    }
-    const lb = document.getElementById('lightbox');
-    const img = document.getElementById('lightboxImg');
-    if (!lb || !img) return;
-    
-    lb.classList.remove('show');
-    document.removeEventListener('keydown', lightboxKeyHandler);
-    
-    setTimeout(() => { 
-        lb.style.display = 'none'; 
-        img.style.transform = 'scale(1)';
-        img.src = '';
-    }, 300);
-}
-
-function enablePinchZoomOnImage(imageElement) {
-    if (!imageElement) return;
-    let imageScale = 1; let lastScale = 1; let startData = { x: 0, y: 0, distance: 0 };
-    const getDistance = (event) => Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
-
-    imageElement.addEventListener('touchstart', (event) => {
-        if (event.touches.length === 2) {
-            event.preventDefault();
-            startData.x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
-            startData.y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
-            startData.distance = getDistance(event);
-            lastScale = imageScale;
-        }
-    }, { passive: false });
-
-    imageElement.addEventListener('touchmove', (event) => {
-        if (event.touches.length === 2) {
-            event.preventDefault(); event.stopPropagation();
-            let scale = event.scale ? event.scale : getDistance(event) / startData.distance;
-            imageScale = Math.min(Math.max(1, lastScale * scale), 5);
-            const deltaX = (event.touches[0].pageX + event.touches[1].pageX) / 2 - startData.x;
-            const deltaY = (event.touches[0].pageY + event.touches[1].pageY) / 2 - startData.y;
-            const transform = `translate(${deltaX}px, ${deltaY}px) scale(${imageScale})`;
-            imageElement.style.transform = transform; imageElement.style.WebkitTransform = transform;
-            imageElement.style.zIndex = "99999"; imageElement.style.transition = "none";
-        }
-    }, { passive: false });
-
-    imageElement.addEventListener('touchend', (event) => {
-        if (event.touches.length < 2 && imageScale > 1.1) {
             setTimeout(() => {
-                imageElement.style.transform = 'scale(1)'; imageElement.style.WebkitTransform = 'scale(1)';
-                imageElement.style.transition = 'transform 0.3s ease';
-                imageScale = 1; lastScale = 1;
+                const allImages = document.querySelectorAll('.zoomable-img');
+                allImages.forEach(img => { enablePinchZoomOnImage(img); });
+                buildGlobalGallery();
+            }, 100);
+        }
+
+        function changeGallerySlide(cardIdx, imgIdx) {
+            const images = document.querySelectorAll(`.gallery-img-${cardIdx}`);
+            images.forEach(img => { img.style.display = 'none'; });
+            if (images[imgIdx]) images[imgIdx].style.display = 'block';
+            const dots = document.getElementById(`dots-${cardIdx}`);
+            if (dots) {
+                Array.from(dots.children).forEach(d => { d.classList.remove('active'); });
+                if (dots.children[imgIdx]) dots.children[imgIdx].classList.add('active');
+            }
+        }
+
+        function openLightbox(url) {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            if (!lb || !img) return;
+
+            currentLightboxIndex = globalImageGallery.indexOf(url);
+            if (currentLightboxIndex === -1) {
+                globalImageGallery.push(url);
+                currentLightboxIndex = globalImageGallery.length - 1;
+            }
+
+            img.src = url;
+            img.style.transform = 'scale(1)';
+            img.style.transition = 'transform 0.3s ease';
+
+            lb.style.display = 'flex';
+            lb.classList.add('show');
+            enablePinchZoomOnImage(img);
+
+            document.addEventListener('keydown', lightboxKeyHandler);
+        }
+
+        function changeLightboxImage(direction, event) {
+            if (event) event.stopPropagation();
+            if (globalImageGallery.length === 0) return;
+
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = globalImageGallery.length - 1;
+            if (currentLightboxIndex >= globalImageGallery.length) currentLightboxIndex = 0;
+
+            const img = document.getElementById('lightboxImg');
+            img.style.transform = 'scale(1)';
+            img.src = globalImageGallery[currentLightboxIndex];
+        }
+
+        function lightboxKeyHandler(e) {
+            if (e.key === 'ArrowRight') changeLightboxImage(1);
+            if (e.key === 'ArrowLeft') changeLightboxImage(-1);
+            if (e.key === 'Escape') closeLightbox({ target: { id: 'lightbox' } });
+        }
+
+        function closeLightbox(event) {
+            if (event && event.target.id !== 'lightbox' && !event.target.classList.contains('lightbox-close')) {
+                if (event.target.classList.contains('lightbox-prev') || event.target.classList.contains('lightbox-next')) return;
+                return;
+            }
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            if (!lb || !img) return;
+
+            lb.classList.remove('show');
+            document.removeEventListener('keydown', lightboxKeyHandler);
+
+            setTimeout(() => {
+                lb.style.display = 'none';
+                img.style.transform = 'scale(1)';
+                img.src = '';
             }, 300);
         }
-    }, { passive: false });
-    
-    let lastTap = 0;
-    imageElement.addEventListener('touchend', function(event) {
-        const currentTime = new Date().getTime(); const tapLength = currentTime - lastTap;
-        if (tapLength < 300 && tapLength > 0) {
-            event.preventDefault();
-            imageElement.style.transform = 'scale(1)'; imageElement.style.WebkitTransform = 'scale(1)';
-            imageElement.style.transition = 'transform 0.3s ease';
-            imageScale = 1; lastScale = 1;
+
+        function enablePinchZoomOnImage(imageElement) {
+            if (!imageElement) return;
+            let imageScale = 1; let lastScale = 1; let startData = { x: 0, y: 0, distance: 0 };
+            const getDistance = (event) => Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
+
+            imageElement.addEventListener('touchstart', (event) => {
+                if (event.touches.length === 2) {
+                    event.preventDefault();
+                    startData.x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+                    startData.y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+                    startData.distance = getDistance(event);
+                    lastScale = imageScale;
+                }
+            }, { passive: false });
+
+            imageElement.addEventListener('touchmove', (event) => {
+                if (event.touches.length === 2) {
+                    event.preventDefault(); event.stopPropagation();
+                    let scale = event.scale ? event.scale : getDistance(event) / startData.distance;
+                    imageScale = Math.min(Math.max(1, lastScale * scale), 5);
+                    const deltaX = (event.touches[0].pageX + event.touches[1].pageX) / 2 - startData.x;
+                    const deltaY = (event.touches[0].pageY + event.touches[1].pageY) / 2 - startData.y;
+                    const transform = `translate(${deltaX}px, ${deltaY}px) scale(${imageScale})`;
+                    imageElement.style.transform = transform; imageElement.style.WebkitTransform = transform;
+                    imageElement.style.zIndex = "99999"; imageElement.style.transition = "none";
+                }
+            }, { passive: false });
+
+            imageElement.addEventListener('touchend', (event) => {
+                if (event.touches.length < 2 && imageScale > 1.1) {
+                    setTimeout(() => {
+                        imageElement.style.transform = 'scale(1)'; imageElement.style.WebkitTransform = 'scale(1)';
+                        imageElement.style.transition = 'transform 0.3s ease';
+                        imageScale = 1; lastScale = 1;
+                    }, 300);
+                }
+            }, { passive: false });
+
+            let lastTap = 0;
+            imageElement.addEventListener('touchend', function (event) {
+                const currentTime = new Date().getTime(); const tapLength = currentTime - lastTap;
+                if (tapLength < 300 && tapLength > 0) {
+                    event.preventDefault();
+                    imageElement.style.transform = 'scale(1)'; imageElement.style.WebkitTransform = 'scale(1)';
+                    imageElement.style.transition = 'transform 0.3s ease';
+                    imageScale = 1; lastScale = 1;
+                }
+                lastTap = currentTime;
+            });
         }
-        lastTap = currentTime;
-    });
-}
 
-function toggleMode() {
-    document.body.classList.toggle('day-mode');
-    localStorage.setItem('theme', document.body.classList.contains('day-mode') ? 'day' : 'night');
-    const icon = document.querySelector('.mode-toggle i');
-    if (icon) icon.className = document.body.classList.contains('day-mode') ? 'fas fa-sun' : 'fas fa-moon';
-}
-
-function loadTheme() {
-    if (localStorage.getItem('theme') === 'day') {
-        document.body.classList.add('day-mode');
-        const icon = document.querySelector('.mode-toggle i');
-        if (icon) icon.className = 'fas fa-sun';
-    }
-}
-
-function toggleNavAndScroll() {
-    const nav = document.getElementById('bottomNav');
-    const icon = document.querySelector('.scroll-toggle i');
-    if (!nav || !icon) return;
-    if (!nav.classList.contains('hidden')) {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        nav.classList.add('hidden'); icon.className = 'fas fa-arrow-up';
-    } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        nav.classList.remove('hidden'); icon.className = 'fas fa-arrow-down';
-    }
-}
-
-function closeAllMenus() {
-    const menu = document.getElementById('sectionsMenu');
-    const overlay = document.getElementById('overlay');
-    if (menu) menu.classList.remove('show');
-    if (overlay) overlay.classList.remove('show');
-}
-
-function openLink(url) {
-    if (!url || url.trim() === '#') return;
-    closeAllMenus();
-
-    document.getElementById('modeToggle').style.display = 'none';
-    document.querySelector('.logout-btn').style.display = 'none';
-    document.getElementById('userInfoBadge').style.display = 'none';
-
-    resetIframeLoader(); 
-
-    const phNo = localStorage.getItem('pharmacy_number');
-    const token = crypto.randomUUID();
-    sessionStorage.setItem('_tk', token);
-
-    let finalUrl = url;
-    const separator = url.includes('?') ? '&' : '?';
-    finalUrl = phNo 
-        ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
-        : url + separator + '_tk=' + token;
-
-    const navButtons = document.querySelectorAll('.nav-btn');
-    navButtons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
-            btn.classList.add('active');
+        function toggleMode() {
+            document.body.classList.toggle('day-mode');
+            localStorage.setItem('theme', document.body.classList.contains('day-mode') ? 'day' : 'night');
+            const icon = document.querySelector('.mode-toggle i');
+            if (icon) icon.className = document.body.classList.contains('day-mode') ? 'fas fa-sun' : 'fas fa-moon';
         }
-    });
 
-    const container = document.getElementById('iframeContainer');
-    const iframe = document.getElementById('embeddedFrame');
-    const errorBox = document.getElementById('iframeError');
-    const loader = document.getElementById('loadingOverlay');
-
-    if (!container || !iframe || !errorBox) return;
-    errorBox.classList.remove('show');
-    if (loader) {
-        loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
-    }
-    container.classList.add('show');
-
-    iframe.onload = null; iframe.onerror = null;
-
-    setTimeout(() => {
-        let hasLoaded = false;
-        let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
-
-        iframe.onload = function() {
-            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-            if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
-        };
-        
-        iframe.onerror = function() {
-            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-            errorBox.classList.add('show');
-        };
-
-        iframe.src = finalUrl;
-    }, 50);
-}
-
-function resetIframeLoader() {
-    const loader = document.getElementById('loadingOverlay');
-    if (loader) { loader.style.display = 'none'; loader.classList.add('hidden'); loader.style.opacity = '0'; }
-}
-
-function hideLoaderFast(loader) {
-    if (!loader) loader = document.getElementById('loadingOverlay');
-    if (!loader) return;
-    loader.style.transition = 'opacity 0.2s'; loader.style.opacity = '0';
-    setTimeout(() => {
-        loader.classList.add('hidden'); loader.style.display = 'none';
-        if (loader.style.display !== 'none') { loader.style.display = 'none'; }
-    }, 200);
-}
-
-function closeIframe() {
-    const container = document.getElementById('iframeContainer');
-    const errorBox = document.getElementById('iframeError');
-    const iframe = document.getElementById('embeddedFrame');
-    
-    if (container) container.classList.remove('show');
-    if (errorBox) errorBox.classList.remove('show');
-    
-    document.getElementById('modeToggle').style.display = 'flex';
-    checkAuth();
-    
-    setTimeout(() => { if (iframe) iframe.src = 'about:blank'; }, 400);
-}
-
-function goHome() {
-    closeIframe(); closeAllMenus();
-    const navButtons = document.querySelectorAll('.nav-btn');
-    navButtons.forEach(btn => btn.classList.remove('active'));
-    const homeBtn = document.querySelector('.nav-btn[onclick="goHome()"]');
-    if (homeBtn) homeBtn.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function toggleSections() {
-    const navButtons = document.querySelectorAll('.nav-btn');
-    navButtons.forEach(btn => btn.classList.remove('active'));
-    const sectionsBtn = document.querySelector('.nav-btn[onclick="toggleSections()"]');
-    if (sectionsBtn) sectionsBtn.classList.add('active');
-    
-    const menu = document.getElementById('sectionsMenu');
-    const overlay = document.getElementById('overlay');
-    if (menu) menu.classList.add('show');
-    if (overlay) overlay.classList.add('show');
-}
-
-function triggerAlarm(reminderObj) {
-    const audio = document.getElementById('offerAlarmSound');
-    if (audio) { audio.currentTime = 0; audio.play().catch(e => console.log("Audio prevented:", e)); }
-
-    let timeString = ""; let isExactlyNow = false;
-    const cleanId = reminderObj.offer_id.replace('_30min', '').replace('_exact', '');
-    const originalOffer = START_OFFERS.find(o => o.id === cleanId);
-    
-    if (originalOffer) {
-        const offerTime = new Date(originalOffer.start_date);
-        timeString = " الساعة " + offerTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const diff = Math.abs(new Date().getTime() - offerTime.getTime());
-        if (diff < 60000) { isExactlyNow = true; }
-    }
-
-    const message = isExactlyNow 
-        ? `${reminderObj.offer_title} بدأ الآن! 🔥` 
-        : `${reminderObj.offer_title}${timeString} سيبدأ خلال 30 دقيقة! ⏳`;
-
-    const titleDisplay = document.getElementById('alarmOfferName');
-    if (titleDisplay) titleDisplay.innerText = message;
-    
-    const actionModal = document.getElementById('alarmActionModal');
-    if (actionModal) actionModal.style.display = 'flex';
-    
-    const idInput = document.getElementById('currentReminderId');
-    if (idInput) idInput.value = reminderObj.id;
-
-    const notifTitle = "تنبيه MONO SYSTEM";
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ type: 'SHOW_NOTIFICATION', title: notifTitle, body: message });
-    } else {
-        showBrowserNotification(notifTitle, message);
-    }
-
-    clearTimeout(stopAudioTimeout);
-    stopAudioTimeout = setTimeout(() => {
-        if (audio) { audio.pause(); audio.currentTime = 0; }
-    }, 20000);
-}
-
-function startAlarmChecker() {
-    if(alarmCheckInterval) clearInterval(alarmCheckInterval);
-    alarmCheckInterval = setInterval(() => {
-        const nowMs = new Date().getTime();
-        userReminders.forEach((rem) => {
-            const trigTimeMs = new Date(rem.trigger_time).getTime();
-            const isTooOld = (nowMs - trigTimeMs) > (60 * 60 * 1000); 
-            if ((rem.status === 'pending' || rem.status === 'snoozed') && nowMs >= trigTimeMs && !isTooOld) {
-                console.log(`Triggering alarm: ${rem.offer_title}`);
-                rem.status = 'firing'; 
-                triggerAlarm(rem); 
+        function loadTheme() {
+            if (localStorage.getItem('theme') === 'day') {
+                document.body.classList.add('day-mode');
+                const icon = document.querySelector('.mode-toggle i');
+                if (icon) icon.className = 'fas fa-sun';
             }
-        });
-    }, 5000); 
-}
+        }
 
-function openScannerDirectly() {
-    const loader = document.getElementById('loadingOverlay');
-    if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
-    setTimeout(() => { openLink('offersgit.html#scanner'); }, 100);
-}
-</script>
+        function toggleNavAndScroll() {
+            const nav = document.getElementById('bottomNav');
+            const icon = document.querySelector('.scroll-toggle i');
+            if (!nav || !icon) return;
+            if (!nav.classList.contains('hidden')) {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                nav.classList.add('hidden'); icon.className = 'fas fa-arrow-up';
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                nav.classList.remove('hidden'); icon.className = 'fas fa-arrow-down';
+            }
+        }
+
+        function closeAllMenus() {
+            const menu = document.getElementById('sectionsMenu');
+            const overlay = document.getElementById('overlay');
+            if (menu) menu.classList.remove('show');
+            if (overlay) overlay.classList.remove('show');
+        }
+
+        function openLink(url) {
+            if (!url || url.trim() === '#') return;
+            closeAllMenus();
+
+            document.getElementById('modeToggle').style.display = 'none';
+            document.querySelector('.logout-btn').style.display = 'none';
+            document.getElementById('userInfoBadge').style.display = 'none';
+
+            resetIframeLoader();
+
+            const phNo = localStorage.getItem('pharmacy_number');
+            const token = crypto.randomUUID();
+            sessionStorage.setItem('_tk', token);
+
+            let baseUrl = url.split('#')[0];
+            const hash = url.includes('#') ? '#' + url.split('#')[1] : '';
+            const separator = baseUrl.includes('?') ? '&' : '?';
+
+            let finalUrl = phNo
+                ? baseUrl + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token + hash
+                : baseUrl + separator + '_tk=' + token + hash;
+
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            const container = document.getElementById('iframeContainer');
+            const iframe = document.getElementById('embeddedFrame');
+            const errorBox = document.getElementById('iframeError');
+            const loader = document.getElementById('loadingOverlay');
+
+            if (!container || !iframe || !errorBox) return;
+            errorBox.classList.remove('show');
+            if (loader) {
+                loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
+            }
+            container.classList.add('show');
+
+            iframe.onload = null; iframe.onerror = null;
+
+            setTimeout(() => {
+                let hasLoaded = false;
+                let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
+
+                iframe.onload = function () {
+                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+                    if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
+                };
+
+                iframe.onerror = function () {
+                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+                    errorBox.classList.add('show');
+                };
+
+                iframe.src = finalUrl;
+            }, 50);
+        }
+
+        function resetIframeLoader() {
+            const loader = document.getElementById('loadingOverlay');
+            if (loader) { loader.style.display = 'none'; loader.classList.add('hidden'); loader.style.opacity = '0'; }
+        }
+
+        function hideLoaderFast(loader) {
+            if (!loader) loader = document.getElementById('loadingOverlay');
+            if (!loader) return;
+            loader.style.transition = 'opacity 0.2s'; loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.classList.add('hidden'); loader.style.display = 'none';
+                if (loader.style.display !== 'none') { loader.style.display = 'none'; }
+            }, 200);
+        }
+
+        function closeIframe() {
+            const container = document.getElementById('iframeContainer');
+            const errorBox = document.getElementById('iframeError');
+            const iframe = document.getElementById('embeddedFrame');
+
+            if (container) container.classList.remove('show');
+            if (errorBox) errorBox.classList.remove('show');
+
+            document.getElementById('modeToggle').style.display = 'flex';
+            checkAuth();
+
+            setTimeout(() => { if (iframe) iframe.src = 'about:blank'; }, 400);
+        }
+
+        function goHome() {
+            closeIframe(); closeAllMenus();
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            const homeBtn = document.querySelector('.nav-btn[onclick="goHome()"]');
+            if (homeBtn) homeBtn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleSections() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            const sectionsBtn = document.querySelector('.nav-btn[onclick="toggleSections()"]');
+            if (sectionsBtn) sectionsBtn.classList.add('active');
+
+            const menu = document.getElementById('sectionsMenu');
+            const overlay = document.getElementById('overlay');
+            if (menu) menu.classList.add('show');
+            if (overlay) overlay.classList.add('show');
+        }
+
+        function triggerAlarm(reminderObj) {
+            const audio = document.getElementById('offerAlarmSound');
+            if (audio) { audio.currentTime = 0; audio.play().catch(e => console.log("Audio prevented:", e)); }
+
+            let timeString = ""; let isExactlyNow = false;
+            const cleanId = reminderObj.offer_id.replace('_30min', '').replace('_exact', '');
+            const originalOffer = START_OFFERS.find(o => o.id === cleanId);
+
+            if (originalOffer) {
+                const offerTime = new Date(originalOffer.start_date);
+                timeString = " الساعة " + offerTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const diff = Math.abs(new Date().getTime() - offerTime.getTime());
+                if (diff < 60000) { isExactlyNow = true; }
+            }
+
+            const message = isExactlyNow
+                ? `${reminderObj.offer_title} بدأ الآن! 🔥`
+                : `${reminderObj.offer_title}${timeString} سيبدأ خلال 30 دقيقة! ⏳`;
+
+            const titleDisplay = document.getElementById('alarmOfferName');
+            if (titleDisplay) titleDisplay.innerText = message;
+
+            const actionModal = document.getElementById('alarmActionModal');
+            if (actionModal) actionModal.style.display = 'flex';
+
+            const idInput = document.getElementById('currentReminderId');
+            if (idInput) idInput.value = reminderObj.id;
+
+            const notifTitle = "تنبيه MONO SYSTEM";
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'SHOW_NOTIFICATION', title: notifTitle, body: message });
+            } else {
+                showBrowserNotification(notifTitle, message);
+            }
+
+            clearTimeout(stopAudioTimeout);
+            stopAudioTimeout = setTimeout(() => {
+                if (audio) { audio.pause(); audio.currentTime = 0; }
+            }, 20000);
+        }
+
+        function startAlarmChecker() {
+            if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+            alarmCheckInterval = setInterval(() => {
+                const nowMs = new Date().getTime();
+                userReminders.forEach((rem) => {
+                    const trigTimeMs = new Date(rem.trigger_time).getTime();
+                    const isTooOld = (nowMs - trigTimeMs) > (60 * 60 * 1000);
+                    if ((rem.status === 'pending' || rem.status === 'snoozed') && nowMs >= trigTimeMs && !isTooOld) {
+                        console.log(`Triggering alarm: ${rem.offer_title}`);
+                        rem.status = 'firing';
+                        triggerAlarm(rem);
+                    }
+                });
+            }, 5000);
+        }
+
+        function openScannerDirectly() {
+            openLink('offersgit.html#scanner');
+        }
+    </script>
 </body>
+
 </html>
