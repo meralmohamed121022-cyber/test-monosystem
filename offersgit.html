@@ -29,16 +29,22 @@
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script>
     if (window.location.hash.includes('scanner')) {
-      const style = document.createElement('style');
-      style.innerHTML = `
-        #loaderScreen, #gatewayView { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; z-index: -1 !important; }
-        #fixedHeader { display: flex !important; }
-        #mainOffersContainer { display: block !important; }
-        body { overflow: auto !important; }
-      `;
-      document.head.appendChild(style);
+      document.documentElement.classList.add('direct-scanner');
     }
   </script>
+  <style>
+    /* Instant hiding for scanner mode */
+    html.direct-scanner #loaderScreen, 
+    html.direct-scanner #gatewayView, 
+    html.direct-scanner #mainOffersContainer, 
+    html.direct-scanner #fixedHeader { 
+      display: none !important; 
+    }
+    /* Instant showing for scanner modal */
+    html.direct-scanner #scannerModalOverlay { 
+      display: flex !important; 
+    }
+  </style>
 </head>
 
 <body>
@@ -46925,6 +46931,9 @@
       async function closeBarcodeScanner() {
         const overlay = document.getElementById('scannerModalOverlay');
         if (overlay) overlay.style.display = 'none';
+
+        // إزالة الكلاس الخاص بالفتح المباشر لإظهار المحتوى الخلفي
+        document.documentElement.classList.remove('direct-scanner');
 
         clearManualScannerInput();
 
