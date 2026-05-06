@@ -7758,84 +7758,88 @@
 
         const workerBaseUrl = "https://online.meralmohamed121022.workers.dev";
         const stockCache = new Map();
-        const CACHE_KEY = "STOCK_CACHE_DATA_V1";
-
         function getTodayString() {
           const d = new Date();
           return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
         }
 
+        function getCacheKey() {
+          const sc = getStoreCode();
+          return sc ? `STOCK_CACHE_V2_${sc}` : null;
+        }
+
         function loadCacheFromLocal() {
           try {
-            const raw = localStorage.getItem(CACHE_KEY);
-            if (!raw) return;
+            const key = getCacheKey();
+            if (!key) return false; // Not ready yet
+
+            const raw = localStorage.getItem(key);
+            if (!raw) return true; // Ready but empty
+
             const parsed = JSON.parse(raw);
             const today = getTodayString();
-            
-            // Robust check for current period ID
-            let currentPeriodId = 'default';
-            const periodObj = window.currentDataInstance || (typeof currentDataInstance !== 'undefined' ? currentDataInstance : null);
-            if (periodObj && periodObj.id) currentPeriodId = periodObj.id;
 
-            if (parsed.date === today && parsed.periodId === currentPeriodId) {
-              console.log(`📦 [Stock Cache] Found valid cache for today (${today}) and period (${currentPeriodId})`);
-              if (parsed.data) {
-                let count = 0;
-                Object.keys(parsed.data).forEach(key => {
-                  stockCache.set(key, parsed.data[key]);
+            if (parsed.date !== today) {
+              console.log("🧹 [Stock Cache] Date changed. Clearing old cache for this store.");
+              localStorage.removeItem(key);
+              return true;
+            }
+
+            if (parsed.data) {
+              let count = 0;
+              Object.keys(parsed.data).forEach(itemCode => {
+                // The itemCode in V2 is just the product code, not store__code
+                if (!stockCache.has(itemCode)) {
+                  stockCache.set(itemCode, parsed.data[itemCode]);
                   count++;
-                });
-                console.log(`✅ [Stock Cache] Successfully restored ${count} items.`);
-                
-                // Proactively sync what we already have
+                }
+              });
+              if (count > 0) {
+                console.log(`✅ [Stock Cache] Restored ${count} items for today.`);
                 syncProductsWithCache();
               }
-            } else {
-              console.log(`🧹 [Stock Cache] Cache invalid (Date: ${parsed.date} vs ${today}, Period: ${parsed.periodId} vs ${currentPeriodId}). Clearing.`);
-              localStorage.removeItem(CACHE_KEY);
             }
-          } catch (e) { console.error("❌ [Stock Cache] Load error:", e); }
+            return true;
+          } catch (e) { 
+            console.error("❌ [Stock Cache] Load error:", e);
+            return true; 
+          }
         }
 
         function saveCacheToLocal() {
           try {
-            const today = getTodayString();
-            let currentPeriodId = 'default';
-            const periodObj = window.currentDataInstance || (typeof currentDataInstance !== 'undefined' ? currentDataInstance : null);
-            if (periodObj && periodObj.id) currentPeriodId = periodObj.id;
+            const key = getCacheKey();
+            if (!key) return;
 
+            const today = getTodayString();
             const dataObj = {};
-            stockCache.forEach((val, key) => {
-              dataObj[key] = val;
+            stockCache.forEach((val, k) => {
+              dataObj[k] = val;
             });
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
+
+            localStorage.setItem(key, JSON.stringify({
               date: today,
-              periodId: currentPeriodId,
               data: dataObj
             }));
-            console.log(`💾 [Stock Cache] Saved ${stockCache.size} items to localStorage.`);
+            console.log(`💾 [Stock Cache] Saved ${stockCache.size} items to storage.`);
           } catch (e) { console.error("❌ [Stock Cache] Save error:", e); }
         }
 
         function syncProductsWithCache() {
           const db = Array.isArray(window.productsDB) ? window.productsDB : [];
-          const storeCode = getStoreCode();
-          if (db.length > 0 && storeCode && stockCache.size > 0) {
-            let syncCount = 0;
-            db.forEach(p => {
-              const codeStr = String(p.Code).trim();
-              if (typeof p.inStock === "undefined") {
-                const cacheKey = storeCode + "__" + codeStr;
-                if (stockCache.has(cacheKey)) {
-                  const cached = stockCache.get(cacheKey);
-                  p.inStock = cached.inStock;
-                  p.actualStock = cached.actualStock;
-                  syncCount++;
-                }
-              }
-            });
-            if (syncCount > 0) console.log(`🔄 [Stock Cache] Synced ${syncCount} products from memory.`);
-          }
+          if (db.length === 0 || stockCache.size === 0) return;
+
+          let syncCount = 0;
+          db.forEach(p => {
+            const code = String(p.Code).trim();
+            if (typeof p.inStock === "undefined" && stockCache.has(code)) {
+              const cached = stockCache.get(code);
+              p.inStock = cached.inStock;
+              p.actualStock = cached.actualStock;
+              syncCount++;
+            }
+          });
+          if (syncCount > 0) console.log(`🔄 [Stock Cache] Synced ${syncCount} products.`);
         }
 
         // Initialize cache from localStorage
@@ -7980,10 +7984,10 @@
             const db = Array.isArray(window.productsDB) ? window.productsDB : [];
             const activeCodes = getActiveOfferCodesSet();
 
-            // 1. Sync from Cache immediately to avoid "Loading" state if data is already known
+            // Ensure cache is loaded
+            if (stockCache.size === 0) loadCacheFromLocal();
             syncProductsWithCache();
 
-            // 2. Identify what actually needs fetching
             const productsToFetch = db.filter(p => {
               const codeStr = String(p.Code).trim();
               return activeCodes.has(codeStr) && typeof p.inStock === "undefined";
@@ -8048,9 +8052,8 @@
                   const codesToRequest = [];
                   currentBatch.forEach(p => {
                     const code = String(p?.Code ?? "").trim();
-                    const cacheKey = storeCode + "__" + code;
-                    if (stockCache.has(cacheKey)) {
-                      const cached = stockCache.get(cacheKey);
+                    if (stockCache.has(code)) {
+                      const cached = stockCache.get(code);
                       p.inStock = cached.inStock;
                       p.actualStock = cached.actualStock;
                       fetched++;
@@ -8080,15 +8083,14 @@
                       const data = await fetchWithRetry(fullUrl);
                       if (currentFetchSession === mySession && data && data.success && data.results) {
                         data.results.forEach(resItem => {
-                          const cacheKey = storeCode + "__" + resItem.code;
-                          stockCache.set(cacheKey, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
+                          stockCache.set(resItem.code, { inStock: resItem.inStock, actualStock: resItem.stockLevel });
                           const targetP = currentBatch.find(p => String(p.Code).trim() === resItem.code);
                           if (targetP) {
                             targetP.inStock = resItem.inStock;
                             targetP.actualStock = resItem.stockLevel;
                           }
                         });
-                        saveCacheToLocal(); // ✅ Save to localStorage after each successful batch
+                        saveCacheToLocal();
                       }
                     } catch (err) { console.error(`❌ Permanent failure:`, err); }
                     fetched += codesToRequest.length;
@@ -8141,6 +8143,16 @@
           setStockUiState("off");
         };
 
+        // 🚀 Smart Initialization: Retry until store code is ready
+        function initStockFilter() {
+          if (loadCacheFromLocal()) {
+            console.log("🚀 [Stock Cache] System initialized successfully.");
+          } else {
+            setTimeout(initStockFilter, 1000);
+          }
+        }
+        initStockFilter();
+
         document.addEventListener("DOMContentLoaded", function () {
           const checkbox = document.getElementById("stockFilterToggleCheckbox");
           const hiddenSelect = document.getElementById("stockFilterToggle");
@@ -8151,12 +8163,12 @@
 
           setStockUiState("on");
 
-          // Trigger filters after a short delay to ensure DB is ready
+          // Trigger filters after a delay to ensure everything is initialized
           setTimeout(() => {
             if (typeof window.applyFilters === "function") {
               window.applyFilters();
             }
-          }, 500);
+          }, 1500);
         });
         window.addEventListener("load", function () {
           if (!document.getElementById("pharmacyWelcomeToast")) {
