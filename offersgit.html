@@ -6264,7 +6264,7 @@ if (_p.get("_tk")) {
     SESSION_TOKEN = _p.get("_tk");
 }
 
-window.history.replaceState({}, "", window.location.pathname);
+window.history.replaceState({}, "", window.location.pathname + window.location.hash);
 // ──────────────────
 
 // 1. إعدادات سوبابيز
@@ -46404,7 +46404,7 @@ if (window.location.hash.includes('scanner')) {
     // بنعمل ستايل إجباري يخفي اللودر والجات واي فوراً
     const instantStyle = document.createElement('style');
     instantStyle.innerHTML = `
-        #loaderScreen, #gatewayView { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; z-index: -1 !important; }
+        #loaderScreen, #gatewayView, #loadingIndicator { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; z-index: -1 !important; }
         #fixedHeader { display: flex !important; }
         #mainOffersContainer { display: block !important; }
         body { overflow: auto !important; }
@@ -46420,11 +46420,13 @@ window.addEventListener("DOMContentLoaded", () => {
         const fixedHeader = document.getElementById('fixedHeader');
         const mainOffersContainer = document.getElementById('mainOffersContainer');
         const loader = document.getElementById('loaderScreen');
+        const loadingInd = document.getElementById('loadingIndicator');
         
         if (gatewayView) gatewayView.style.display = 'none';
         if (fixedHeader) fixedHeader.style.display = 'flex';
         if (mainOffersContainer) mainOffersContainer.style.display = 'block'; 
         if (loader) loader.style.display = 'none';
+        if (loadingInd) loadingInd.style.display = 'none';
 
         // فتح السكانر بسرعة (300 ملي ثانية كافية جداً لتشغيل الكاميرا)
         setTimeout(() => {
