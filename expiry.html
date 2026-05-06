@@ -1170,118 +1170,137 @@ setStatFilter: (type, el) => {
         },
 
 render: (resetPagination = true) => {
-            if (resetPagination) app.currentPage = 1;
-            const t = app.i18n[app.language];
-            const search = document.getElementById('search').value.toLowerCase().trim();
+    if (resetPagination) app.currentPage = 1;
+    const t = app.i18n[app.language];
+    const search = document.getElementById('search').value.toLowerCase().trim();
 
-            // 🔥 فلترة الأصناف الذكية 🔥
-            let baseData = app.exploreMode ? 
-                app.exploreData
-                // 1. التحديد التلقائي لجميع الصيدليات المسجلة (All PH Expiry)
-                .filter(it => app.selectedUsers.has(it.userId))
-                // 2. [منع التكرار] إخفاء الأصناف اللي متسجلة عندك مسبقاً بنفس الكود وتاريخ الانتهاء
-                .filter(it => {
-                    const alreadyHaveIt = app.data.some(myItem => 
-                        String(myItem.code) === String(it.code) && myItem.expiryDate === it.expiryDate
-                    );
-                    return !alreadyHaveIt; 
-                })
-                .map(it => {
-                    const local = DB_MAP.get(String(it.code));
-                    return { 
-                        ...it, 
-                        nameEn: local ? local['Item Description'] : 'Unknown', 
-                        nameAr: local ? local['أسم المنتج'] : '', 
-                        brand: local ? local.Brand : 'OTHER', 
-                        catA: local ? local['Category Level A'] : 'Uncategorized',
-                        catB: local ? local['Category Level B'] : 'Uncategorized',
-                        isExplore: true, 
-                        ownerId: it.userId 
-                    };
-                }) : 
-                app.data;
+    // 1. فلترة الأصناف الذكية
+    let baseData = app.exploreMode ? 
+        app.exploreData
+        .filter(it => app.selectedUsers.has(it.userId))
+        .filter(it => {
+            const alreadyHaveIt = app.data.some(myItem => 
+                String(myItem.code) === String(it.code) && myItem.expiryDate === it.expiryDate
+            );
+            return !alreadyHaveIt; 
+        })
+        .map(it => {
+            const local = DB_MAP.get(String(it.code));
+            return { 
+                ...it, 
+                nameEn: local ? local['Item Description'] : 'Unknown', 
+                nameAr: local ? local['أسم المنتج'] : '', 
+                brand: local ? local.Brand : 'OTHER', 
+                catA: local ? local['Category Level A'] : 'Uncategorized',
+                catB: local ? local['Category Level B'] : 'Uncategorized',
+                isExplore: true, 
+                ownerId: it.userId 
+            };
+        }) : 
+        app.data;
 
-            // حساب الإحصائيات بناءً على البيانات المفلترة
-            let s = { total: 0, found: 0, missing: 0, pending: 0, exp: 0 };
-            baseData.forEach(i => {
-                const alert = app.getAlert(i.expiryDate);
-                s.total++;
-                if (i.status === 'found') s.found++;
-                else if (i.status === 'not-found') s.missing++;
-                else { 
-                    s.pending++; 
-                    if (alert === 'expired') s.exp++; 
-                }
-            });
+    // 2. حساب الإحصائيات (pending = expired + warning فقط، بدون safe)
+    let s = { total: 0, found: 0, missing: 0, pending: 0, exp: 0 };
+    baseData.forEach(i => {
+        const alert = app.getAlert(i.expiryDate);
+        s.total++;
+        if (i.status === 'found') s.found++;
+        else if (i.status === 'not-found') s.missing++;
+        else {
+            if (alert === 'expired' || alert === 'warning') s.pending++;
+            if (alert === 'expired') s.exp++;
+        }
+    });
 
-            document.getElementById('stTotal').innerText = s.total;
-            document.getElementById('stFound').innerText = s.found;
-            document.getElementById('stMissing').innerText = s.missing;
-            document.getElementById('stPending').innerText = s.pending;
-            document.getElementById('stExpired').innerText = s.exp;
+    document.getElementById('stTotal').innerText = s.total;
+    document.getElementById('stFound').innerText = s.found;
+    document.getElementById('stMissing').innerText = s.missing;
+    document.getElementById('stPending').innerText = s.pending;
+    document.getElementById('stExpired').innerText = s.exp;
 
-            // 🟢 إدارة واجهة الاستكشاف (مخفية الآن كما طلبت)
-            const exploreContainer = document.getElementById('exploreUsersContainer');
-            if (exploreContainer) {
-                // إخفاء الحاوية تماماً في وضع الاستكشاف الجديد All PH Expiry
-                exploreContainer.style.display = 'none'; 
+    const exploreContainer = document.getElementById('exploreUsersContainer');
+    if (exploreContainer) exploreContainer.style.display = 'none';
+
+    // 3. تطبيق الفلاتر المتعددة والبحث
+    app.fullFilteredList = baseData.filter(item => {
+        const alert = app.getAlert(item.expiryDate);
+        if (app.statFilter === 'found' && item.status !== 'found') return false;
+        if (app.statFilter === 'not-found' && item.status !== 'not-found') return false;
+
+        if (app.statFilter === 'pending') {
+            if (item.status === 'found' || item.status === 'not-found') return false;
+            if (alert !== 'expired' && alert !== 'warning') return false;
+        }
+
+        if (app.statFilter === 'expired' && (alert !== 'expired' || item.status === 'found' || item.status === 'not-found')) return false;
+
+        const monthFilters  = app.tomSelectInstances['month']?.getValue()  || [];
+        const catAFilters   = app.tomSelectInstances['catA']?.getValue()   || [];
+        const catBFilters   = app.tomSelectInstances['catB']?.getValue()   || [];
+        const brandFilters  = app.tomSelectInstances['brand']?.getValue()  || [];
+        const statusFilters = app.tomSelectInstances['status']?.getValue() || [];
+
+        if (monthFilters.length  > 0 && !monthFilters.includes(item.expiryDate.slice(0, 7))) return false;
+        if (catAFilters.length   > 0 && !catAFilters.includes(item.catA))   return false;
+        if (catBFilters.length   > 0 && !catBFilters.includes(item.catB))   return false;
+        if (brandFilters.length  > 0 && !brandFilters.includes(item.brand)) return false;
+        if (statusFilters.length > 0 && !statusFilters.includes(item.status)) return false;
+
+        return true;
+    });
+
+    if (search) {
+        app.fullFilteredList = app.fullFilteredList.filter(item => 
+            String(item.nameEn).toLowerCase().includes(search) || 
+            String(item.nameAr).includes(search) ||
+            String(item.code).includes(search)
+        );
+    }
+
+    // 4. شريط الشهور العلوي
+    const navContainer = document.getElementById('monthNav');
+    navContainer.innerHTML = '';
+    const uniqueMonths = [...new Set(app.fullFilteredList.map(it => it.expiryDate.slice(0, 7)))].sort();
+
+    if (uniqueMonths.length > 0) {
+        navContainer.style.display = 'flex';
+        uniqueMonths.forEach(mKey => {
+            // عدد فريد بدون تكرار (fix مشكلة العدد الغلط)
+            const allMonthItems = app.fullFilteredList.filter(it => it.expiryDate.startsWith(mKey));
+            const uniqueMonthItems = [...new Map(allMonthItems.map(it => [it.code + it.expiryDate, it])).values()];
+            const alert = app.getAlert(mKey + "-01");
+
+            if (alert !== 'safe' || app.statFilter === 'all') {
+                const chip = document.createElement('div');
+                chip.className = `month-chip ${alert === 'expired' ? 'st-expired' : alert === 'warning' ? 'st-warning' : 'st-safe'}`;
+                chip.innerHTML = `<div class="m-date">${mKey}</div><div class="m-count">${uniqueMonthItems.length}</div>`;
+
+                // fix السكرول: setTimeout يضمن تحديث DOM قبل السكرول
+                chip.onclick = () => {
+                    let target = document.getElementById(`sec-${mKey}`);
+                    if (!target) {
+                        app.currentPage = Math.ceil(app.fullFilteredList.length / app.displayLimit);
+                        app.renderVisiblePart();
+                    }
+                    setTimeout(() => {
+                        target = document.getElementById(`sec-${mKey}`);
+                        if (target) {
+                            const yOffset = -180;
+                            const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                            window.scrollTo({ top: y, behavior: 'smooth' });
+                        }
+                    }, 50);
+                };
+                navContainer.appendChild(chip);
             }
+        });
+    } else { 
+        navContainer.style.display = 'none'; 
+    }
 
-            // --- الفلاتر المتعددة (Tom Select) ---
-            app.fullFilteredList = baseData.filter(item => {
-                const alert = app.getAlert(item.expiryDate);
-                
-                if (app.statFilter === 'found' && item.status !== 'found') return false;
-                if (app.statFilter === 'not-found' && item.status !== 'not-found') return false;
-                if (app.statFilter === 'pending' && item.status !== 'pending') return false;
-                if (app.statFilter === 'expired' && (alert !== 'expired' || item.status !== 'pending')) return false;
+    app.renderVisiblePart();
+},
 
-                const monthFilters = app.tomSelectInstances['month']?.getValue() || [];
-                const catAFilters  = app.tomSelectInstances['catA']?.getValue() || [];
-                const catBFilters  = app.tomSelectInstances['catB']?.getValue() || [];
-                const brandFilters = app.tomSelectInstances['brand']?.getValue() || [];
-                const statusFilters = app.tomSelectInstances['status']?.getValue() || [];
-
-                if (monthFilters.length > 0 && !monthFilters.includes(item.expiryDate.slice(0, 7))) return false;
-                if (catAFilters.length > 0 && !catAFilters.includes(item.catA)) return false;
-                if (catBFilters.length > 0 && !catBFilters.includes(item.catB)) return false;
-                if (brandFilters.length > 0 && !brandFilters.includes(item.brand)) return false;
-                if (statusFilters.length > 0 && !statusFilters.includes(item.status)) return false;
-
-                return true;
-            });
-
-            // فلتر البحث النصي الرئيسي (اسم المنتج والكود)
-            if (search) {
-                app.fullFilteredList = app.fullFilteredList.filter(item => 
-                    String(item.nameEn).toLowerCase().includes(search) || 
-                    String(item.nameAr).includes(search) ||
-                    String(item.code).includes(search)
-                );
-            }
-
-            // تحديث شريط الشهور العلوي
-            const navContainer = document.getElementById('monthNav');
-            navContainer.innerHTML = '';
-            const uniqueMonths = [...new Set(app.fullFilteredList.map(it => it.expiryDate.slice(0, 7)))].sort();
-
-            if (uniqueMonths.length > 0) {
-                navContainer.style.display = 'flex';
-                uniqueMonths.forEach(mKey => {
-                    const monthItems = app.fullFilteredList.filter(it => it.expiryDate.startsWith(mKey));
-                    const alert = app.getAlert(mKey + "-01");
-                    const chip = document.createElement('div');
-                    chip.className = `month-chip ${alert === 'expired' ? 'st-expired' : alert === 'warning' ? 'st-warning' : 'st-safe'}`;
-                    chip.innerHTML = `<div class="m-date">${mKey}</div><div class="m-count">${monthItems.length}</div>`;
-                    chip.onclick = () => document.getElementById(`sec-${mKey}`)?.scrollIntoView({ behavior: 'smooth' });
-                    navContainer.appendChild(chip);
-                });
-            } else { 
-                navContainer.style.display = 'none'; 
-            }
-
-            app.renderVisiblePart();
-        },        
 renderVisiblePart: () => {
     const t = app.i18n[app.language];
     const resultContainer = document.getElementById('inventoryContainer');
@@ -1319,13 +1338,25 @@ renderVisiblePart: () => {
     Object.keys(grouped).sort().forEach(mKey => {
         const alert = app.getAlert(mKey + "-01");
         let headerClass = alert === 'expired' ? 'expired-header' : alert === 'warning' ? 'warning-header' : 'safe-header';
-        finalHtml += `<div class="date-section" id="sec-${mKey}"><div class="date-header ${headerClass}">📅 ${mKey}</div><div class="date-grid">`;
-        
+
+        finalHtml += `
+        <div class="date-section" id="sec-${mKey}">
+            <div class="date-header ${headerClass}">📅 ${mKey}</div>
+            <div class="date-grid">`;
+
         grouped[mKey].forEach(item => {
             const phColor = item.isExplore ? getPhColor(item.ownerId) : 'var(--primary)';
             const cardStyle = item.isExplore 
                 ? `border: 2.5px solid ${phColor}; background: #fdfdfd; box-shadow: 0 4px 15px ${phColor}20;` 
                 : '';
+
+            // لون الـ badge حسب حالة الشهر
+            const itemAlert = app.getAlert(item.expiryDate);
+            const badgeColor = itemAlert === 'expired' 
+                ? { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' }
+                : itemAlert === 'warning' 
+                ? { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A' }
+                : { bg: '#F0FDF4', text: '#059669', border: '#BBF7D0' };
 
             finalHtml += `
             <div class="card" style="${cardStyle}">
@@ -1337,12 +1368,14 @@ renderVisiblePart: () => {
                     <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div class="brand" style="color:${phColor}; font-weight:800;">${item.brand}</div>
-                            <!-- التاريخ مكان الكود السداسي في الأعلى -->
-                            <div style="font-size:11px; font-weight:bold; color:#DC2626; background:#FEF2F2; padding:2px 6px; border-radius:4px; border:1px solid #FECACA;">
+                            <div style="font-size:11px; font-weight:bold; 
+                                        color:${badgeColor.text}; 
+                                        background:${badgeColor.bg}; 
+                                        padding:2px 6px; border-radius:4px; 
+                                        border:1px solid ${badgeColor.border};">
                                 📅 ${item.expiryDate.slice(5, 7)}-${item.expiryDate.slice(0, 4)}
                             </div>
                         </div>
-                        <!-- الباركود وتحته الكود السداسي مباشرة -->
                         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:1px dashed #E2E8F0; padding:6px; border-radius:8px;">
                             <svg class="barcode-svg" data-barcode="${item.code}"></svg>
                             <div style="font-size:12px; font-weight:bold; color:var(--text-main); margin-top:4px;">
@@ -1353,7 +1386,7 @@ renderVisiblePart: () => {
 
                     <div class="name-en"><b>${item.nameEn}</b></div>
                     <div class="name-ar">${item.nameAr}</div>
-                    
+
                     <div class="status-actions">
                         <button class="st-btn found ${item.status === 'found' ? 'active' : ''}" 
                                 style="${item.status === 'found' ? `background:${phColor} !important; border-color:${phColor} !important; color:white !important;` : ''}"
@@ -1370,27 +1403,24 @@ renderVisiblePart: () => {
         });
         finalHtml += `</div></div>`;
     });
+
     resultContainer.innerHTML = finalHtml;
-    
+
+    // Lazy Loading للصور
     document.querySelectorAll('.card-img').forEach(img => app.observer.observe(img));
 
+    // Barcodes
     if (typeof JsBarcode !== 'undefined') {
         document.querySelectorAll('.barcode-svg').forEach(svg => {
             const bCode = svg.getAttribute('data-barcode');
             if (bCode) {
                 try {
-                    JsBarcode(svg, bCode, {
-                        format: "CODE128",
-                        width: 1.5,
-                        height: 35,
-                        displayValue: false, // تم إخفاؤه من داخل الباركود لأننا أضفناه يدوياً تحته بتنسيق أوضح
-                        margin: 0,
-                        lineColor: "#1E293B",
-                        background: "transparent"
+                    JsBarcode(svg, bCode, { 
+                        format: 'CODE128', width: 1.5, height: 35, 
+                        displayValue: false, margin: 0, 
+                        lineColor: '#1E293B', background: 'transparent' 
                     });
-                } catch (e) {
-                    console.error(`Barcode generation failed for: ${bCode}`, e);
-                }
+                } catch(e) { console.error('Barcode failed:', bCode); }
             }
         });
     }
