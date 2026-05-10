@@ -3745,44 +3745,56 @@
     /* 🔘 زر الفتح المطور (Pill Shape + Pulse + Menu Icon) */
     .sidebar-toggle-btn {
       position: fixed;
-      right: 0;
-      top: 60px;
-      width: 70px;
-      /* تم تكبير العرض لاستيعاب العناصر الجديدة */
-      height: 55px;
+      right: 20px;
+      bottom: 120px;
+      /* Moved up slightly to be more visible */
+      width: auto;
+      height: auto;
       background: linear-gradient(135deg, #00235B 0%, #0047AB 100%) !important;
       border: 2px solid #ffffff;
-      border-right: none;
-      border-radius: 50px 0 0 50px;
+      border-radius: 50px;
       cursor: pointer;
-      box-shadow: -5px 5px 15px rgba(0, 35, 91, 0.4);
+      box-shadow: 0 4px 15px rgba(0, 35, 91, 0.4);
       z-index: 99999;
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      display: flex;
+      display: none;
+      /* Default hidden until enter app */
       align-items: center;
       justify-content: center;
-      padding-right: 5px;
-
-      /* 🔥 انيميشن النبض لجذب الانتباه */
+      padding: 12px 24px;
+      gap: 12px;
       animation: sidebarPulse 2s infinite;
     }
 
-    /* أيقونة المنيو الجديدة */
-    .sidebar-toggle-btn::before {
-      content: "📋";
-      font-size: 24px;
-      transition: all 0.3s ease;
-      z-index: 2;
+    .sidebar-toggle-btn .icon {
+      font-size: 20px;
     }
 
-    /* سهم توجيهي "تعالى افتحني" */
-    .sidebar-toggle-btn::after {
-      content: "◀";
-      position: absolute;
-      left: 8px;
-      font-size: 10px;
+    .sidebar-toggle-btn .btn-text {
       color: white;
-      animation: arrowSlide 1.5s infinite;
+      font-weight: 900;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sidebar-toggle-btn:hover {
+      transform: scale(1.1) translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 71, 171, 0.5);
+    }
+
+    /* إزالة الأيقونات القديمة */
+    .sidebar-toggle-btn::before,
+    .sidebar-toggle-btn::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    position: absolute;
+    left: 8px;
+    font-size: 10px;
+    color: white;
+    animation: arrowSlide 1.5s infinite;
     }
 
     /* تأثير التفاعل عند التحويم */
@@ -3832,8 +3844,9 @@
 
     /* إخفاء الزرار لما السايدبار يتفتح */
     .sidebar-toggle-btn.hidden {
-      right: -100px;
+      transform: translateX(150%);
       opacity: 0;
+      pointer-events: none;
     }
 
     /* 🚀 محتوى الأزرار داخل السايدبار */
@@ -4288,15 +4301,7 @@
     }
 
 
-    /* إخفاء زرار الأدوات في البداية */
-    #toolsSidebarToggle {
-      display: none;
-      /* مخفي في واجهة الـ Gateway */
-      position: fixed;
-      right: 0;
-      top: 60px;
-      z-index: 99999;
-    }
+    /* تم دمج الخصائص مع .sidebar-toggle-btn لتوحيد التحكم */
 
     /* 🟢 حالة العرض الشغال حالياً - أخضر فخم */
     .gateway-btn.status-active {
@@ -5287,6 +5292,7 @@
       }
     }
 
+
     /* تأكد من توسيع منطقة الرؤية في الـ CSS */
     #reader__scan_region {
       display: flex;
@@ -5534,7 +5540,10 @@
 
 
     </div>
-    <button id="toolsSidebarToggle" class="sidebar-toggle-btn" onclick="toggleToolsSidebar()"></button>
+    <button id="toolsSidebarToggle" class="sidebar-toggle-btn" onclick="toggleToolsSidebar()" style="display: none;">
+      <span class="icon">☰</span>
+      <span class="btn-text" style="font-weight: bold; font-size: 12px;">Menu</span>
+    </button>
     <div id="toolsSidebar" class="modern-sidebar">
       <div class="sidebar-header">
         <button class="sidebar-close" onclick="toggleToolsSidebar()">✖</button>
@@ -6008,6 +6017,39 @@
               style="width:calc(100% - 20px); margin:10px; padding:10px; background:#0f172a; border:1px solid rgba(255,255,255,0.2); color:white; border-radius:5px; outline:none; box-sizing:border-box;">
             <div id="customOfferTypesList" style="padding:5px;"></div>
           </div>
+        </div>
+
+        <!-- 🔥 ملخص الفلاتر النشطة في الصفحة الرئيسية -->
+        <div id="activeFiltersSummary"
+          style="margin-bottom:20px; display:none; background:rgba(102, 126, 234, 0.1); border:1px dashed #667eea; padding:15px; border-radius:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="color:#667eea; font-weight:bold; font-size:14px;">⚡ Active Page Filters:</span>
+            <button onclick="resetAllPrintFilters()"
+              style="background:#ef4444; color:white; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:bold;">Reset
+              All Filters</button>
+          </div>
+          <div id="activeFiltersList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+
+          <!-- 🔘 Print Mode Selection -->
+          <div
+            style="margin-top:15px; padding-top:10px; border-top:1px solid rgba(102, 126, 234, 0.2); display: flex; flex-direction: column; gap: 8px;">
+            <label
+              style="display: flex; align-items: center; gap: 10px; color: #fff; cursor: pointer; font-size: 13px;">
+              <input type="radio" name="printScope" value="all" checked
+                style="accent-color: #667eea; width: 16px; height: 16px;">
+              <span>Print ALL Current Offers</span>
+            </label>
+            <label
+              style="display: flex; align-items: center; gap: 10px; color: #fff; cursor: pointer; font-size: 13px;">
+              <input type="radio" name="printScope" value="filtered"
+                style="accent-color: #667eea; width: 16px; height: 16px;">
+              <span style="color: #667eea; font-weight: bold;">Print FILTERED Results ONLY</span>
+            </label>
+          </div>
+
+          <p style="color:#94a3b8; font-size:11px; margin-top:10px; margin-bottom:0; line-height:1.4;">
+            * If you don't enter manual codes, the selection above determines which products will be printed.
+          </p>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
@@ -60622,6 +60664,14 @@
         // ✅ احفظ التحديد قبل الـ re-render
         saveSelections();
 
+        // 🛡️ Ensure Menu Button Visibility (Safety Fix)
+        const toggleBtn = document.getElementById('toolsSidebarToggle');
+        const isGatewayVisible = document.getElementById('gatewayView') && document.getElementById('gatewayView').style.display === 'flex';
+        const isScannerVisible = document.getElementById('scannerModalOverlay') && document.getElementById('scannerModalOverlay').style.display === 'flex';
+        if (toggleBtn && !isGatewayVisible && !isScannerVisible) {
+          toggleBtn.style.display = 'flex';
+        }
+
         const container = document.getElementById("productsContainer");
         const loader = document.getElementById("loadingIndicator");
         if (loader) loader.style.display = "block";
@@ -61475,7 +61525,7 @@
       // =====================
       async function printCustomCardsDirectly() {
         injectPrintStylesOnce();
-        const codes = document.getElementById('customCode') ? document.getElementById('customCode').value.trim() : '';
+        let codes = document.getElementById('customCode') ? document.getElementById('customCode').value.trim() : '';
 
         // Get selections
         const selectedOfferTypes = getSelectedOfferTypes();
@@ -61496,7 +61546,42 @@
           return;
         }
 
-        const codesList = codes.split(/[,\s]+/).filter(c => c.length > 0);
+        let codesList = codes.split(/[,\s]+/).filter(c => c.length > 0);
+
+        // 🔥 الذكاء الاصطناعي: لو مفيش أكواد، نحدد هنسحب إيه بناءً على خيار المستخدم
+        if (codesList.length === 0) {
+          const printScope = document.querySelector('input[name="printScope"]:checked')?.value || 'all';
+
+          if (printScope === 'filtered') {
+            console.log('🚀 Scope: Filtered Results ONLY');
+            // نستخدم المنتجات المفلترة حالياً (كلها مش بس اللي معروض)
+            if (window.currentFilteredProducts && window.currentFilteredProducts.length > 0) {
+              codesList = window.currentFilteredProducts.map(p => String(p.Code).trim());
+              console.log(`✅ Automatically picked ${codesList.length} codes from FULL filtered data.`);
+            } else {
+              //Fallback لو الداتا مش في الـ window
+              const filteredCards = Array.from(document.querySelectorAll('#productsContainer .product-card'));
+              codesList = filteredCards.map(card => {
+                const codeText = card.querySelector('.product-code')?.textContent || '';
+                return codeText.replace(/Code:|#/gi, '').trim();
+              }).filter(c => c.length > 0);
+            }
+          } else {
+            console.log('🚀 Scope: ALL Active Offers');
+            // لو "الكل" نرجع كل المنتجات اللي في الـ DB حالياً (العروض الحالية)
+            if (productsDB && productsDB.length > 0) {
+              codesList = productsDB.map(p => String(p.Code).trim());
+              console.log(`✅ Automatically picked ALL ${codesList.length} products for printing.`);
+            }
+          }
+
+          if (codesList.length > 100) {
+            if (!confirm(`⚠️ سيتم تجهيز ${codesList.length} منتج للطباعة. هل تريد الاستمرار؟ قد يستغرق ذلك وقتاً.`)) {
+              return;
+            }
+          }
+        }
+
         const quantityInput = document.getElementById('customQuantity');
         const quantity = (quantityInput && parseInt(quantityInput.value) > 0) ? parseInt(quantityInput.value) : 1;
 
@@ -61516,7 +61601,9 @@
               customCards.push({ Code: '', customData: { ...customData, offerEN: offer.en, offerAR: offer.ar } });
             }
           } else {
-            codesList.forEach(code => {
+            // Remove duplicates to avoid double printing
+            const uniqueCodes = [...new Set(codesList)];
+            uniqueCodes.forEach(code => {
               for (let i = 0; i < quantity; i++) {
                 customCards.push({ Code: code, customData: { ...customData, offerEN: offer.en, offerAR: offer.ar } });
               }
@@ -61525,7 +61612,7 @@
         });
 
         if (!customCards.length) {
-          alert('⚠️ حدث خطأ غير متوقع: لا توجد بطاقات للطباعة.');
+          alert('⚠️ لم يتم العثور على أكواد للطباعة. يرجى إدخال أكواد يدوياً أو تفعيل فلاتر في الصفحة الرئيسية.');
           return;
         }
 
@@ -62707,8 +62794,9 @@
        * - ✅ الباركود السداسي أصبح على (يمين الدائرة)، رفيع جداً (3.5 ملم)، ولا يتداخل مع التصميم.
        */
 
+
       // ==========================================
-      // 1️⃣ دالة الريندر الرئيسية (Mixed Positioning)
+      // 2️⃣ دالة renderPrint
       // ==========================================
       function renderPrint(filteredProducts) {
         const container = document.getElementById("printContainer");
@@ -63098,6 +63186,82 @@
 
         return card;
       }
+
+      // استبدل الدالة القديمة بهذا الإصدار
+      function openCustomPrintModal() {
+        const modal = document.getElementById('customPrintModal');
+        if (modal) {
+          // 1. إظهار المودال
+          modal.style.display = 'flex';
+
+          // 2. 🔥 اكتشاف الفلاتر النشطة في الصفحة
+          updateActiveFiltersSummary();
+
+          // 3. 🔥 إعادة بناء القائمة بناءً على offersDB "الحالية"
+          populateCustomOfferTypesDropdown();
+
+          // 4. استعادة البيانات وتحديث الزر
+          restoreCustomModalData();
+          updateCustomOfferTypesTrigger();
+        }
+      }
+
+      function updateActiveFiltersSummary() {
+        const summaryDiv = document.getElementById('activeFiltersSummary');
+        const listDiv = document.getElementById('activeFiltersList');
+        if (!summaryDiv || !listDiv) return;
+
+        const filters = {
+          'Brand': getSelectedValues('brandFilter'),
+          'Cat Main': getSelectedValues('categoryAFilter'),
+          'Cat Sub': getSelectedValues('categoryBFilter'),
+          'Class': getSelectedValues('itemClassFilter'),
+          'Offer': getSelectedValues('offerFilter')
+        };
+
+        listDiv.innerHTML = '';
+        let hasActive = false;
+
+        for (const [key, values] of Object.entries(filters)) {
+          if (values && values.length > 0) {
+            hasActive = true;
+            const badge = document.createElement('span');
+            badge.style.cssText = 'background: #667eea; color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 5px;';
+
+            badge.innerHTML = `<span>${key}:</span> <span style="background:rgba(255,255,255,0.2); padding:2px 5px; border-radius:4px;">${values.length}</span>`;
+            badge.title = `${key}: ${values.join(', ')}`;
+            listDiv.appendChild(badge);
+          }
+        }
+
+        summaryDiv.style.display = hasActive ? 'block' : 'none';
+      }
+
+      function resetAllPrintFilters() {
+        if (typeof resetFilter === 'function') {
+          resetFilter('brandFilter');
+          resetFilter('offerFilter');
+          resetFilter('categoryAFilter');
+          resetFilter('categoryBFilter');
+          resetFilter('categoryCFilter');
+          resetFilter('categoryDFilter');
+          resetFilter('manufactureFilter');
+          resetFilter('itemClassFilter');
+        }
+
+        // Reset Global Search
+        const searchInput = document.getElementById('globalSearch');
+        if (searchInput) searchInput.value = '';
+
+        // Trigger main filter logic
+        if (typeof applyFilters === 'function') applyFilters();
+
+        // Update Modal UI
+        updateActiveFiltersSummary();
+
+        console.log('✅ All page filters reset from Print Modal');
+      }
+
       // ========== FILTERS - SUPABASE UPDATED VERSION (TOTAL VIEW) ==========
       function initializeFilters() {
         if (!productsDB || productsDB.length === 0) {
@@ -66765,6 +66929,10 @@
 
         if (overlay) overlay.style.display = 'flex';
 
+        // إخفاء زر المنيو مؤقتاً أثناء عمل السكاينر عشان ميبقاش فوق الكاميرا
+        const toggleBtn = document.getElementById('toolsSidebarToggle');
+        if (toggleBtn) toggleBtn.style.display = 'none';
+
         ensureScannerUiExtras();
 
         if (readerEl) {
@@ -67365,6 +67533,10 @@
       async function closeBarcodeScanner() {
         const overlay = document.getElementById('scannerModalOverlay');
         if (overlay) overlay.style.display = 'none';
+
+        // إظهار زر المنيو فور إغلاق السكاير
+        const toggleBtn = document.getElementById('toolsSidebarToggle');
+        if (toggleBtn) toggleBtn.style.display = 'flex';
 
         clearManualScannerInput();
 
