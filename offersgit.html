@@ -58426,34 +58426,6 @@
       }
 
       // 🔄 دالة لتحديث حالة الأصناف في السكانر "لايف" بدون ريفريش
-      function refreshScannerLiveStatus() {
-        if (typeof scannedItemsMemory === 'undefined' || !scannedItemsMemory.length) return;
-
-        scannedItemsMemory.forEach(item => {
-          const offer = (typeof getOfferForScanner === 'function') ? getOfferForScanner(item.cleanCode) : null;
-          const isOfferActive = (typeof isOfferCurrentlyActive === 'function') ? isOfferCurrentlyActive(offer) : false;
-
-          const newStatusColor = isOfferActive ? '#38ef7d' : '#ef4444';
-          const newLabel = isOfferActive ? (offer?.offerTypeAR || 'العرض متاح') : '❌ لا يوجد عرض نشط حالياً';
-
-          const row = document.getElementById(`card-row-${item.cleanCode}`);
-          if (row) {
-            if (row.style.borderRightColor !== newStatusColor) {
-              row.style.borderRightColor = newStatusColor;
-              row.style.background = isOfferActive ? 'rgba(56, 239, 125, 0.08)' : 'rgba(239, 68, 68, 0.08)';
-
-              const labels = row.querySelectorAll('div');
-              labels.forEach(div => {
-                const text = div.textContent.trim();
-                if (text.includes('لا يوجد عرض') || text.includes('العرض متاح') || (offer && text.includes(offer.offerTypeAR))) {
-                  div.style.color = newStatusColor;
-                  div.innerHTML = escapeHtml(newLabel);
-                }
-              });
-            }
-          }
-        });
-      }
       // 3. التشغيل عند تحميل الصفحة
       applyDynamicBackgrounds();
       function saveCustomModalData() {
@@ -59319,28 +59291,12 @@
           entries.forEach(entry => {
             if (entry.isIntersecting) {
               const img = entry.target;
-              const code = img.dataset.code;
-              const brand = img.dataset.brand;
-
-              fetchProductImage(code).then(imageUrl => {
-                if (imageUrl) {
-                  testImageLoad(imageUrl).then(success => {
-                    if (success) {
-                      img.src = imageUrl;
-                      img.onload = () => {
-                        img.style.opacity = '1';
-                      };
-                    } else {
-                      tryLoadBrandLogo(brand, img);
-                    }
-                  });
-                } else {
-                  tryLoadBrandLogo(brand, img);
-                }
-              }).catch(() => {
-                tryLoadBrandLogo(brand, img);
-              });
-
+              const brand = img.dataset.brand || 'Generic';
+              
+              // الصفحة الأساسية والمجلة تعتمد على الداتا بيز فقط
+              // لا نطلب من الوركر هنا لتوفير الليميت
+              img.style.opacity = '1';
+              
               observer.unobserve(img);
             }
           });
@@ -61245,22 +61201,9 @@
               if (isValidUrl) {
                 img.src = dbUrl;
                 img.onload = () => { img.style.opacity = '1'; };
-                img.onerror = async () => {
-                  console.warn(`[Image System] Link broken for ${code}, trying Worker fallback...`);
-                  try {
-                    // محاولة جلب الصورة الصحيحة من الوركر (لأن روابط الداتا بيز أحياناً تكون Staging ومكسورة)
-                    const res = await fetch(`${WORKER_BASE}/api/product?code=${code}`);
-                    const data = await res.json();
-                    if (data.success && data.image_url) {
-                      console.log(`[Image System] Fixed image for ${code} via Worker`);
-                      img.src = data.image_url;
-                      img.onload = () => { img.style.opacity = '1'; };
-                    } else {
-                      loadFallback();
-                    }
-                  } catch (err) {
-                    loadFallback();
-                  }
+                img.onerror = () => {
+                  console.warn(`Link broken for ${code}, loading fallback...`);
+                  loadFallback();
                 };
               } else {
                 loadFallback();
@@ -63600,9 +63543,6 @@
           }
 
           // 🔄 تحديث حالة الأصناف في السكانر لايف (لو الوقت اتغير والعرض اشتغل)
-          if (typeof refreshScannerLiveStatus === 'function') {
-            refreshScannerLiveStatus();
-          }
 
           // 🔄 تحديث حالة الأزرار في الواجهة الرئيسية لايف
           if (typeof renderGatewayButtons === 'function') {
