@@ -8190,7 +8190,7 @@
           id: 'p1',
           label: '10 to 17 may OFFERS',
           start: '2026-05-10', // خليتها تبدأ من النهاردة عشان متبقاش الصفحة فاضية
-          end: '2026-15-17',
+          end: '2026-05-17',
           offers: [
             {
               "offerType": "40% off",
@@ -59183,13 +59183,18 @@
         const btnList = document.getElementById('buttonsList');
         if (!btnList) return;
 
-        btnList.innerHTML = '';
-
-        // الحصول على تاريخ اليوم فقط بدون ساعات
+        // الحصول على تاريخ اليوم فقط بدون ساعات لعملية المقارنة
         const now = new Date();
         const todayTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-        ALL_PERIODS_OFFERS.forEach(period => {
+        // بدلاً من مسح القائمة كل مرة، سنقوم بتحديث الستايت فقط لو لزم الأمر
+        // أو المسح لو القائمة فارغة
+        const currentButtons = btnList.querySelectorAll('.gateway-btn');
+        if (currentButtons.length === 0) {
+          btnList.innerHTML = '';
+        }
+
+        ALL_PERIODS_OFFERS.forEach((period, index) => {
           const start = new Date(period.start);
           const startTime = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
 
@@ -59197,47 +59202,58 @@
           end.setHours(23, 59, 59, 999);
           const endTime = end.getTime();
 
-          let status = 'normal'; // الحالة الافتراضية
-
+          let status = 'normal';
           if (todayTime > endTime) {
-            status = 'expired'; // 🔴 انتهى
+            status = 'expired';
           } else if (todayTime >= startTime && todayTime <= endTime) {
-            status = 'active';  // 🟢 شغال حالياً
+            status = 'active';
           }
 
-          const btn = document.createElement('div');
-          btn.className = 'gateway-btn';
-          btn.onclick = () => activatePeriod(period.id);
-
-          // --- تطبيق الألوان بالقوة الجبرية (Inline Styles) لضمان ظهورها ---
-          if (status === 'active') {
-            btn.classList.add('status-active');
-            btn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
-            btn.style.color = 'white';
-            btn.style.borderLeft = '6px solid #1e8449';
-            btn.style.boxShadow = '0 0 20px rgba(46, 204, 113, 0.5)';
-          } else if (status === 'expired') {
-            btn.classList.add('status-expired');
-            btn.style.background = 'linear-gradient(135deg, #b91c1c, #7f1d1d)';
-            btn.style.color = 'white';
-            btn.style.borderLeft = '6px solid #450a0a';
+          let btn = currentButtons[index];
+          if (!btn) {
+            btn = document.createElement('div');
+            btn.className = 'gateway-btn';
+            btn.onclick = () => activatePeriod(period.id);
+            btnList.appendChild(btn);
           }
 
-          const liveBadge = (status === 'active') ?
-            `<div style="display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px;">
-                <div style="width:7px; height:7px; background:#fff; border-radius:50%; box-shadow:0 0 5px #fff;"></div>
-                <span style="font-size:10px; font-weight:900;">LIVE</span>
-            </div>` : '';
+          // تحديث الحالة فقط لو تغيرت لتجنب الـ Flickering
+          if (btn.getAttribute('data-status') !== status) {
+            btn.setAttribute('data-status', status);
+            
+            // تنظيف الكلاسات والستايلات القديمة
+            btn.classList.remove('status-active', 'status-expired');
+            btn.style.background = '';
+            btn.style.color = '';
+            btn.style.borderLeft = '';
+            btn.style.boxShadow = '';
 
-          btn.innerHTML = `
-            <div class="btn-label" style="font-weight:800;">${period.label.toUpperCase()}</div>
-            ${liveBadge}
-        `;
+            if (status === 'active') {
+              btn.classList.add('status-active');
+              // استخدام setProperty مع important لضمان غلبة الستايل
+              btn.style.setProperty('background', 'linear-gradient(135deg, #2ecc71, #27ae60)', 'important');
+              btn.style.setProperty('color', 'white', 'important');
+              btn.style.setProperty('border-left', '6px solid #1e8449', 'important');
+              btn.style.setProperty('box-shadow', '0 0 20px rgba(46, 204, 113, 0.5)', 'important');
+            } else if (status === 'expired') {
+              btn.classList.add('status-expired');
+              btn.style.setProperty('background', 'linear-gradient(135deg, #b91c1c, #7f1d1d)', 'important');
+              btn.style.setProperty('color', 'white', 'important');
+              btn.style.setProperty('border-left', '6px solid #450a0a', 'important');
+            }
 
-          btnList.appendChild(btn);
+            const liveBadge = (status === 'active') ?
+              `<div style="display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px;">
+                  <div style="width:7px; height:7px; background:#fff; border-radius:50%; box-shadow:0 0 5px #fff; animation: pulse 1.5s infinite;"></div>
+                  <span style="font-size:10px; font-weight:900;">LIVE</span>
+              </div>` : '';
+
+            btn.innerHTML = `
+              <div class="btn-label" style="font-weight:800;">${period.label.toUpperCase()}</div>
+              ${liveBadge}
+            `;
+          }
         });
-
-        console.log("🎨 Buttons rendered with status colors applied.");
       }
       // 3. التشغيل عند تحميل الصفحة
       applyDynamicBackgrounds();
@@ -64387,6 +64403,11 @@
           // 🔄 تحديث حالة الأصناف في السكانر لايف (لو الوقت اتغير والعرض اشتغل)
           if (typeof refreshScannerLiveStatus === 'function') {
             refreshScannerLiveStatus();
+          }
+
+          // 🔄 تحديث حالة الأزرار في الواجهة الرئيسية لايف
+          if (typeof renderGatewayButtons === 'function') {
+            renderGatewayButtons();
           }
 
           return;
