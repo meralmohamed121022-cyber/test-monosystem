@@ -67124,7 +67124,8 @@
             // ✅ التعديل الوحيد: إضافة التوكن
             const _tk = sessionStorage.getItem("_tk") || "";
 
-            fetch(`https://online.meralmohamed121022.workers.dev/api/product?code=${encodeURIComponent(cleanCode)}&t=${Date.now()}`, {
+            const workerUrl = `${WORKER_BASE}/api/product?code=${encodeURIComponent(cleanCode)}&t=${Date.now()}`;
+            fetch(workerUrl, {
               headers: { "x-session-token": _tk }
             })
               .then(res => res.json())
