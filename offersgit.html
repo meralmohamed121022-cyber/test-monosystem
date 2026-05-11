@@ -26,7 +26,7 @@
     href="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png">
 
   <script>
-    (function() {
+    (function () {
       // Robust detection for both query string and hash
       const isScanner = window.location.href.toLowerCase().indexOf('scanner') !== -1;
       if (isScanner) {
@@ -36,8 +36,8 @@
     })();
   </script>
   <style>
-    /* When scanner mode is active, hide everything in the body except the container holding the scanner */
-    html.scanner-direct-active body > *:not(#mainOffersContainer):not(#scannerImageGallery):not(script):not(style) {
+    /* When scanner mode is active, hide everything in the body except the container holding the scanner and the print container */
+    html.scanner-direct-active body>*:not(#mainOffersContainer):not(#scannerImageGallery):not(#printContainer):not(script):not(style) {
       display: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
@@ -45,7 +45,7 @@
     }
 
     /* Inside the main container, hide everything except the scanner modal */
-    html.scanner-direct-active #mainOffersContainer > *:not(#scannerModalOverlay) {
+    html.scanner-direct-active #mainOffersContainer>*:not(#scannerModalOverlay) {
       display: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
@@ -59,9 +59,9 @@
       position: fixed !important;
       inset: 0 !important;
       z-index: 999999 !important;
-      background: rgba(0,0,0,0.9) !important;
+      background: rgba(0, 0, 0, 0.9) !important;
     }
-    
+
     /* Ensure the parent mainOffersContainer doesn't hide its child scanner modal */
     html.scanner-direct-active #mainOffersContainer {
       display: block !important;
@@ -66741,7 +66741,7 @@
           ""
         ).trim();
       }
-      function getScannerThumbMarkup(imageUrl, altText, size, cleanCode) {
+      function getScannerThumbMarkup(imageUrl, altText, w, h, cleanCode) {
         const safeImageUrl = imageUrl && /^https?:\/\//i.test(imageUrl) ? escapeHtml(imageUrl) : '';
         const safeAlt = escapeHtml(altText || 'Product');
 
@@ -66750,8 +66750,8 @@
             class="scanner-thumb-wrap" 
             onclick="openScannerGallery('${cleanCode}')" 
             style="
-                width:${size}px;
-                height:${size}px;
+                width:${w}px;
+                height:${h}px;
                 border-radius:16px;
                 overflow:hidden;
                 background:#fff;
@@ -66793,7 +66793,8 @@
         onlineOffer = '',
         onlineOfferData = null
       }) {
-        const imageSize = compact ? 74 : 92;
+        const imageW = compact ? 148 : 180;
+        const imageH = compact ? 105 : 125;
         const titleSize = compact ? '12px' : '14px';
         const offerEnSize = compact ? '11px' : '12px';
         const enSize = compact ? '13px' : '15px';
@@ -66842,7 +66843,7 @@
           ? `
             <div id="online-offer-${cleanCode}"
                  onclick="window.open('${productUrl}', '_blank')"
-                 style="margin-top:8px; padding:8px 10px; border-radius:12px;
+                 style="margin-top:4px; padding:8px 10px; border-radius:12px;
                         background:linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
                         border:none; display:flex; flex-direction:column; gap:4px; cursor:pointer;
                         box-shadow:0 4px 12px rgba(124,58,237,0.3); animation:pulseOnline 2s infinite;">
@@ -66875,7 +66876,7 @@
             ? `
             <div id="online-offer-${cleanCode}"
                  onclick="window.open('${productUrl}', '_blank')"
-                 style="margin-top:8px; padding:8px 12px; border-radius:10px;
+                 style="margin-top:4px; padding:8px 12px; border-radius:10px;
                         background:linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
                         border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
                         box-shadow:0 4px 10px rgba(124,58,237,0.3); animation:pulseOnline 2s infinite;">
@@ -66886,7 +66887,7 @@
             : `
             <div id="online-offer-${cleanCode}" 
                  onclick="window.open('${productUrl}', '_blank')"
-                 style="margin-top:8px; padding:6px 12px; border-radius:10px;
+                 style="margin-top:4px; padding:6px 12px; border-radius:10px;
                         background:rgba(124,58,237,0.1); border:1px dashed rgba(124,58,237,0.3);
                         display:flex; align-items:center; justify-content:center; gap:8px; min-height:28px; cursor:pointer;">
                 <div class="scanner-mini-loader"></div>
@@ -66926,7 +66927,33 @@
                 <!-- 💡 الجزء العلوي (الصورة على اليسار والبيانات على اليمين) -->
                 <div style="display: flex; gap: 12px; align-items: flex-start; width: 100%; box-sizing: border-box;">
                     
-                    ${getScannerThumbMarkup(imageUrl, nameEN || cleanCode, imageSize, cleanCode)}
+                    <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; width: ${imageW}px; flex-shrink: 0;">
+                        ${getScannerThumbMarkup(imageUrl, nameEN || cleanCode, imageW, imageH, cleanCode)}
+                        
+                        <div style="width: 100%; text-align: center;">
+                            <span style="
+                                display:inline-flex;
+                                align-items:center;
+                                justify-content: center;
+                                gap:6px;
+                                background:rgba(15,23,42,0.95);
+                                border:1px solid rgba(148,163,184,0.35);
+                                padding:4px 8px;
+                                border-radius:999px;
+                                color:#e2e8f0;
+                                font-family:monospace;
+                                font-size:${codeSize};
+                                font-weight:700;
+                                width: 100%;
+                                box-sizing: border-box;
+                                overflow:hidden;
+                                text-overflow:ellipsis;
+                                white-space: nowrap;
+                            ">
+                                ${escapeHtml(cleanCode)}
+                            </span>
+                        </div>
+                    </div>
 
                     <div style="flex:1; min-width:0; text-align:right;">
                         <div style="color:${statusColor}; font-weight:800; font-size:${titleSize}; margin-bottom:6px; line-height:1.35; word-break:break-word;">
@@ -66945,27 +66972,6 @@
 
                         <div style="font-size:${arSize}; color:#fbbf24; font-family:Cairo,sans-serif; direction:rtl; margin:4px 0 0; line-height:1.45; word-break:break-word;">
                             ${escapeHtml(nameAR || '')}
-                        </div>
-
-                        <div style="margin-top:8px;">
-                            <span style="
-                                display:inline-flex;
-                                align-items:center;
-                                gap:6px;
-                                background:rgba(15,23,42,0.95);
-                                border:1px solid rgba(148,163,184,0.35);
-                                padding:6px 10px;
-                                border-radius:999px;
-                                color:#e2e8f0;
-                                font-family:monospace;
-                                font-size:${codeSize};
-                                font-weight:700;
-                                max-width:100%;
-                                overflow:hidden;
-                                text-overflow:ellipsis;
-                            ">
-                                CODE: ${escapeHtml(cleanCode)}
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -67011,7 +67017,7 @@
         overflow: hidden;
         flex: 0 0 100%; 
         width: 100%;
-        min-height: 125px;
+        min-height: 140px;
         box-sizing: border-box;
         scroll-snap-align: center;
         display: flex;
@@ -67896,12 +67902,17 @@
           return;
         }
 
-        const productsToPrint = productsDB.filter(p =>
-          scannedCodes.includes(String(p.Code || "").trim())
-        );
+        // إنشاء خريطة (Map) سريعة للبحث بدلاً من find المتكرر لتسريع العملية خاصة في الموبايل
+        const pMap = new Map();
+        productsDB.forEach(p => {
+          const c = String(p.Code || "").trim();
+          if (c && !pMap.has(c)) pMap.set(c, p);
+        });
+
+        const productsToPrint = scannedCodes.map(code => pMap.get(code)).filter(Boolean);
 
         if (!productsToPrint.length) {
-          alert("⚠️ لم يتم العثور على المنتجات الممسوحة للطباعة.");
+          alert("⚠️ لم يتم العثور على المنتجات الممسوحة للطباعة (تأكد أن الأصناف الممسوحة لها عروض نشطة).");
           return;
         }
 
