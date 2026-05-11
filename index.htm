@@ -1299,7 +1299,7 @@
     </div>
 
     <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
-        <i class="fas fa-barcode"></i>
+        <i class="fas fa-qrcode"></i>
         <span class="btn-tooltip">Scanner</span>
     </button>
 
@@ -1587,7 +1587,7 @@ setInterval(() => {
                 for (let t of triggerTimes) {
                     // حذف الموعد القديم أولاً لضمان التحديث في حال تغيير التوقيت (حل مشكلة عدم وجود unique constraint)
                     await supabaseClient.from('reminders').delete().eq('pharmacy_number', currentPharmacy).eq('offer_id', t.id);
-                    
+
                     // إضافة الموعد الجديد
                     await supabaseClient.from('reminders').insert([{
                         pharmacy_number: currentPharmacy,
@@ -2129,9 +2129,7 @@ setInterval(() => {
         }
 
         function openScannerDirectly() {
-            const loader = document.getElementById('loadingOverlay');
-            if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
-            setTimeout(() => { openLink('offersgit.html#scanner'); }, 100);
+            openLink('offersgit.html#scanner');
         }
     </script>
 </body>
