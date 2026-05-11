@@ -1315,9 +1315,24 @@
 
 
         const START_OFFERS = [
-            { id: 'offer_may_10_test_v2', title: 'MAY 10 TEST OFFER', start_date: '2026-05-12T03:09:00' },
-            { id: 'offer_alert_may_15', title: 'MID-MONTH OFFERS', start_date: '2026-05-15T00:00:00' },
-            { id: 'offer_alert_may_25', title: 'MONTHLY OFFERS', start_date: '2026-05-25T00:00:00' }
+            {
+                id: 'offer_may_10_test_v2',
+                title: 'MAY 10 TEST OFFER',
+                start_date: '2026-05-12T03:20:00',
+                image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png'
+            },
+            {
+                id: 'offer_alert_may_15',
+                title: 'MID-MONTH OFFERS',
+                start_date: '2026-05-15T00:00:00',
+                image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png'
+            },
+            {
+                id: 'offer_alert_may_25',
+                title: 'MONTHLY OFFERS',
+                start_date: '2026-05-25T00:00:00',
+                image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png'
+            }
         ];
 
         const LOCAL_BANNERS = [
@@ -1526,8 +1541,21 @@
             const { data, error } = await supabaseClient.from('reminders').select('*').eq('pharmacy_number', currentPharmacy).in('status', ['pending', 'snoozed']);
             if (!error && data) {
                 userReminders = data;
-                // إرسال التنبيهات للـ Service Worker ليعمل في الخلفية مع رقم الصيدلية
-                const msgData = { type: 'UPDATE_REMINDERS', reminders: data, pharmacy_number: currentPharmacy };
+
+                // تجهيز خريطة الصور لإرسالها للـ Service Worker
+                const offerImages = {};
+                START_OFFERS.forEach(off => {
+                    if (off.image) offerImages[off.id] = off.image;
+                });
+
+                // إرسال التنبيهات والصور للـ Service Worker ليعمل في الخلفية
+                const msgData = {
+                    type: 'UPDATE_REMINDERS',
+                    reminders: data,
+                    pharmacy_number: currentPharmacy,
+                    offer_images: offerImages
+                };
+
                 if (navigator.serviceWorker.controller) {
                     navigator.serviceWorker.controller.postMessage(msgData);
                 } else {

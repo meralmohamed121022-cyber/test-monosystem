@@ -1,5 +1,7 @@
 let swReminders = [];
 let pharmacyNumber = null;
+let offerImages = {}; // تخزين صور العروض: mapping from offer_id to image_url
+
 const SUPABASE_URL = 'https://uzydzvfcrlqmtondugte.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo';
 
@@ -34,12 +36,16 @@ self.addEventListener('message', (event) => {
         if (event.data.type === 'UPDATE_REMINDERS') {
             swReminders = event.data.reminders;
             pharmacyNumber = event.data.pharmacy_number;
+            if (event.data.offer_images) {
+                offerImages = event.data.offer_images;
+            }
             console.log('SW Reminders updated:', swReminders.length);
         }
         if (event.data.type === 'SHOW_NOTIFICATION') {
             self.registration.showNotification(event.data.title, {
                 body: event.data.body,
                 icon: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
+                image: event.data.image || null, // دعم الصورة الكبيرة
                 vibrate: [200, 100, 200],
                 badge: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png'
             });
@@ -63,9 +69,14 @@ setInterval(() => {
                 ? rem.offer_title + " بدأ الآن! 🔥" 
                 : rem.offer_title + " سيبدأ خلال 30 دقيقة! ⏳";
             
+            // استخراج معرف العرض الأصلي (بدون _30min أو _exact)
+            const baseOfferId = rem.offer_id.replace('_30min', '').replace('_exact', '');
+            const imageUrl = offerImages[baseOfferId] || null;
+
             self.registration.showNotification("تنبيه MONO SYSTEM", {
                 body: message,
                 icon: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
+                image: imageUrl, // عرض الصورة الكبيرة إذا وجدت
                 vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
                 badge: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
                 tag: rem.id,
