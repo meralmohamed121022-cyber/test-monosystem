@@ -3744,25 +3744,26 @@
 
     /* 🔘 زر الفتح المطور (Pill Shape + Pulse + Menu Icon) */
     .sidebar-toggle-btn {
-      position: fixed;
-      right: 20px;
-      bottom: 120px;
-      /* Moved up slightly to be more visible */
+      position: fixed !important;
+      right: 15px !important;
+      top: 15px !important;
       width: auto;
-      height: auto;
-      background: linear-gradient(135deg, #00235B 0%, #0047AB 100%) !important;
-      border: 2px solid #ffffff;
+      height: 48px;
+      padding: 0 25px;
+      background: #1e3a8a !important;
+      border: 2px solid #ffffff !important;
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 35, 91, 0.4);
-      z-index: 99999;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+      z-index: 200000 !important;
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: none;
-      /* Default hidden until enter app */
       align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
-      gap: 12px;
+      gap: 10px;
+      color: white !important;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       animation: sidebarPulse 2s infinite;
     }
 
@@ -6030,25 +6031,18 @@
           </div>
           <div id="activeFiltersList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
 
-          <!-- 🔘 Print Mode Selection -->
-          <div
-            style="margin-top:15px; padding-top:10px; border-top:1px solid rgba(102, 126, 234, 0.2); display: flex; flex-direction: column; gap: 8px;">
-            <label
-              style="display: flex; align-items: center; gap: 10px; color: #fff; cursor: pointer; font-size: 13px;">
-              <input type="radio" name="printScope" value="all" checked
-                style="accent-color: #667eea; width: 16px; height: 16px;">
-              <span>Print ALL Current Offers</span>
-            </label>
-            <label
-              style="display: flex; align-items: center; gap: 10px; color: #fff; cursor: pointer; font-size: 13px;">
-              <input type="radio" name="printScope" value="filtered"
-                style="accent-color: #667eea; width: 16px; height: 16px;">
-              <span style="color: #667eea; font-weight: bold;">Print FILTERED Results ONLY</span>
-            </label>
+          <!-- 🔘 Automated Print Scope Message -->
+          <div id="printScopeMessage" style="margin-top:15px; padding:10px; background:rgba(56, 239, 125, 0.1); border-left:4px solid #38ef7d; border-radius:8px; display:none;">
+            <p style="color:#38ef7d; font-size:13px; font-weight:bold; margin:0;">
+              ✨ Printing FILTERED Results ONLY ([N] products)
+            </p>
           </div>
+        </div>
 
-          <p style="color:#94a3b8; font-size:11px; margin-top:10px; margin-bottom:0; line-height:1.4;">
-            * If you don't enter manual codes, the selection above determines which products will be printed.
+        <!-- 🔘 Fallback Scope Message (When no filters) -->
+        <div id="printScopeAllMessage" style="margin-bottom:20px; padding:10px; background:rgba(102, 126, 234, 0.1); border-left:4px solid #667eea; border-radius:8px;">
+          <p style="color:#667eea; font-size:13px; font-weight:bold; margin:0;">
+            ✅ Printing ALL Current Offers
           </p>
         </div>
 
@@ -6071,9 +6065,23 @@
         <div
           style="margin-bottom:20px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; gap: 15px;">
           <label style="color:#fff; margin:0; font-weight:bold; font-size: 14px;">🔢 Cards to Print:</label>
-          <input type="number" id="customQuantity" value="6" min="1"
+          <input type="number" id="customQuantity" value="6" min="1" oninput="updateCustomOfferTypesTrigger()"
             style="width:80px; padding:10px; background:#0f172a; border:1px solid #d4af37; color:#fff; border-radius:8px; outline:none; font-size: 16px; font-weight: bold; text-align: center;">
         </div>
+
+        <!-- 🔥 ملخص ديناميكي لعدد الكروت -->
+        <div id="printSummaryDisplay" style="
+            margin-bottom: 20px; 
+            padding: 12px; 
+            background: rgba(16, 185, 129, 0.1); 
+            border: 1px dashed #10b981; 
+            border-radius: 12px; 
+            color: #10b981; 
+            font-size: 13px; 
+            text-align: center; 
+            font-weight: bold;
+            display: none;
+        "></div>
 
         <div style="display:flex; gap:12px;">
           <button onclick="printCustomCardsDirectly()"
@@ -58349,7 +58357,8 @@
         dateRange: '',
         productEN: '',
         productAR: '',
-        category: ''
+        category: '',
+        selectedOfferTypes: [] // 🔥 New field to persist selections
       };
       // 1. قاعدة بيانات الخلفيات مقسمة حسب الفترات اللي طلبتها
       const dynamicBackgrounds = [
@@ -58476,7 +58485,12 @@
         if (productAREl) customModalData.productAR = productAREl.value || '';
         if (categoryEl) customModalData.category = categoryEl.value || '';
 
-        console.log('💾 Custom modal data saved');
+        // 🔥 Save selected offer types from checkboxes
+        if (typeof getSelectedOfferTypes === 'function') {
+          customModalData.selectedOfferTypes = getSelectedOfferTypes().map(item => item.en);
+        }
+
+        console.log('💾 Custom modal data saved', customModalData.selectedOfferTypes);
       }
 
       function restoreCustomModalData() {
@@ -58500,6 +58514,12 @@
           if (categoryEl) categoryEl.value = customModalData.category;
 
           updateQuantityDisplay();
+          
+          // 🔥 Update trigger text for selected offers
+          if (typeof updateCustomOfferTypesTrigger === 'function') {
+            updateCustomOfferTypesTrigger();
+          }
+
           console.log('✅ Custom modal data restored');
         }, 100);
       }
@@ -60666,10 +60686,16 @@
 
         // 🛡️ Ensure Menu Button Visibility (Safety Fix)
         const toggleBtn = document.getElementById('toolsSidebarToggle');
-        const isGatewayVisible = document.getElementById('gatewayView') && document.getElementById('gatewayView').style.display === 'flex';
+        const gatewayView = document.getElementById('gatewayView');
+        const isGatewayVisible = gatewayView && (gatewayView.style.display === 'flex' || window.getComputedStyle(gatewayView).display === 'flex');
         const isScannerVisible = document.getElementById('scannerModalOverlay') && document.getElementById('scannerModalOverlay').style.display === 'flex';
-        if (toggleBtn && !isGatewayVisible && !isScannerVisible) {
-          toggleBtn.style.display = 'flex';
+        
+        if (toggleBtn) {
+          if (!isGatewayVisible && !isScannerVisible) {
+            toggleBtn.style.display = 'flex';
+          } else {
+            toggleBtn.style.display = 'none';
+          }
         }
 
         const container = document.getElementById("productsContainer");
@@ -60715,6 +60741,9 @@
         console.log(`📊 ${isInitialLoad ? '🚀 INITIAL' : '✅ FILTERED'}: ${filteredProducts.length} products`);
 
         updateDynamicFilters(filters);
+        
+        // ✅ Save full filtered set for printing modules
+        window.currentFilteredProducts = filteredProducts;
 
         if (filteredProducts.length === 0) {
           container.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">No products found</div>';
@@ -60727,7 +60756,6 @@
         // ✅ CHECK MAGAZINE / BRIEF MODES
         if (isMagazineMode) {
           renderMagazineMode(filteredProducts);
-          window.currentFilteredProducts = filteredProducts;
           restoreSelections();
           updateSelectedCount(); // 🔥 إظهار الشريط في وضع المجلة
           if (loader) loader.style.display = "none";
@@ -60736,7 +60764,6 @@
 
         if (isBriefMode) {
           renderBriefMode(filteredProducts);
-          window.currentFilteredProducts = filteredProducts;
           createPrintSelectionBar();
           restoreSelections();
           updateSelectedCount(); // 🔥 إظهار الشريط في وضع الـ Brief
@@ -61548,18 +61575,18 @@
 
         let codesList = codes.split(/[,\s]+/).filter(c => c.length > 0);
 
-        // 🔥 الذكاء الاصطناعي: لو مفيش أكواد، نحدد هنسحب إيه بناءً على خيار المستخدم
+        // 🔥 الذكاء الاصطناعي: لو مفيش أكواد، نحدد هنسحب إيه بناءً على الفلاتر النشطة
         if (codesList.length === 0) {
-          const printScope = document.querySelector('input[name="printScope"]:checked')?.value || 'all';
+          const hasActiveFilters = document.getElementById('activeFiltersSummary')?.style.display === 'block';
 
-          if (printScope === 'filtered') {
-            console.log('🚀 Scope: Filtered Results ONLY');
+          if (hasActiveFilters) {
+            console.log('🚀 Scope: Filtered Results ONLY (Auto-detected)');
             // نستخدم المنتجات المفلترة حالياً (كلها مش بس اللي معروض)
             if (window.currentFilteredProducts && window.currentFilteredProducts.length > 0) {
               codesList = window.currentFilteredProducts.map(p => String(p.Code).trim());
               console.log(`✅ Automatically picked ${codesList.length} codes from FULL filtered data.`);
             } else {
-              //Fallback لو الداتا مش في الـ window
+              // Fallback لو الداتا مش في الـ window
               const filteredCards = Array.from(document.querySelectorAll('#productsContainer .product-card'));
               codesList = filteredCards.map(card => {
                 const codeText = card.querySelector('.product-code')?.textContent || '';
@@ -61593,23 +61620,31 @@
         };
 
         const customCards = [];
+        const uniqueCodes = [...new Set(codesList)];
 
-        // 📦 بناء الكروت بناءً على العروض والأكواد
-        finalOffers.forEach(offer => {
-          if (codesList.length === 0) {
+        if (selectedOfferTypes.length > 0) {
+          // 🔥 التعديل المطلوب: الطباعة بناءً على نوع العرض وليس الكود
+          selectedOfferTypes.forEach(off => {
             for (let i = 0; i < quantity; i++) {
-              customCards.push({ Code: '', customData: { ...customData, offerEN: offer.en, offerAR: offer.ar } });
+              customCards.push({ 
+                Code: "", // لا نحتاج كود محدد لأنها كروت عرض عامة
+                customData: { 
+                  ...customData, 
+                  offerEN: off.en, 
+                  offerAR: off.ar 
+                } 
+              });
             }
-          } else {
-            // Remove duplicates to avoid double printing
-            const uniqueCodes = [...new Set(codesList)];
-            uniqueCodes.forEach(code => {
-              for (let i = 0; i < quantity; i++) {
-                customCards.push({ Code: code, customData: { ...customData, offerEN: offer.en, offerAR: offer.ar } });
-              }
+          });
+        } else if (manualOfferEN || manualOfferAR) {
+          // لو كاتب يدوي
+          for (let i = 0; i < quantity; i++) {
+            customCards.push({ 
+              Code: "", 
+              customData: { ...customData, offerEN: manualOfferEN, offerAR: manualOfferAR } 
             });
           }
-        });
+        }
 
         if (!customCards.length) {
           alert('⚠️ لم يتم العثور على أكواد للطباعة. يرجى إدخال أكواد يدوياً أو تفعيل فلاتر في الصفحة الرئيسية.');
@@ -63195,9 +63230,11 @@
           modal.style.display = 'flex';
 
           // 2. 🔥 اكتشاف الفلاتر النشطة في الصفحة
-          updateActiveFiltersSummary();
+          if (typeof updateActiveFiltersSummary === 'function') {
+            updateActiveFiltersSummary();
+          }
 
-          // 3. 🔥 إعادة بناء القائمة بناءً على offersDB "الحالية"
+          // 3. 🔥 إعادة بناء القائمة بناءً على المنتجات المفلترة حالياً (ذكاء اصطناعي)
           populateCustomOfferTypesDropdown();
 
           // 4. استعادة البيانات وتحديث الزر
@@ -63211,12 +63248,20 @@
         const listDiv = document.getElementById('activeFiltersList');
         if (!summaryDiv || !listDiv) return;
 
+        // 🔍 Check global search
+        const globalSearchInput = document.getElementById('globalSearch');
+        const globalSearchValue = globalSearchInput ? globalSearchInput.value.trim() : '';
+
         const filters = {
+          'Search': globalSearchValue ? [globalSearchValue] : [],
           'Brand': getSelectedValues('brandFilter'),
           'Cat Main': getSelectedValues('categoryAFilter'),
           'Cat Sub': getSelectedValues('categoryBFilter'),
+          'Cat 3': getSelectedValues('categoryCFilter'),
+          'Cat 4': getSelectedValues('categoryDFilter'),
           'Class': getSelectedValues('itemClassFilter'),
-          'Offer': getSelectedValues('offerFilter')
+          'Offer': getSelectedValues('offerFilter'),
+          'Manufacturer': getSelectedValues('manufactureFilter')
         };
 
         listDiv.innerHTML = '';
@@ -63226,15 +63271,33 @@
           if (values && values.length > 0) {
             hasActive = true;
             const badge = document.createElement('span');
-            badge.style.cssText = 'background: #667eea; color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 5px;';
+            badge.style.cssText = 'background: #667eea; color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);';
 
-            badge.innerHTML = `<span>${key}:</span> <span style="background:rgba(255,255,255,0.2); padding:2px 5px; border-radius:4px;">${values.length}</span>`;
+            // 🔥 Show count only as requested
+            const displayValue = `${values.length} items`;
+            badge.innerHTML = `<span>${key}:</span> <span style="background:rgba(255,255,255,0.2); padding:2px 5px; border-radius:4px;">${displayValue}</span>`;
             badge.title = `${key}: ${values.join(', ')}`;
             listDiv.appendChild(badge);
           }
         }
 
         summaryDiv.style.display = hasActive ? 'block' : 'none';
+        
+        // Update automated scope messages
+        const scopeMessage = document.getElementById('printScopeMessage');
+        const scopeAllMessage = document.getElementById('printScopeAllMessage');
+        
+        if (hasActive) {
+          if (scopeMessage) {
+            const count = window.currentFilteredProducts ? window.currentFilteredProducts.length : '...';
+            scopeMessage.innerHTML = `<p style="color:#38ef7d; font-size:13px; font-weight:bold; margin:0;">✨ Printing FILTERED Results ONLY (${count} products)</p>`;
+            scopeMessage.style.display = 'block';
+          }
+          if (scopeAllMessage) scopeAllMessage.style.display = 'none';
+        } else {
+          if (scopeMessage) scopeMessage.style.display = 'none';
+          if (scopeAllMessage) scopeAllMessage.style.display = 'block';
+        }
       }
 
       function resetAllPrintFilters() {
@@ -63258,6 +63321,9 @@
 
         // Update Modal UI
         updateActiveFiltersSummary();
+        
+        // 🔥 إعادة بناء القائمة لتعرض كل العروض بعد الريست
+        populateCustomOfferTypesDropdown();
 
         console.log('✅ All page filters reset from Print Modal');
       }
@@ -63898,6 +63964,7 @@
         setTimeout(applyDarkModeTextFix, 100);
       }
 
+
       // Watch for DOM changes
       const observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
@@ -64432,14 +64499,43 @@
         console.log(`🔍 Found ${alternatives.length} alternative codes for ${brand} with ${offerType}`);
         return alternatives;
       }
-      // Populate Custom Offer Types Dropdown (Updated to include Exclusive Offers)
+      // Populate Custom Offer Types Dropdown (Updated: Dynamic Filtering)
       function populateCustomOfferTypesDropdown() {
         const container = document.getElementById('customOfferTypesList');
         if (!container) return;
 
         let allOffersSource = [];
+        const hasActiveFilters = document.getElementById('activeFiltersSummary')?.style.display === 'block';
 
-        // سحب العروض بناءً على المتغيرات الحالية
+        if (hasActiveFilters && window.currentFilteredProducts && window.currentFilteredProducts.length > 0) {
+          // 🔥 حالة الفلترة: نسحب العروض من المنتجات المفلترة فقط
+          const filteredOffersMap = new Map();
+          window.currentFilteredProducts.forEach(product => {
+            const offer = getOffer(product.Code);
+            if (offer && offer.offerType) {
+              const key = offer.offerType.trim();
+              if (!filteredOffersMap.has(key)) {
+                filteredOffersMap.set(key, {
+                  en: key,
+                  ar: (offer.offerTypeAR || offer.offerType).trim()
+                });
+              }
+            }
+          });
+          
+          const offerTypes = Array.from(filteredOffersMap.values())
+            .sort((a, b) => a.en.localeCompare(b.en));
+
+          if (offerTypes.length === 0) {
+            container.innerHTML = '<div style="padding:20px; color:#ffffff; text-align:center; font-size:14px; background:rgba(255,255,255,0.05); border-radius:10px; font-weight:bold;">⚠️ لا توجد عروض مطابقة للفلاتر الحالية</div>';
+            return;
+          }
+          
+          renderOfferTypesList(offerTypes, container);
+          return;
+        }
+
+        // 🏠 حالة عدم وجود فلتر: نسحب من الداتا كاملة
         if (typeof offersDB !== 'undefined' && offersDB.length > 0) {
           allOffersSource = allOffersSource.concat(offersDB);
         }
@@ -64466,12 +64562,19 @@
           .map(str => JSON.parse(str))
           .sort((a, b) => a.en.localeCompare(b.en));
 
+        renderOfferTypesList(offerTypes, container);
+      }
+
+      // دالة مساعدة لرسم القائمة لتجنب التكرار
+      function renderOfferTypesList(offerTypes, container) {
         container.innerHTML = '';
+        const savedSelections = customModalData.selectedOfferTypes || [];
 
         offerTypes.forEach(type => {
           const option = document.createElement('div');
           option.className = 'custom-option';
           const safeId = type.en.replace(/[^a-zA-Z0-9]/g, '-');
+          const isChecked = savedSelections.includes(type.en);
 
           option.style.cssText = `
             display: flex;
@@ -64486,7 +64589,8 @@
                    value="${type.en}" 
                    data-ar="${type.ar}" 
                    id="offer-${safeId}" 
-                   onchange="updateCustomOfferTypesTrigger()"
+                   onchange="saveCustomModalData(); updateCustomOfferTypesTrigger();"
+                   ${isChecked ? 'checked' : ''}
                    style="
                         width: 22px; 
                         height: 22px; 
@@ -64508,9 +64612,9 @@
         `;
           container.appendChild(option);
         });
-
-        console.log(`✅ Loaded ${offerTypes.length} offer types into the modal.`);
+        console.log(`✅ Loaded ${offerTypes.length} offer types. Restored ${savedSelections.length} selections.`);
       }
+
       // =================================================================
       // 🔍 جلب العروض المختارة
       // =================================================================
@@ -64545,12 +64649,14 @@
         }
       });
 
-      // 2. تحديث النص اللي بيظهر في المربع بعد ما تختار
+      // 2. تحديث النص اللي بيظهر في المربع بعد ما تختار + تحديث الملخص الديناميكي
       function updateCustomOfferTypesTrigger() {
         const selected = getSelectedOfferTypes();
-        const trigger = document.getElementById('modalDropdownText'); // بنستهدف الـ ID الجديد
+        const trigger = document.getElementById('modalDropdownText');
+        const summaryDisplay = document.getElementById('printSummaryDisplay');
         if (!trigger) return;
 
+        // 1. تحديث نص الزرار
         if (selected.length === 0) {
           trigger.textContent = 'Search & Select Offers...';
         } else if (selected.length === 1) {
@@ -64558,22 +64664,30 @@
         } else {
           trigger.innerHTML = `${selected[0].en} <span style="background:#d4af37; color:#000; padding:2px 8px; border-radius:10px; font-size:11px; margin-left:5px;">+${selected.length - 1}</span>`;
         }
-      }
-      // استبدل الدالة القديمة بهذا الإصدار
-      function openCustomPrintModal() {
-        const modal = document.getElementById('customPrintModal');
-        if (modal) {
-          // 1. إظهار المودال
-          modal.style.display = 'flex';
 
-          // 2. 🔥 إعادة بناء القائمة بناءً على offersDB "الحالية"
-          populateCustomOfferTypesDropdown();
+        const manualOfferEN = document.getElementById('customOfferEN') ? document.getElementById('customOfferEN').value.trim() : '';
+        const manualOfferAR = document.getElementById('customOfferAR') ? document.getElementById('customOfferAR').value.trim() : '';
+        const quantityInput = document.getElementById('customQuantity');
+        const quantity = (quantityInput && parseInt(quantityInput.value) > 0) ? parseInt(quantityInput.value) : 1;
 
-          // 3. استعادة البيانات وتحديث الزر
-          restoreCustomModalData();
-          updateCustomOfferTypesTrigger();
+        let matchingCount = 0;
+
+        if (selected.length > 0) {
+          // الحساب بناءً على عدد أنواع العروض المختارة فقط
+          matchingCount = selected.length;
+        } else if (manualOfferEN || manualOfferAR) {
+          // لو كاتب يدوي نعتبره عرض واحد
+          matchingCount = 1;
+        }
+
+        if (matchingCount > 0) {
+          summaryDisplay.innerHTML = `✅ سيتم طباعة <b>${matchingCount}</b> عرض <br> (الإجمالي: <b>${matchingCount * quantity}</b> كرت)`;
+          summaryDisplay.style.display = 'block';
+        } else {
+          summaryDisplay.style.display = 'none';
         }
       }
+      // استبدل الدالة القديمة بهذا الإصدار
       // 2️⃣ دالة مخصصة لربط الأحداث بالعناصر الديناميكية
       function attachDynamicListeners() {
         const list = document.getElementById('customOfferTypesList');
@@ -64586,20 +64700,32 @@
       // 3️⃣ تحديث مستمع الأحداث الرئيسي (DOMContentLoaded)
       document.addEventListener('DOMContentLoaded', () => {
         // Listeners للأشياء الثابتة اللي مش بتتمسح من الـ HTML
-        const customInput = document.getElementById('customOfferEN'); // أو ID المربع اليدوي عندك
+        const customInput = document.getElementById('customOfferEN');
         if (customInput) {
           customInput.addEventListener('input', () => {
             const hasText = customInput.value.trim().length > 0;
             const checkboxes = document.querySelectorAll('#customOfferTypesList input[type="checkbox"]');
-
-            // تعطيل الاختيارات لو المستخدم قرر يكتب عرض يدوي
             checkboxes.forEach(cb => {
               cb.disabled = hasText;
-              if (hasText) cb.checked = false; // اختيار اختياري: يشيل العلامات لو كتب يدوي
+              if (hasText) cb.checked = false;
             });
-
             updateCustomOfferTypesTrigger();
           });
+        }
+
+        const customInputAR = document.getElementById('customOfferAR');
+        if (customInputAR) {
+          customInputAR.addEventListener('input', updateCustomOfferTypesTrigger);
+        }
+
+        const customCodeInput = document.getElementById('customCode');
+        if (customCodeInput) {
+          customCodeInput.addEventListener('input', updateCustomOfferTypesTrigger);
+        }
+
+        const customQuantityInput = document.getElementById('customQuantity');
+        if (customQuantityInput) {
+          customQuantityInput.addEventListener('input', updateCustomOfferTypesTrigger);
         }
 
         // تشغيل الربط الأولي (اختياري)
@@ -64623,10 +64749,9 @@
           }
         });
 
-        // تحديث النص اللي بيظهر برة القائمة
-        if (typeof updateCustomOfferTypesTrigger === 'function') {
-          updateCustomOfferTypesTrigger();
-        }
+        // 🔥 حفظ البيانات وتحديث النص
+        if (typeof saveCustomModalData === 'function') saveCustomModalData();
+        if (typeof updateCustomOfferTypesTrigger === 'function') updateCustomOfferTypesTrigger();
       }
       // =================================================================
       // 🔍 دالة فلترة العروض (محدثة بالقوة الجبرية !important)
@@ -64655,10 +64780,9 @@
           cb.checked = false;
         });
 
-        // تحديث النص اللي بيظهر برة القائمة
-        if (typeof updateCustomOfferTypesTrigger === 'function') {
-          updateCustomOfferTypesTrigger();
-        }
+        // 🔥 حفظ البيانات وتحديث النص
+        if (typeof saveCustomModalData === 'function') saveCustomModalData();
+        if (typeof updateCustomOfferTypesTrigger === 'function') updateCustomOfferTypesTrigger();
       }
       // ====== 📂 UPLOADED CODES FILTER (Global Variables) ======
       let uploadedCodesFilter = null;
