@@ -28,13 +28,20 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     /* Instant hide for scanner mode to prevent "passing through layers" */
-    .scanner-direct-active #loaderScreen, 
-    .scanner-direct-active #gatewayView { 
-      display: none !important; 
-      opacity: 0 !important; 
-      visibility: hidden !important; 
+    .scanner-direct-active #loaderScreen,
+    .scanner-direct-active #gatewayView,
+    .scanner-direct-active #mainOffersContainer,
+    .scanner-direct-active #fixedHeader {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
       z-index: -1 !important;
       pointer-events: none !important;
+    }
+
+    /* Force Scanner Modal to show instantly */
+    .scanner-direct-active #scannerModalOverlay {
+      display: flex !important;
     }
   </style>
   <script>
@@ -5790,13 +5797,18 @@
         <div class="promo-media-lightbox-inner" id="promoMediaStage"></div>
       </div>
       <!-- SCANNER PROMO SECTION (Above Search) -->
-      <div class="scanner-promo-section" style="margin: 20px 15px 15px; background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 24px; border: 2px dashed rgba(102, 126, 234, 0.3); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; transition: all 0.3s ease;">
-        <button onclick="openBarcodeScanner()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; width: 80px; height: 80px; border-radius: 22px; cursor: pointer; font-size: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+      <div class="scanner-promo-section"
+        style="margin: 20px 15px 15px; background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 24px; border: 2px dashed rgba(102, 126, 234, 0.3); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; transition: all 0.3s ease;">
+        <button onclick="openBarcodeScanner()"
+          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; width: 80px; height: 80px; border-radius: 22px; cursor: pointer; font-size: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);"
+          onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
           <i class="fas fa-qrcode"></i>
         </button>
         <div class="scanner-promo-text">
-          <h4 style="margin: 0; color: #667eea; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;">اسكانر الاكواد السداسية</h4>
-          <p style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px; font-weight: 500; line-height: 1.4; max-width: 320px;">
+          <h4 style="margin: 0; color: #667eea; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;">اسكانر
+            الاكواد السداسية</h4>
+          <p
+            style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px; font-weight: 500; line-height: 1.4; max-width: 320px;">
             لمعرفة العروض الاوفلاين والاونلاين وطباعة اكواد معينة
           </p>
         </div>
@@ -6059,7 +6071,8 @@
           <div id="activeFiltersList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
 
           <!-- 🔘 Automated Print Scope Message -->
-          <div id="printScopeMessage" style="margin-top:15px; padding:10px; background:rgba(56, 239, 125, 0.1); border-left:4px solid #38ef7d; border-radius:8px; display:none;">
+          <div id="printScopeMessage"
+            style="margin-top:15px; padding:10px; background:rgba(56, 239, 125, 0.1); border-left:4px solid #38ef7d; border-radius:8px; display:none;">
             <p style="color:#38ef7d; font-size:13px; font-weight:bold; margin:0;">
               ✨ Printing FILTERED Results ONLY ([N] products)
             </p>
@@ -6067,7 +6080,8 @@
         </div>
 
         <!-- 🔘 Fallback Scope Message (When no filters) -->
-        <div id="printScopeAllMessage" style="margin-bottom:20px; padding:10px; background:rgba(102, 126, 234, 0.1); border-left:4px solid #667eea; border-radius:8px;">
+        <div id="printScopeAllMessage"
+          style="margin-bottom:20px; padding:10px; background:rgba(102, 126, 234, 0.1); border-left:4px solid #667eea; border-radius:8px;">
           <p style="color:#667eea; font-size:13px; font-weight:bold; margin:0;">
             ✅ Printing ALL Current Offers
           </p>
@@ -58541,7 +58555,7 @@
           if (categoryEl) categoryEl.value = customModalData.category;
 
           updateQuantityDisplay();
-          
+
           // 🔥 Update trigger text for selected offers
           if (typeof updateCustomOfferTypesTrigger === 'function') {
             updateCustomOfferTypesTrigger();
@@ -60716,7 +60730,7 @@
         const gatewayView = document.getElementById('gatewayView');
         const isGatewayVisible = gatewayView && (gatewayView.style.display === 'flex' || window.getComputedStyle(gatewayView).display === 'flex');
         const isScannerVisible = document.getElementById('scannerModalOverlay') && document.getElementById('scannerModalOverlay').style.display === 'flex';
-        
+
         if (toggleBtn) {
           if (!isGatewayVisible && !isScannerVisible) {
             toggleBtn.style.display = 'flex';
@@ -60768,7 +60782,7 @@
         console.log(`📊 ${isInitialLoad ? '🚀 INITIAL' : '✅ FILTERED'}: ${filteredProducts.length} products`);
 
         updateDynamicFilters(filters);
-        
+
         // ✅ Save full filtered set for printing modules
         window.currentFilteredProducts = filteredProducts;
 
@@ -61653,22 +61667,22 @@
           // 🔥 التعديل المطلوب: الطباعة بناءً على نوع العرض وليس الكود
           selectedOfferTypes.forEach(off => {
             for (let i = 0; i < quantity; i++) {
-              customCards.push({ 
+              customCards.push({
                 Code: "", // لا نحتاج كود محدد لأنها كروت عرض عامة
-                customData: { 
-                  ...customData, 
-                  offerEN: off.en, 
-                  offerAR: off.ar 
-                } 
+                customData: {
+                  ...customData,
+                  offerEN: off.en,
+                  offerAR: off.ar
+                }
               });
             }
           });
         } else if (manualOfferEN || manualOfferAR) {
           // لو كاتب يدوي
           for (let i = 0; i < quantity; i++) {
-            customCards.push({ 
-              Code: "", 
-              customData: { ...customData, offerEN: manualOfferEN, offerAR: manualOfferAR } 
+            customCards.push({
+              Code: "",
+              customData: { ...customData, offerEN: manualOfferEN, offerAR: manualOfferAR }
             });
           }
         }
@@ -63309,11 +63323,11 @@
         }
 
         summaryDiv.style.display = hasActive ? 'block' : 'none';
-        
+
         // Update automated scope messages
         const scopeMessage = document.getElementById('printScopeMessage');
         const scopeAllMessage = document.getElementById('printScopeAllMessage');
-        
+
         if (hasActive) {
           if (scopeMessage) {
             const count = window.currentFilteredProducts ? window.currentFilteredProducts.length : '...';
@@ -63348,7 +63362,7 @@
 
         // Update Modal UI
         updateActiveFiltersSummary();
-        
+
         // 🔥 إعادة بناء القائمة لتعرض كل العروض بعد الريست
         populateCustomOfferTypesDropdown();
 
@@ -64549,7 +64563,7 @@
               }
             }
           });
-          
+
           const offerTypes = Array.from(filteredOffersMap.values())
             .sort((a, b) => a.en.localeCompare(b.en));
 
@@ -64557,7 +64571,7 @@
             container.innerHTML = '<div style="padding:20px; color:#ffffff; text-align:center; font-size:14px; background:rgba(255,255,255,0.05); border-radius:10px; font-weight:bold;">⚠️ لا توجد عروض مطابقة للفلاتر الحالية</div>';
             return;
           }
-          
+
           renderOfferTypesList(offerTypes, container);
           return;
         }
@@ -68099,40 +68113,12 @@
         }
       });
       document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
-      // 1. إخفاء كل شيء في الصفحة تماماً (اللودر، الجات واي، العروض، الهيدر) في أول جزء من الثانية
-      // 1. الحقن الفوري: ده كود بيشتغل قبل ما المتصفح يرسم أي حاجة على الشاشة
-      if (window.location.hash.includes('scanner')) {
-        // بنعمل ستايل إجباري يخفي اللودر والجات واي فوراً
-        const instantStyle = document.createElement('style');
-        instantStyle.innerHTML = `
-        #loaderScreen, #gatewayView { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; z-index: -1 !important; }
-        #fixedHeader { display: flex !important; }
-        #mainOffersContainer { display: block !important; }
-        body { overflow: auto !important; }
-    `;
-        document.head.appendChild(instantStyle);
-      }
-
-      // 2. تشغيل السكانر بمجرد ما الصفحة تقرأ العناصر (أسرع بكتير من load)
+      // تشغيل السكانر فوراً عند تحميل العناصر
       window.addEventListener("DOMContentLoaded", () => {
         if (window.location.hash.includes('scanner')) {
-          // تأكيد الإخفاء والظهور بالجافاسكريبت (زيادة أمان)
-          const gatewayView = document.getElementById('gatewayView');
-          const fixedHeader = document.getElementById('fixedHeader');
-          const mainOffersContainer = document.getElementById('mainOffersContainer');
-          const loader = document.getElementById('loaderScreen');
-
-          if (gatewayView) gatewayView.style.display = 'none';
-          if (fixedHeader) fixedHeader.style.display = 'flex';
-          if (mainOffersContainer) mainOffersContainer.style.display = 'block';
-          if (loader) loader.style.display = 'none';
-
-          // فتح السكانر بسرعة (300 ملي ثانية كافية جداً لتشغيل الكاميرا)
-          setTimeout(() => {
-            if (typeof openBarcodeScanner === 'function') {
-              openBarcodeScanner();
-            }
-          }, 300);
+          if (typeof openBarcodeScanner === 'function') {
+            openBarcodeScanner();
+          }
         }
       });
     </script>
