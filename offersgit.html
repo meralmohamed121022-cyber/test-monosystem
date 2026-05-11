@@ -25,30 +25,13 @@
   <link rel="apple-touch-icon"
     href="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* Instant hide for scanner mode to prevent "passing through layers" */
-    .scanner-direct-active #loaderScreen,
-    .scanner-direct-active #gatewayView,
-    .scanner-direct-active #mainOffersContainer,
-    .scanner-direct-active #fixedHeader {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-      z-index: -1 !important;
-      pointer-events: none !important;
-    }
-
-    /* Force Scanner Modal to show instantly */
-    .scanner-direct-active #scannerModalOverlay {
-      display: flex !important;
-    }
-  </style>
   <script>
-    if (window.location.hash.includes('scanner')) {
+    if (window.location.href.indexOf('scanner') !== -1) {
       document.documentElement.classList.add('scanner-direct-active');
+      document.write('<style>#loaderScreen, #gatewayView, #mainOffersContainer, #fixedHeader { display: none !important; opacity: 0 !important; visibility: hidden !important; } #scannerModalOverlay { display: flex !important; }</style>');
     }
   </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -68113,12 +68096,14 @@
         }
       });
       document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
-      // تشغيل السكانر فوراً عند تحميل العناصر
+      // تشغيل السكانر عند تحميل العناصر مع مهلة لضمان جاهزية المكتبات
       window.addEventListener("DOMContentLoaded", () => {
-        if (window.location.hash.includes('scanner')) {
-          if (typeof openBarcodeScanner === 'function') {
-            openBarcodeScanner();
-          }
+        if (window.location.href.indexOf('scanner') !== -1) {
+          setTimeout(() => {
+            if (typeof openBarcodeScanner === 'function') {
+              openBarcodeScanner();
+            }
+          }, 500);
         }
       });
     </script>
