@@ -1167,7 +1167,7 @@
             <div id="app-version-info"
                 style="font-size: 11px; color: var(--accent-orange); margin: 5px 0 15px 0; opacity: 0.8; cursor: pointer;"
                 onclick="window.location.reload(true)">
-                Version 1.1.5 (Click to update)
+                Version 1.1.6 (Click to update)
             </div>
             <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)">
             <button onclick="doLogin()" style="background: var(--accent-orange);">
@@ -1312,7 +1312,7 @@
     <script>
         "use strict";
 
-        const APP_VERSION = '1.1.5';
+        const APP_VERSION = '1.1.6';
 
         if ('serviceWorker' in navigator) {
             // إضافة إصدار للملف لإجبار الكروم على تحميل النسخة الجديدة
@@ -1544,7 +1544,8 @@
                     { id: offer.id + '_exact', time: offerStartTime }
                 ];
                 for (let t of triggerTimes) {
-                    // حذف الموعد القديم أولاً لضمان التحديث في حال تغيير التوقيت (حل مشكلة عدم وجود unique constraint)
+                    console.log(`[System] Scheduling ${t.id} at ${t.time.toLocaleString()}`);
+                    // حذف الموعد القديم أولاً
                     await supabaseClient.from('reminders').delete().eq('pharmacy_number', currentPharmacy).eq('offer_id', t.id);
 
                     // إضافة الموعد الجديد

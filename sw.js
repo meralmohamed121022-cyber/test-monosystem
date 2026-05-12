@@ -1,13 +1,13 @@
-const VERSION = '1.1.5'; // تحديث الإصدار لإجبار المتصفح على التحديث
+const VERSION = '1.1.6'; // تحديث الإصدار لضمان التزامن
 let swReminders = [];
 let pharmacyNumber = null;
-let offerImages = {}; // تخزين صور العروض: mapping from offer_id to image_url
+let offerImages = {};
 
 const SUPABASE_URL = 'https://uzydzvfcrlqmtondugte.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo';
 
 self.addEventListener('install', (event) => {
-    console.log('SW Version:', VERSION, 'Installing...');
+    console.log('SW Installing v', VERSION);
     self.skipWaiting();
 });
 
@@ -57,33 +57,38 @@ self.addEventListener('message', (event) => {
 
 // محاولة البقاء حياً والتحقق من التنبيهات
 setInterval(() => {
+    const now = Date.now();
+    
     if (swReminders.length === 0 && pharmacyNumber) {
         fetchRemindersFromSW();
     }
 
-    const now = Date.now();
     swReminders.forEach(rem => {
         const trigTime = new Date(rem.trigger_time).getTime();
-        // التحقق مما إذا كان الوقت قد حان (خلال نافذة دقيقتين)
-        if (now >= trigTime && (now - trigTime) < 120000) {
+        const diff = now - trigTime;
+
+        // التحقق مما إذا كان الوقت قد حان (نافذة دقيقة واحدة بدلاً من دقيقتين لزيادة الدقة)
+        if (now >= trigTime && diff < 60000) {
+            console.log(`[SW] Triggering notification for: ${rem.offer_title}. Diff: ${diff}ms`);
+            
             const isExact = rem.offer_id.includes('_exact');
             const message = isExact 
                 ? rem.offer_title + " بدأ الآن! 🔥" 
                 : rem.offer_title + " سيبدأ خلال 30 دقيقة! ⏳";
             
-            // استخراج معرف العرض الأصلي (بدون _30min أو _exact)
             const baseOfferId = rem.offer_id.replace('_30min', '').replace('_exact', '');
             const imageUrl = offerImages[baseOfferId] || null;
 
+            // إظهار الإشعار في كل الأحوال (حتى لو الموقع مفتوح)
             self.registration.showNotification("تنبيه MONO SYSTEM", {
                 body: message,
                 icon: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
-                image: imageUrl, // عرض الصورة الكبيرة إذا وجدت
+                image: imageUrl,
                 vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
                 badge: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
                 tag: rem.id,
-                data: { url: self.location.origin + '/index.htm' }, // تخزين الرابط لفتحه عند الضغط
-                requireInteraction: true // يجعل الإشعار لا يختفي حتى يتفاعل معه المستخدم
+                data: { url: self.location.origin + '/index.htm' },
+                requireInteraction: true
             });
             
             // إزالة التنبيه من القائمة المحلية لمنع التكرار
