@@ -1164,6 +1164,11 @@
             <p style="font-size: 14px; margin-top: 10px; color: var(--text-secondary);">
                 Enter your pharmacy number
             </p>
+            <div id="app-version-info"
+                style="font-size: 11px; color: var(--accent-orange); margin: 5px 0 15px 0; opacity: 0.8; cursor: pointer;"
+                onclick="window.location.reload(true)">
+                Version 1.1.5 (Click to update)
+            </div>
             <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)">
             <button onclick="doLogin()" style="background: var(--accent-orange);">
                 Login <i class="fas fa-sign-in-alt"></i>
@@ -1307,9 +1312,27 @@
     <script>
         "use strict";
 
+        const APP_VERSION = '1.1.5';
+
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('Service Worker Registered (sw.js)'))
+            // إضافة إصدار للملف لإجبار الكروم على تحميل النسخة الجديدة
+            navigator.serviceWorker.register('sw.js?v=' + APP_VERSION)
+                .then(reg => {
+                    console.log('Service Worker Registered (sw.js) v' + APP_VERSION);
+
+                    // التحقق من وجود تحديث جديد
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed') {
+                                if (navigator.serviceWorker.controller) {
+                                    console.log('New update available. Reloading...');
+                                    window.location.reload();
+                                }
+                            }
+                        };
+                    };
+                })
                 .catch(err => console.error('SW Error:', err));
         }
 
@@ -1318,7 +1341,7 @@
             {
                 id: 'offer_may_10_test_v2',
                 title: 'MAY 10 TEST OFFER',
-                start_date: '2026-05-12T03:25:00',
+                start_date: '2026-05-12T03:33:00',
                 image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png'
             },
             {

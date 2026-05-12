@@ -1,3 +1,4 @@
+const VERSION = '1.1.5'; // تحديث الإصدار لإجبار المتصفح على التحديث
 let swReminders = [];
 let pharmacyNumber = null;
 let offerImages = {}; // تخزين صور العروض: mapping from offer_id to image_url
@@ -6,6 +7,7 @@ const SUPABASE_URL = 'https://uzydzvfcrlqmtondugte.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo';
 
 self.addEventListener('install', (event) => {
+    console.log('SW Version:', VERSION, 'Installing...');
     self.skipWaiting();
 });
 
@@ -80,6 +82,7 @@ setInterval(() => {
                 vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
                 badge: 'https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png',
                 tag: rem.id,
+                data: { url: self.location.origin + '/index.htm' }, // تخزين الرابط لفتحه عند الضغط
                 requireInteraction: true // يجعل الإشعار لا يختفي حتى يتفاعل معه المستخدم
             });
             
@@ -88,3 +91,20 @@ setInterval(() => {
         }
     });
 }, 10000);
+
+// التعامل مع الضغط على الإشعار
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            if (clientList.length > 0) {
+                let client = clientList[0];
+                for (let i = 0; i < clientList.length; i++) {
+                    if (clientList[i].focused) { client = clientList[i]; }
+                }
+                return client.focus();
+            }
+            return clients.openWindow(event.notification.data.url);
+        })
+    );
+});
