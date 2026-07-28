@@ -52036,7 +52036,7 @@
             let currentGroup = null;
 
             rowProducts.forEach(item => {
-              const catD = item.catD || (item.product && item.product["Category Level D"]) || 'OTHER';
+              const catD = item.catD || (item.product && item.product["Category Level C"]) || 'OTHER';
 
               if (!currentGroup || currentGroup.catD !== catD) {
                 currentGroup = { catD, items: [] };
@@ -57008,7 +57008,7 @@
 
                 chunk.forEach(product => {
                   const catA = product["Category Level A"] || product["Category A"] || "Uncategorized";
-                  const catD = product["Category Level D"] || product["Category D"] || "Uncategorized";
+                  const catD = product["Category Level C"] || product["Category C"] || "Uncategorized";
                   const brand = product.Brand || "GENERIC";
                   const offer = getOffer(product.Code);
                   const offerType = offer ? (offer.offerType || offer.type) : null;
