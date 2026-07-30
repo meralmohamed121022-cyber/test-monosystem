@@ -5227,7 +5227,16 @@
       }
 
       #scannerModalOverlay #scannedItemsList::-webkit-scrollbar {
-        display: none;
+        height: 8px;
+        display: block;
+      }
+      #scannerModalOverlay #scannedItemsList::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+      #scannerModalOverlay #scannedItemsList::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.8);
+        border-radius: 4px;
       }
 
       /* الكارت مالي الواجهة (مستطيل مفرود) */
@@ -5961,6 +5970,8 @@
           style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:100000; flex-direction:column; align-items:center; justify-content:center; padding:8px;">
           <div class="scanner-shell">
 
+            <button onclick="toggleScannerLayout()" title="تغيير العرض (أفقي/رأسي)"
+              style="position:absolute; right:60px; top:12px; z-index:1001; background:#3b82f6; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">⇄</button>
             <button onclick="closeBarcodeScanner()"
               style="position:absolute; right:12px; top:12px; z-index:1001; background:#ef4444; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">✕</button>
 
@@ -5983,8 +5994,8 @@
                   🗑️
                 </button>
 
-                <input id="scannerManualCode" type="text" inputmode="numeric" maxlength="6" placeholder="كود سداسي"
-                  oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)"
+                <input id="scannerManualCode" type="text" inputmode="numeric" maxlength="20" placeholder="كود سداسي أو باركود"
+                  oninput="this.value=this.value.replace(/\D/g,'').slice(0,20)"
                   onkeydown="handleScannerManualInputKey(event)"
                   style="flex: 1; min-width: 80px; height:42px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:14px; outline:none;" />
 
@@ -5996,9 +6007,9 @@
             </div>
 
             <div class="scanner-cards-wrap"
-              style="flex:1; display:flex; flex-direction:column; overflow:hidden; background:#1e293b; padding:10px 12px 100px; border-top:1px solid #334155; position: relative;">
+              style="flex:1; display:flex; flex-direction:column; overflow:hidden; background:#1e293b; padding:10px 12px 20px; border-top:1px solid #334155; position: relative;">
               <div id="scannedItemsList"
-                style="display:flex; flex-direction:row; gap:12px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding-bottom:10px;">
+                style="display:flex; flex-direction:row; gap:12px; overflow-x:auto; overflow-y:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding-bottom:10px;">
               </div>
 
               <div class="modern-nav-indicator"
@@ -59261,7 +59272,7 @@
         function normalizeManualScannerCode(value) {
           return String(value || '')
             .replace(/\D/g, '')
-            .slice(0, 6)
+            .slice(0, 20)
             .trim();
         }
 
@@ -59304,14 +59315,14 @@
           const cleanCode = normalizeManualScannerCode(input.value);
           input.value = cleanCode;
 
-          if (!cleanCode || cleanCode.length !== 6) {
+          if (!cleanCode || (cleanCode.length !== 6 && cleanCode.length < 8)) {
             setLatestScannerMessage(`
             <div style="color:#f59e0b;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                من فضلك اكتب الكود السداسي كاملًا (6 أرقام)
+                من فضلك اكتب الكود السداسي أو الباركود بشكل صحيح
             </div>
         `);
 
-            setScannerFeedback('error', 'إدخال غير مكتمل', 'اكتب الكود السداسي كاملًا');
+            setScannerFeedback('error', 'إدخال غير مكتمل', 'اكتب الكود السداسي أو الباركود بشكل صحيح');
             flashScannerSwipe('error');
 
             if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
@@ -60205,8 +60216,23 @@
         // Process Code
         // =====================================================
         async function processScannedCode(code) {
-          const cleanCode = String(code || '').trim();
+          let cleanCode = String(code || '').trim();
           if (!cleanCode) return;
+          
+          let searchCode = cleanCode.replace(/^0+/, '');
+          if (!searchCode) searchCode = cleanCode;
+
+          if (Array.isArray(window.productsDB)) {
+            const prod = window.productsDB.find(p => {
+                const c = String(p.Code || '').trim().replace(/^0+/, '');
+                const matchesCode = c === searchCode;
+                const matchesGTIN = Array.isArray(p.GTIN) && p.GTIN.some(g => String(g).trim().replace(/^0+/, '') === searchCode);
+                return matchesCode || matchesGTIN;
+            });
+            if (prod) {
+               cleanCode = String(prod.Code || '').trim();
+            }
+          }
 
           if (navigator.vibrate) {
             if (!scannedCodesSet.has(cleanCode)) {
@@ -60934,3 +60960,76 @@
           }
         });
       </script>
+
+<style>
+/* Layout Toggle Styles */
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    max-width: 900px !important;
+}
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    border-right: 2px solid #334155;
+    border-bottom: none;
+    min-height: 250px;
+    width: 100%;
+}
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    border-right: 2px solid #334155;
+}
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-cards-wrap {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+}
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scroll-snap-type: y mandatory !important;
+}
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList > * {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 140px !important;
+    margin-bottom: 12px !important;
+}
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .new-scanned-item-flash {
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    margin-bottom: 10px !important;
+}
+@media (max-width: 768px) {
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
+        border-right: none;
+        border-bottom: 2px solid #334155;
+    }
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory !important;
+    }
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList > * {
+        flex: 0 0 100% !important;
+        height: 100% !important;
+        margin-bottom: 0 !important;
+    }
+}
+</style>
+<script>
+function toggleScannerLayout() {
+    const shell = document.querySelector('.scanner-shell');
+    if(shell) {
+        shell.classList.toggle('scanner-shell-horizontal');
+    }
+}
+</script>
