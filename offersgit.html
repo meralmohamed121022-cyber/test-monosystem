@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+�<!DOCTYPE html>
 <html lang="en" dir="ltr" data-theme="light">
 
 <head>
@@ -37,13 +37,38 @@
 
       document.documentElement.classList.add('scanner-mode-active');
     }
-  </script>
+  
+        function openPromoMedia(type, url) {
+            const lightbox = document.getElementById('promoMediaLightbox');
+            const stage = document.getElementById('promoMediaStage');
+            
+            if (type === 'video') {
+                stage.innerHTML = '<video controls autoplay style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"><source src="' + url + '" type="video/mp4"></video>';
+            } else if (type === 'image') {
+                stage.innerHTML = '<img src="' + url + '" style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />';
+            }
+            
+            lightbox.classList.add('show');
+        }
+
+        function closePromoMedia(event) {
+            if (event && event.target.id !== 'promoMediaLightbox' && !event.target.classList.contains('promo-media-close')) {
+                return;
+            }
+            const lightbox = document.getElementById('promoMediaLightbox');
+            const stage = document.getElementById('promoMediaStage');
+            lightbox.classList.remove('show');
+            stage.innerHTML = '';
+        }
+</script>
   <style>
     .scanner-mode-active #gatewayView,
     .scanner-mode-active #fixedHeader,
     .scanner-mode-active #loadingIndicator,
     .scanner-mode-active #loaderScreen,
-    .scanner-mode-active #printLoader {
+    .scanner-mode-active #printLoader,
+    .scanner-mode-active .print-button-wrapper,
+    .scanner-mode-active .print-fab {
       display: none !important;
     }
 
@@ -57,7 +82,8 @@
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-    }
+        padding-bottom: 50vh !important;
+}
 
     .scanner-mode-active #mainOffersContainer>*:not(#scannerModalOverlay) {
       display: none !important;
@@ -66,10 +92,362 @@
     .scanner-mode-active #scannerModalOverlay {
       display: flex !important;
     }
-  </style>
+  
+/* ENFORCE RESET BUTTONS VISIBILITY AND STYLE */
+.reset-filter-btn, .reset-all-btn {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid #d4af37 !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+}
+.reset-filter-btn:hover, .reset-all-btn:hover {
+    background: linear-gradient(135deg, #d4af37, #f59e0b) !important;
+    color: #0f172a !important;
+}
+
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+</style>
+
+<!-- OVERRIDE STYLES AND TABS CSS -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root, body, body.light-mode, body.dark-mode, [data-theme="dark"], [data-theme="light"] {
+    body, #mainOffersContainer, .container, #products-section {
+        background: transparent !important;
+    }
+    .products-container {
+        background: transparent !important;
+    }
+    
+        --bg-body: #0f172a !important;
+        --text-main: #ffffff !important;
+        --text-secondary: #94a3b8 !important;
+        --card-bg: rgba(30, 58, 138, 0.25) !important;
+        --card-shadow: rgba(0, 0, 0, 0.3) !important;
+        --filter-bg: rgba(15, 23, 42, 0.95) !important;
+        --input-bg: rgba(30, 58, 138, 0.35) !important;
+        --input-border: rgba(245, 158, 11, 0.4) !important;
+        --header-gradient: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+        --cat-b-bg: linear-gradient(to right, rgba(245, 158, 11, 0.1), rgba(234, 88, 12, 0.2)) !important;
+        --cat-b-text: #ffffff !important;
+        --brand-border: rgba(245, 158, 11, 0.3) !important;
+        --offer-group-bg: rgba(30, 58, 138, 0.2) !important;
+        --offer-group-border: rgba(245, 158, 11, 0.3) !important;
+        --premium-glass-bg: rgba(15, 23, 42, 0.95) !important;
+        --premium-glass-border: rgba(245, 158, 11, 0.3) !important;
+        --premium-glass-shadow: rgba(0, 0, 0, 0.4) !important;
+        --premium-input-bg: rgba(30, 58, 138, 0.35) !important;
+    }
+    
+    body {
+        font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif !important;
+        background-color: var(--bg-body) !important;
+        color: var(--text-main) !important;
+        scroll-behavior: smooth;
+    }
+
+    
+    
+    #mainOffersContainer {
+        padding-bottom: 50vh !important;
+    }
+
+    /* Animated Background */
+    .animated-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0; pointer-events: none;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+        overflow: hidden;
+    }
+    .animated-bg::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: moveGrid 20s linear infinite;
+    }
+    @keyframes moveGrid {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+    }
+    .floating-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.15), transparent);
+        animation: float 15s infinite ease-in-out;
+    }
+    .shape:nth-child(1) {
+        width: 300px;
+        height: 300px;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    .shape:nth-child(2) {
+        width: 200px;
+        height: 200px;
+        top: 60%;
+        right: 10%;
+        animation-delay: 5s;
+    }
+    .shape:nth-child(3) {
+        width: 250px;
+        height: 250px;
+        bottom: 10%;
+        left: 50%;
+        animation-delay: 10s;
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        33% { transform: translateY(-30px) translateX(30px); }
+        66% { transform: translateY(30px) translateX(-30px); }
+    }
+/* TOP TABS NAVIGATION */
+    .top-tabs {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(15px);
+        padding: 0.8rem 0;
+        z-index: 10000;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        border-bottom: 2px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .tabs-container {
+        display: flex;
+        justify-content: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        padding: 0 1rem;
+    }
+
+    .tab-box {
+        background: rgba(30, 58, 138, 0.3);
+        border: 2px solid rgba(245, 158, 11, 0.3);
+        border-radius: 10px;
+        padding: 0.6rem 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .tab-box:hover {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: #f59e0b;
+        transform: translateY(-2px);
+    }
+
+    .tab-box.active {
+        background: linear-gradient(135deg, #f59e0b, #ea580c);
+        border-color: #f59e0b;
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    }
+
+    /* Fade In Animation on Scroll */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(25px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+</style>
+
+
+
+
+
+<style>
+/* 🔥 FINAL FIXES 🔥 */
+#productsContainer, .products-section {
+    display: block !important;
+}
+#toolsSidebar {
+    display: block !important;
+    overflow: visible !important;
+}
+.filters-container {
+    margin-bottom: 20px;
+}
+.reset-all-btn, button[onclick="clearAllFilters()"] {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 44px !important;
+    width: max-content !important;
+    padding: 12px 35px !important;
+    margin: 20px auto 10px auto !important;
+    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5) !important;
+}
+.category-a-header {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    background: linear-gradient(135deg, #2c3e50, #34495e) !important;
+    padding: 15px 20px !important;
+    margin-bottom: 20px !important;
+    border-radius: 15px !important;
+    text-align: center !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+}
+.category-b-header {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+}
+
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+</style>
+
+
 </head>
 
 <body>
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || savedTheme === 'night') {
+        document.body.classList.add('dark-mode');
+        document.body.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
 
   <body>
     <style>
@@ -138,6 +516,41 @@
         --body-bg-image: url('https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/e150a08438c5add0cce56bdb2f062147b6b98c8a/3d45a0004b80c3b0662f3c25d3e18ad9.jpg');
         --body-bg-opacity: 1.5;
         --body-bg-blur: 7px;
+        
+        --premium-glass-bg: rgba(255, 255, 255, 0.6);
+        --premium-glass-border: rgba(0, 0, 0, 0.1);
+        --premium-glass-shadow: rgba(0, 0, 0, 0.1);
+        --premium-input-bg: rgba(255, 255, 255, 0.8);
+      }
+
+      body.dark-mode {
+        --bg-body: #0f172a;
+        --bg-container: transparent;
+        --text-main: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --card-bg: rgba(30, 41, 59, 0.85);
+        --card-shadow: rgba(0, 0, 0, 0.5);
+        --filter-bg: rgba(15, 23, 42, 0.85);
+        --input-bg: rgba(30, 41, 59, 0.9);
+        --input-border: #334155;
+        --header-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        --cat-b-bg: linear-gradient(to right, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+        --cat-b-text: #f8fafc;
+        --brand-border: rgba(255, 255, 255, 0.1);
+        --offer-group-bg: rgba(15, 23, 42, 0.6);
+        --offer-group-border: rgba(51, 65, 85, 0.8);
+        
+        --premium-glass-bg: rgba(30, 41, 59, 0.75);
+        --premium-glass-border: rgba(255, 255, 255, 0.1);
+        --premium-glass-shadow: rgba(0, 0, 0, 0.4);
+        --premium-input-bg: rgba(15, 23, 42, 0.6);
+        
+        background-color: #0f172a !important;
+      }
+      
+      body.dark-mode .container,
+      [data-theme="dark"] .container {
+        background-color: #0f172a !important;
       }
 
       /* تطبيق الخلفية على الـ body بشكل احترافي */
@@ -260,7 +673,7 @@
 
         /* عناصر زيادة محتاج تتأكد إنها متظهرش */
         .theme-switch-wrapper,
-        .print-button-wrapper,
+        .print-fab, .scanner-print-fab, #exportPDFBtn, .print-fab, .scanner-print-fab, #exportPDFBtn, .print-button-wrapper,
         #printLoader {
           display: none !important;
         }
@@ -413,17 +826,20 @@
         position: fixed;
         right: 20px;
         bottom: 20px;
-        z-index: 1000;
+        z-index: 999999 !important;
+        display: none !important;
       }
 
       .print-fab {
-        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         color: white;
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        border: none;
-        box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+        border: 1px solid rgba(255,255,255,0.3);
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.5), inset 0 0 10px rgba(255,255,255,0.2);
         cursor: pointer;
         font-size: 24px;
         display: flex;
@@ -516,28 +932,39 @@
       }
 
       .global-search-wrapper {
-        padding: 10px 15px 0 15px;
-        background: var(--filter-bg) !important;
-        transition: background 0.3s;
+        padding: 15px 15px 0 15px;
+        background: var(--premium-glass-bg) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--premium-glass-border);
       }
 
       .global-search-box {
         width: 100%;
-        padding: 10px 14px;
+        padding: 12px 16px;
         border-radius: 12px;
-        border: 2px solid var(--input-border);
-        background: var(--input-bg);
+        border: 1px solid var(--premium-glass-border);
+        background: var(--premium-input-bg);
         color: var(--text-main);
-        font-size: 0.9em;
+        font-size: 1em;
         font-weight: 600;
         outline: none;
+        transition: all 0.3s;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+      }
+
+      .global-search-box:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 15px rgba(102, 126, 234, 0.3), inset 0 2px 5px rgba(0,0,0,0.2);
       }
 
       .filter-section {
-        background: var(--filter-bg) !important;
+        background: var(--premium-glass-bg) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
         padding: 10px 15px 20px 15px;
-        border-bottom: 3px solid #667eea;
-        transition: background 0.3s;
+        border-bottom: 3px solid rgba(102, 126, 234, 0.6);
+        box-shadow: 0 10px 20px var(--premium-glass-shadow);
       }
 
       .filter-title {
@@ -591,16 +1018,21 @@
       .custom-select-trigger {
         width: 100%;
         padding: 12px 35px 12px 15px;
-        border: 2px solid var(--input-border);
+        border: 1px solid var(--premium-glass-border);
         border-radius: 12px;
         font-size: 0.85em;
-        background: var(--input-bg);
+        background: var(--premium-input-bg);
         color: var(--text-main);
         cursor: pointer;
         font-weight: 600;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        transition: all 0.3s;
+      }
+      .custom-select-trigger:hover {
+        border-color: rgba(102, 126, 234, 0.5);
+        background: var(--premium-glass-bg);
       }
 
       .custom-select-options {
@@ -619,6 +1051,7 @@
         flex-direction: column;
       }
 
+      .custom-select.open { z-index: 9999; }
       .custom-select.open .custom-select-options {
         display: flex;
       }
@@ -709,27 +1142,25 @@
         margin-bottom: 15px;
       }
 
+      @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
       .hero-banner {
-        /* 👇 عدل الرابط هنا بصورة الخلفية اللي تحبها */
-        background:
-          linear-gradient(135deg, rgba(30, 60, 114, 0.85), rgba(42, 82, 152, 0.85)),
-          /* طبقة زرقاء شفافة */
-          url('https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/0e03439768a3f0e6660c88432d83b387.jpg');
-        /* رابط الصورة */
-
-        background-size: cover;
-        /* عشان الصورة تغطي البوكس كله */
+        background: linear-gradient(-45deg, rgba(30, 60, 114, 0.85), rgba(42, 82, 152, 0.85), rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6)), url('https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/0e03439768a3f0e6660c88432d83b387.jpg');
+        background-size: 400% 400%, cover;
+        background-blend-mode: overlay;
+        animation: gradientBG 15s ease infinite;
         background-position: center;
-        /* عشان الصورة تتوسط */
         background-repeat: no-repeat;
-
-        /* باقي الخصائص زي ما هي */
         padding: 40px 20px;
         text-align: center;
         color: white;
         border-radius: 20px;
         margin: 20px;
-        box-shadow: 0 10px 40px rgba(30, 60, 114, 0.4);
+        box-shadow: 0 10px 40px rgba(30, 60, 114, 0.4), inset 0 0 0 1px rgba(255,255,255,0.2);
         position: relative;
         overflow: hidden;
       }
@@ -737,7 +1168,8 @@
       .hero-content h1 {
         font-size: 42px;
         margin: 0 0 15px 0;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 0 20px rgba(255,255,255,0.3), 2px 2px 8px rgba(0, 0, 0, 0.6);
+
         animation: glow 2s ease-in-out infinite alternate;
       }
 
@@ -1129,9 +1561,8 @@
       .reset-filter-btn {
         margin-top: 8px;
         padding: 8px 14px;
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        background: rgba(15, 23, 42, 0.9) !important; border: 1px solid #d4af37 !important;
         color: white;
-        border: none;
         border-radius: 6px;
         cursor: pointer;
         font-size: 12px;
@@ -1430,37 +1861,21 @@
         gap: 20px;
       }
 
-      .magazine-header-health {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      }
+      .magazine-header-health { background: var(--header-gradient); }
 
-      .magazine-header-baby {
-        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-      }
+      .magazine-header-baby { background: var(--header-gradient); }
 
-      .magazine-header-beauty {
-        background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-      }
+      .magazine-header-beauty { background: var(--header-gradient); }
 
-      .magazine-header-personal {
-        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-      }
+      .magazine-header-personal { background: var(--header-gradient); }
 
-      .magazine-content-health {
-        background: #ecfdf5;
-      }
+      .magazine-content-health { background: transparent; }
 
-      .magazine-content-baby {
-        background: #eff6ff;
-      }
+      .magazine-content-baby { background: transparent; }
 
-      .magazine-content-beauty {
-        background: #fdf2f8;
-      }
+      .magazine-content-beauty { background: transparent; }
 
-      .magazine-content-personal {
-        background: #fef2f2;
-      }
+      .magazine-content-personal { background: transparent; }
 
       .magazine-section-title {
         font-size: 32px;
@@ -1574,6 +1989,15 @@
             rgba(254, 226, 226, 0.92) 100%) !important;
       }
 
+      @media print {
+        .magazine-page.magazine-page-health,
+        .magazine-page.magazine-page-baby,
+        .magazine-page.magazine-page-beauty,
+        .magazine-page.magazine-page-personal {
+          background: white !important;
+        }
+      }
+
       /* ===== 3️⃣ CATEGORY HEADER - STICKY ===== */
       .magazine-category-header {
         position: sticky;
@@ -1590,20 +2014,16 @@
         backdrop-filter: blur(10px);
       }
 
-      .magazine-category-header.header-health {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      .magazine-category-header.header-health { background: var(--header-gradient);
       }
 
-      .magazine-category-header.header-baby {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      .magazine-category-header.header-baby { background: var(--header-gradient);
       }
 
-      .magazine-category-header.header-beauty {
-        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+      .magazine-category-header.header-beauty { background: var(--header-gradient);
       }
 
-      .magazine-category-header.header-personal {
-        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      .magazine-category-header.header-personal { background: var(--header-gradient);
       }
 
       .magazine-category-icon-svg {
@@ -3600,6 +4020,30 @@
         position: relative !important;
       }
 
+      .contact-icons-container {
+        position: absolute;
+        left: 40px;
+        top: calc(40% + 75px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        width: 140px;
+        z-index: 10;
+      }
+
+      /* تنسيق للموبايل */
+      @media (max-width: 768px) {
+        .contact-icons-container {
+          position: relative;
+          left: auto;
+          top: auto;
+          width: 100%;
+          margin-top: 0;
+          padding-bottom: 10px;
+        }
+      }
+
       /* تعديل الموبايل */
       @media (max-width: 768px) {
         .header-personal-img {
@@ -3968,7 +4412,8 @@
         display: none !important;
         position: fixed;
         left: 20px;
-        top: 50%;
+        top: 55%;
+        z-index: 999999 !important;
         transform: translateY(-50%);
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: white;
@@ -4243,6 +4688,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 20px !important;
+        z-index: 30000 !important;
         z-index: 10000;
       }
 
@@ -4446,18 +4892,29 @@
         overflow: visible !important;
       }
 
-      /* تعديل الكارت ليكون مرن */
+      /* تعديل الكارت ليكون مرن واضافة لمسات Premium */
       .product-card {
-        background: var(--card-bg) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(12px) !important;
         border-radius: 20px !important;
-        box-shadow: 0 10px 25px var(--card-shadow) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 2px 5px rgba(255, 255, 255, 0.1) !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         padding: 20px !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
         direction: rtl !important;
         min-height: 400px;
+        transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
+        transform-style: preserve-3d;
+      }
+
+      .product-card:hover {
+        transform: translateY(-12px) scale(1.02) perspective(1000px) rotateX(2deg) rotateY(-2deg) !important;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2), 0 0 35px rgba(102, 126, 234, 0.3) !important;
+        border-color: rgba(102, 126, 234, 0.6) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        z-index: 5 !important;
       }
 
       /* تظبيط الصورة وإجبارها على الظهور */
@@ -4467,7 +4924,11 @@
         object-fit: contain !important;
         margin-bottom: 15px !important;
         opacity: 1 !important;
-        /* لضمان الظهور في الديسكتوب فيو */
+        transition: transform 0.4s ease !important;
+      }
+
+      .product-card:hover img {
+        transform: scale(1.1) !important;
       }
 
       /* وضع الموبايل الحقيقي (السليدر الأفقي) */
@@ -4935,11 +5396,11 @@
 
       .promo-media-head h2 {
         margin: 0 0 8px;
-        color: #fff;
+        color: var(--text-main);
         font-size: 26px;
         font-weight: 900;
         letter-spacing: 0.5px;
-        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        text-shadow: none;
       }
 
       .promo-media-head p {
@@ -4950,18 +5411,42 @@
       }
 
       .promo-media-swiper {
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: minmax(280px, 340px);
-        gap: 16px;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 12px;
+        padding: 12px;
         overflow-x: auto;
-        overflow-y: hidden;
-        padding: 8px 4px 12px;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: #d4af37 rgba(255, 255, 255, 0.15);
-        touch-action: pan-x pinch-zoom;
+        scrollbar-width: none;
+      }
+      .promo-media-swiper::-webkit-scrollbar {
+        display: none;
+      }
+      
+      .promo-media-text-btn {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 30px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      
+      .promo-media-text-btn:hover {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+        border-color: #8b5cf6;
+        transform: translateY(-2px);
       }
 
       .promo-media-swiper::-webkit-scrollbar {
@@ -5650,12 +6135,218 @@
         color: #ffffff;
         transform: translateY(-2px);
       }
-    </style>
+      /* =========================================================
+   📱 1. إظهار بوكس سكانر الأكواد السداسية بشكل دائم
+   ========================================================= */
+.scanner-promo-section {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* =========================================================
+   ✨ 2. تنسيق أزرار PLATFORM FEATURES بستايل البوكسات البرتقالي والـ Glow
+   ========================================================= */
+.promo-media-text-btn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    color: #ffffff !important;
+    font-family: 'Cairo', 'Poppins', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* تأثير التفاعل (Hover) - الهالة الذهبية والبرتقالية */
+.promo-media-text-btn:hover {
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+    border-color: #ffd700 !important;
+    color: #ffffff !important;
+    transform: translateY(-4px) scale(1.03) !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 8px 25px rgba(234, 88, 12, 0.5) !important;
+}
+
+.promo-media-text-btn span {
+    color: #facc15 !important;
+    transition: color 0.3s ease !important;
+}
+
+.promo-media-text-btn:hover span {
+    color: #ffffff !important;
+}
+/* =========================================================
+   🔥 1. إظهار بوكس السكانر بشكل دائم وقاطع
+   ========================================================= */
+.scanner-promo-section,
+div[class*="scanner-promo"],
+div:has(> button[onclick*="openBarcodeScanner"]) {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* =========================================================
+   ↔️ 2. شريط تمرير أفقّي مضيء (Horizontal Scrollbar)
+   ========================================================= */
+/* إجبار إظهار السكرول بار الأفقّي وإلغاء إخفائه القديم */
+.promo-media-swiper,
+#promoMediaSwiper {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 14px !important;
+    scrollbar-width: thin !important; /* للفيَرفوكس */
+    scrollbar-color: #f59e0b rgba(15, 23, 42, 0.6) !important;
+}
+
+/* إظهار وتصميم السكرول بار لجوجل كروم وإيدج وسفاري */
+.promo-media-swiper::-webkit-scrollbar,
+#promoMediaSwiper::-webkit-scrollbar {
+    display: block !important;
+    height: 8px !important;
+}
+
+.promo-media-swiper::-webkit-scrollbar-track,
+#promoMediaSwiper::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+.promo-media-swiper::-webkit-scrollbar-thumb,
+#promoMediaSwiper::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.6) !important;
+}
+
+.promo-media-swiper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #ffd700 0%, #f59e0b 100%) !important;
+}
+    
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+/* =========================================================
+   ✨ تطبيق ستايل PLATFORM FEATURES على بوكس السكشن العلوي
+   ========================================================= */
+
+/* 1. الحاوية الرئيسية لسكشن الخيارات العلوي */
+.inline-layout-mode,
+#section-sidebar {
+    background: rgba(15, 23, 42, 0.75) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 2. الإطار الداخلي المنقط المخصص لزر المنيو */
+.inline-layout-mode > div:first-child,
+#section-sidebar .sidebar-content {
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+/* 3. زر Sidebar Menu وإزالة التدرج الخشبي/البرتقالي خلف الكلمة */
+#layoutToggleBtn,
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important; /* خلفية كحلية زجاجية شفافة */
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* إلغاء التدرج الخلفي الصلب عن النص داخله */
+#layoutToggleText,
+.inline-layout-mode #layoutToggleText {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #facc15 !important; /* أصفر ذهبي مضيء مثل زرار الميديا */
+    padding: 0 !important;
+}
+
+/* تأثير التفاعل (Hover) - الهالة الذهبية والبرتقالية مثل PLATFORM FEATURES */
+#layoutToggleBtn:hover,
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+    border-color: #ffd700 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 8px 25px rgba(234, 88, 12, 0.5) !important;
+}
+
+#layoutToggleBtn:hover #layoutToggleText,
+.inline-layout-mode #layoutToggleBtn:hover #layoutToggleText {
+    color: #ffffff !important;
+}
+
+/* 4. إضفاء تأثير الـ Glow البرتقالي والحدود الذهبية للبوكسات العريضة الثلاثة */
+.inline-layout-mode .sidebar-btn,
+.inline-layout-mode .btn-custom-print,
+.inline-layout-mode .btn-magazine,
+.inline-layout-mode .btn-file {
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.inline-layout-mode .sidebar-btn:hover,
+.inline-layout-mode .btn-custom-print:hover,
+.inline-layout-mode .btn-magazine:hover,
+.inline-layout-mode .btn-file:hover {
+    border-color: #ffd700 !important;
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.5) !important;
+}
+</style>
     </head>
 
     <body>
+      <!-- Removed themeToggleBtn as requested -->
       <div id="loaderScreen">
-        <div id="closeLoaderX" onclick="hideInitialLoader()" style="
+        <script>function hideInitialLoader() { const l = document.getElementById("loaderScreen"); if (l) l.style.display="none"; }</script>
+<div id="closeLoaderX" onclick="hideInitialLoader()" style="
         position: absolute;
         top: 30px;
         right: 30px;
@@ -5699,12 +6390,13 @@
         </div>
       </div>
       <div id="fixedHeader" style="display:none;">
-        <div class="header-logo" onclick="goHome()">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1.5-3.5c-3.59 0-6.5-2.91-6.5-6.5s2.91-6.5 6.5-6.5c.66 0 1.29.1 1.89.28-2.3 1.05-3.89 3.39-3.89 6.22 0 2.83 1.59 5.17 3.89 6.22-.6.18-1.23.28-1.89.28z" />
-          </svg>
-          <span>HOME</span>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <button id="fixedHeaderBackBtn" onclick="goHome()" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-left: -5px;">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <div class="header-logo" onclick="goHome()" style="margin: 0;">
+            <span>HOME</span>
+          </div>
         </div>
 
         <img id="headerCenterImg" src="" class="header-center-img" alt="" style="max-height: 50px; width: auto;">
@@ -5715,56 +6407,83 @@
         <span class="icon">☰</span>
         <span class="btn-text" style="font-weight: bold; font-size: 12px;">Menu</span>
       </button>
-      <div id="toolsSidebar" class="modern-sidebar">
-        <div class="sidebar-header">
+      <div id="section-sidebar" class="modern-sidebar">
+        <div class="sidebar-header fade-in">
           <button class="sidebar-close" onclick="toggleToolsSidebar()">✖</button>
         </div>
-        <div class="sidebar-content">
-          <button class="sidebar-btn btn-custom-print" onclick="openCustomPrintModal(); toggleToolsSidebar();"
-            style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 15px 20px; height: auto; width: 100%; border: none; border-radius: 15px; cursor: pointer; transition: 0.3s; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+        <div class="sidebar-content" id="sidebarContentWrapper">
+          <div class="promo-media-head inline-title fade-in" style="display: none; width: 100%; text-align: center; margin-bottom: 20px;">
+    <h2>SECTIONS</h2>
+</div>
+<button id="layoutToggleBtn" class="sidebar-btn fade-in" onclick="toggleMenuLayoutMode()">
+    <span id="layoutToggleText" class="btn-text" style="font-weight: bold; display: inline-block;">🔄 Inline Layout</span>
+</button>
 
-            <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-              <span class="icon" style="font-size: 20px;">🖨️</span>
-              <span style="font-size: 15px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff;">Custom Offer
-                Print</span>
+          <button class="sidebar-btn btn-custom-print fade-in" onclick="openCustomPrintModal(); toggleToolsSidebar();"
+            style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; height: auto; width: 100%; border: none; border-radius: 15px; cursor: pointer; transition: 0.3s; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; position: relative; z-index: 1;">
+              <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                <span class="icon" style="font-size: 20px;">🖨️</span>
+                <span style="font-size: 15px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">Custom Offer Print</span>
+              </div>
+              <div style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 35px; text-transform: uppercase; letter-spacing: 1px; opacity: 1; text-align: left; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
+                — PRINT OFFERS WITHOUT CODES
+              </div>
             </div>
-
-            <div
-              style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 35px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; text-align: left;">
-              — PRINT OFFERS WITHOUT CODES
+            <div style="position: absolute; right: 0; top: 0; width: 50%; height: 100%; clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); border-left: 3px solid rgba(255,255,255,0.2);">
+              <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/Custom%20Offer%20Print%20PRINT%20OFFERS%20WITHOUT%20CODES.jpg" alt="Custom Print Preview" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
             </div>
-
           </button>
-          <div
-            style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 32px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">
-          </div>
-          </button>
+          <div style="font-size: 9px; font-weight: 700; color: #ffd700; padding-left: 32px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;"></div>
 
-          <button id="sidebarMagazineBtn" class="sidebar-btn btn-magazine" onclick="toggleMagazineModeFromSidebar()">
-            <span class="icon">📰</span> MAGAZINE MODE: OFF
-          </button>
-
-          <button class="sidebar-btn btn-exclusive" onclick="printExclusiveOffers(); toggleToolsSidebar();">
-            <span class="icon">🌟</span> Exclusive Offers (5,10,15)
+          <button id="sidebarMagazineBtn" class="sidebar-btn btn-magazine fade-in" onclick="toggleMagazineModeFromSidebar()" style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; margin-top: 10px; border-radius: 15px; border: none;">
+            <div style="position: relative; z-index: 1; text-shadow: 1px 1px 4px rgba(0,0,0,0.5); font-weight: bold;"><span class="icon">📰</span> MAGAZINE MODE: OFF</div>
+            <div style="position: absolute; right: 0; top: 0; width: 45%; height: 100%; clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); border-left: 3px solid rgba(255,255,255,0.2);">
+              <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/MAGAZINE%20MODE%20OFF.png" alt="Magazine Preview" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+            </div>
           </button>
 
-          <div class="sidebar-upload-box">
-            <label for="codesFileInput" class="sidebar-btn btn-file">
-              <span class="icon">📂</span> PRINT \ View FROM FILE ⚡
+          <div class="sidebar-upload-box" style="margin-top: 10px;">
+            <label for="codesFileInput" class="sidebar-btn btn-file fade-in" style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; width: 100%; box-sizing: border-box; margin: 0; border-radius: 15px; cursor: pointer; border: none;">
+              <div style="position: relative; z-index: 1; text-shadow: 1px 1px 4px rgba(0,0,0,0.5); font-weight: bold;"><span class="icon">📂</span> PRINT \ View FROM FILE ⚡</div>
+              <div style="position: absolute; right: 0; top: 0; width: 45%; height: 100%; clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); border-left: 3px solid rgba(255,255,255,0.2);">
+                <img src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/PRINT%20%20View%20FROM%20FILE.jpg" alt="Print from file Preview" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+              </div>
             </label>
-            <input type="file" id="codesFileInput" accept=".pdf,.txt,.csv,.xlsx,.xls" style="display:none"
-              onchange="handleSidebarFileUpload(event)">
+            <input type="file" id="codesFileInput" accept=".pdf,.txt,.csv,.xlsx,.xls" style="display:none" onchange="handleSidebarFileUpload(event)">
           </div>
 
-          <div style="border-top: 1px solid rgba(150, 150, 150, 0.2); margin: 5px 0;"></div>
-
-          <button class="sidebar-btn btn-help" onclick="openFilterHelpModal(); toggleToolsSidebar();">
-            <span class="icon">❓</span> كيف تفلتر ؟
-          </button>
+          <!-- How to filter button removed upon user request -->
         </div>
       </div>
 
       <div id="mainOffersContainer" class="container" style="display: none; margin-top: 90px;">
+<!-- Top Tabs Navigation -->
+<div class="top-tabs" id="mainTopTabs">
+    <div class="tabs-container">
+       
+        <a href="#section-sidebar" class="tab-box fade-in">
+            <i class="fas fa-bars"></i>
+            <span> SECTIONS</span>
+        </a>
+         <a href="#section-offers" class="tab-box fade-in">
+            <i class="fas fa-fire"></i>
+            <span>MEGA OFFERS</span>
+        </a>
+        <a href="#section-features" class="tab-box fade-in">
+            <i class="fas fa-star"></i>
+            <span>PLATFORM FEATURES</span>
+        </a>
+        <a href="javascript:void(0)" onclick="openBarcodeScanner()" class="tab-box fade-in">
+            <i class="fas fa-qrcode"></i>
+           <span>SCANNER</span>
+        </a>
+        <a href="#section-search" class="tab-box fade-in">
+            <i class="fas fa-search"></i>
+            <span>SEARCH & FILTERS</span>
+        </a>
+    </div>
+</div>
         <button id="exportPDFBtn" class="export-pdf-btn" onclick="exportFullMagazinePDF()">
           <span class="icon">🖨️</span> PDF
         </button>
@@ -5774,25 +6493,548 @@
           <div style="margin-top:15px; font-size:1.2em;">Preparing Print Layout...<br>Please wait</div>
         </div>
 
-        <div id="mainPageStatusContainer" class="main-page-status-container" style="display: none;">
-          <div id="codesFileStatus"></div>
-        </div>
 
-        <div class="theme-switch-wrapper">
-          <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider">
-              <span class="icon sun">☀️</span>
-              <span class="icon moon">🌙</span>
-            </div>
-          </label>
+
+        <button id="newThemeToggleBtn" onclick="toggleTheme()" style="position: relative; float: left; margin: 5px 15px 10px 15px; z-index: 25000; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #0d2137 0%, #1a3a52 100%); color: white; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+          <i id="themeIcon" class="fas fa-moon"></i>
+        </button>
+
+        <style>
+          .is-processing-modal {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            z-index: 100000 !important;
+            box-shadow: 0 0 0 100vmax rgba(0,0,0,0.7), 0 20px 50px rgba(0,0,0,0.5) !important;
+            margin-bottom: 0 !important;
+          }
+          .theme-hint-pointer {
+            position: absolute;
+            top: 165px;
+            left: 70px;
+            z-index: 26000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #facc15;
+            padding: 5px 12px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+          }
+          .theme-hint-pointer.show-hint {
+            display: flex;
+            animation: slideInLeftHint 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOutHint 0.5s 4s forwards;
+          }
+          .theme-hint-pointer .hand-emoji {
+            font-size: 20px;
+            animation: pointLeft 0.8s infinite alternate ease-in-out;
+          }
+          @keyframes slideInLeftHint {
+            0% { transform: translateX(50px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes fadeOutHint {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+          }
+          @keyframes pointLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-8px); }
+          }
+          
+          /* --- Inline Layout Mode CSS --- */
+          .inline-layout-mode {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 15px;
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 1200px;
+            background: rgba(13, 33, 55, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 95%;
+          }
+          
+          .inline-layout-mode .sidebar-btn,
+          .inline-layout-mode .sidebar-upload-box {
+            flex: 1;
+            min-width: 250px;
+            margin: 0 !important;
+          }
+          
+          #layoutToggleBtn {
+            flex-basis: 100%;
+            width: 100%;
+            background: transparent !important;
+            box-shadow: none !important;
+            border: 2px dashed rgba(255,255,255,0.3) !important;
+            color: #d1d5db !important;
+            margin-bottom: 20px !important;
+            transition: all 0.3s;
+          }
+          
+          #layoutToggleBtn:hover {
+            border-color: #8b5cf6 !important;
+            background: rgba(139, 92, 246, 0.1) !important;
+          }
+          /* 🔥 إرجاع إظهار الكاتيجوري وأنواع العروض قبل الكروت مع تأثير الحركة 🔥 */
+.category-a-header, 
+.category-d-header, 
+.offer-type-badge-header,
+.category-b-header {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 0;
+    transform: translateY(-15px);
+    /* تأثير ظهور وانزلاق هادئ وسلس */
+    animation: categoryReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* أنيميشن الانزلاق والظهور */
+@keyframes categoryReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* تنسيق هيدر Category A */
+.category-a-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+    color: #ffffff !important;
+    padding: 12px 24px !important;
+    border-radius: 12px !important;
+    margin: 20px 0 10px 0 !important;
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4) !important;
+    border-left: 5px solid #f59e0b !important;
+}
+
+/* تنسيق هيدر Category D */
+.category-d-header {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+    color: #ffffff !important;
+    padding: 8px 18px !important;
+    border-radius: 8px !important;
+    margin: 12px 0 8px 0 !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    align-items: center !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* تنسيق شريط Offer Type */
+.offer-type-badge-header {
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%) !important;
+    color: #ffffff !important;
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    width: fit-content !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
+}
+/* =========================================
+   🎨 unified Glassmorphism & Fade-In Style
+   ========================================= */
+
+/* دمج الحركة والأنيميشن على كل الهيدرات */
+.category-a-header, 
+.category-d-header, 
+.offer-type-badge-header {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    
+    /* تصميم Glassmorphism الموحد من Portfolio */
+    background: rgba(30, 58, 138, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 18px !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', 'Cairo', sans-serif !important;
+}
+
+/* الكلاس الذي يفعل الظهور عند التمرير أو الرندر */
+.category-a-header.visible, 
+.category-d-header.visible, 
+.offer-type-badge-header.visible,
+.fade-in.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* تخصيص أحجام ومسافات هيدر Category A */
+.category-a-header {
+    padding: 1.2rem 2rem !important;
+    margin: 20px 0 15px 0 !important;
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-left: 5px solid #f59e0b !important;
+}
+
+/* تخصيص أحجام ومسافات هيدر Category D */
+.category-d-header {
+    padding: 0.8rem 1.5rem !important;
+    margin: 15px 0 10px 0 !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    align-items: center !important;
+    border-left: 4px solid #3b82f6 !important;
+}
+
+/* تخصيص شريط نوع العرض Offer Type */
+.offer-type-badge-header {
+    padding: 0.6rem 1.4rem !important;
+    margin: 10px 0 15px 0 !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    color: #f59e0b !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border-left: 4px solid #ea580c !important;
+}
+/* =========================================================
+   🔥 إظهار وتوحيد بوكس نوع العرض (Offer Type) في الوضع العادي
+   ========================================================= */
+
+/* إجبار إظهار بوكس العرض وتطبيق حركة الظهور ولون البورتفوليو */
+.offer-group-header,
+.offer-type-header,
+.offer-badge-title,
+.offer-type-badge-header {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 0;
+    transform: translateY(25px);
+    animation: portfolioFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+
+    /* نفس ألوان البوكسات وتأثير الـ Glassmorphism من كودك */
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 2px solid rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+    border-radius: 14px !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', 'Cairo', sans-serif !important;
+    
+    padding: 12px 24px !important;
+    margin: 15px auto 15px auto !important;
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: max-content !important;
+    border-left: 5px solid #ea580c !important;
+}
+
+/* تأثير أنيميشن الـ Fade In الخاص بالبورتفوليو */
+@keyframes portfolioFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* =========================================
+   ✨ تأثير الظهور الانسيابي (Fade-In & Slide-Up)
+   ========================================= */
+
+/* الحالة المبدئية: العنصر مخفي ونازل لتحت */
+.fade-in {
+    opacity: 0 !important;
+    transform: translateY(30px) !important;
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: opacity, transform;
+}
+
+/* الحالة النشطة: ظهور العنصر وصعوده لمكانه الطبيعي */
+.fade-in.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+/* =========================================================
+   👁️ إصلاح وضوح النصوص داخل القوائم المنسدلة (Dropdown List)
+   ========================================================= */
+/* =========================================================
+   🔥 الكود الأصلي المعدل - تباين عالي جداً للوضعين الليلي والنهاري
+   ========================================================= */
+
+/* 1. خيارات القائمة المنسدلة والكونتينر الداخلي */
+.custom-select-options, 
+.custom-options-list {
+    background-color: #0a1128 !important;     /* خلفية كحلية داكنة جداً وغير شفافة */
+    border: 2px solid #f59e0b !important;       /* إطار برتقالي مضيء */
+    border-radius: 12px !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* 2. عناصر القائمة والإلغاء المباشر لأي خلفيات بيضاء أو شفافة */
+.custom-option {
+    background-color: transparent !important;   /* إلغاء أي خلفية بيضاء طارئة */
+    color: #ffffff !important;                   /* لون نص أبيض صريح */
+    font-size: 14px !important;
+    font-weight: 800 !important;                 /* خط عريض لإبراز النصوص */
+    padding: 10px 14px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: background 0.2s ease, transform 0.2s ease !important;
+}
+
+/* 3. إجبار النص والـ Label داخل العناصر على اللون الذهبي/الأبيض المضيء */
+.custom-option *,
+.custom-option span, 
+.custom-option label,
+.custom-option input + span {
+    color: #facc15 !important;                   /* أصفر ذهبي مضيء ينور على الخلفية الغامقة */
+    opacity: 1 !important;                       /* إلغاء أي الشفافية */
+    visibility: visible !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* 4. تجنُّب تطبيق ألوان النصوص على حقل الشيك بوكس نفسه */
+.custom-option input[type="checkbox"] {
+    color: initial !important;
+    opacity: 1 !important;
+}
+
+/* 5. عند وقوف الماوس على العنصر (Hover) */
+.custom-option:hover,
+.custom-option:hover *,
+.custom-option:hover span {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(30, 58, 138, 0.6)) !important;
+    color: #ffffff !important;                   /* يتحول النص لأبيض ناصع عند الـ Hover */
+}
+
+/* 6. حقل البحث علوي القائمة */
+.custom-select-search {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid #f59e0b !important;
+    font-weight: 800 !important;
+    opacity: 1 !important;
+}
+
+.custom-select-search::placeholder {
+    color: #f59e0b !important;                   /* لون نص البحث برتقالي مضيء */
+    opacity: 1 !important;
+}
+/* =========================================================
+   🔄 إظهار وتثبيت زر Reset All Filters بدون التأثير على الفلاتر
+   ========================================================= */
+
+/* استهداف الزرار بشكل معزول ومباشر لمنع اختفائه */
+button.reset-all-btn,
+button[onclick="clearAllFilters()"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 48px !important;
+    width: max-content !important;
+    padding: 12px 35px !important;
+    margin: 25px auto 15px auto !important;
+
+    /* تدرج أنيق متناسق مع ألوان البورتفوليو والـ Brand */
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+    color: #ffffff !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+
+    font-family: 'Cairo', 'Poppins', sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+/* تأثير الماوس */
+button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4) !important;
+    background: rgba(30, 41, 59, 1) !important;
+}
+/* =========================================================
+   📱 تنسيق وإظهار بوكس الأيقونة والنص (SCANNER PRODUCTS)
+   ========================================================= */
+
+/* الكونتينر الخارجي لبوكس السكانر */
+.scanner-promo-section {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 12px !important;
+    margin: 25px 15px 15px !important;
+    padding: 22px 20px !important;
+
+    /* تدرج زجاجي كحلي مع إطار برتقالي متناسق */
+    background: rgba(30, 58, 138, 0.25) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 2px dashed rgba(245, 158, 11, 0.5) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* زرار السكانر الدائري مع الأيقونة */
+.scanner-main-btn {
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+    color: #ffffff !important;
+    border: 2px solid #ffd700 !important;
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 22px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4) !important;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.scanner-main-btn:hover {
+    transform: scale(1.1) rotate(5deg) !important;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7) !important;
+}
+
+/* الأيقونة نفسها داخل الزرار */
+.scanner-main-btn i {
+    font-size: 38px !important;
+    color: #ffffff !important;
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* النص التوضيحي SCANNER PRODUCTS */
+.scanner-promo-text h4 {
+    margin: 0 !important;
+    color: #facc15 !important; /* أصفر ذهبي مضيء */
+    font-size: 19px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    font-family: 'Poppins', 'Cairo', sans-serif !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6) !important;
+}
+
+.scanner-promo-text p {
+    margin: 6px 0 0 !important;
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+}
+        
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+/* ضبط حاوية السكانر لإعطاء مساحة أمان للأزرار */
+#scannerModalOverlay .scanner-shell {
+    position: relative !important;
+    padding-top: 55px !important; /* مساحة أمان للأزرار العلوية */
+}
+
+/* إعادة تموضع أزرار الإغلاق والتبديل في أعلى اليمين بشكل منظم */
+#scannerModalOverlay .scanner-shell > button[onclick*="closeBarcodeScanner"],
+#scannerModalOverlay .scanner-shell > button[onclick*="toggleScannerLayout"] {
+    top: 10px !important;
+    z-index: 1010 !important; /* التأكد من وجودها أعلى الطبقات دون إغلاق الرؤية */
+}
+
+#scannerModalOverlay .scanner-camera-wrap {
+    margin-top: 5px !important; /* زحزحة بوكس الكاميرا تحت الأزرار تماماً */
+    position: relative !important;
+    z-index: 1 !important;
+}
+/* إخفاء زر الطباعة البرتقالي العائم عند فتح مودال السكانر */
+body.scanner-active .print-button-wrapper,
+body.scanner-active .print-fab {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+</style>
+        <div id="themeHintPointer" class="theme-hint-pointer">
+          <div class="hand-emoji">👈</div>
+          <span>جرب الوضع الليلي من هنا</span>
         </div>
+        
+        <div style="clear: both;"></div>
 
         <div class="hero-banner">
           <img
             src="https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png"
             class="header-personal-img" alt="Profile">
-          <div style="display: flex; align-items: center; gap: 15px; padding: 10px;">
+          <div class="contact-icons-container">
             <div onclick="openEmail()" style="cursor: pointer;"><svg width="30" height="30" viewBox="0 0 24 24">
                 <path
                   d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"
@@ -5809,15 +7051,15 @@
                   fill="#1877F2" />
               </svg></div>
           </div>
-          <div class="hero-content">
-            <h1>🔥 MEGA PHARMACY OFFERS 🔥</h1>
-            <div class="offer-badge">Offers</div>
-            <div class="offer-dates-container">
+          <div id="section-offers"  class="hero-content">
+            <h1 class="fade-in">🔥 MEGA PHARMACY OFFERS 🔥</h1>
+            <div class="offer-badge fade-in">Offers</div>
+            <div class="offer-dates-container fade-in">
               <div class="date-box"><span class="label">🎯 START</span><span class="date-value">Dec 25, 2025</span>
               </div>
               <div class="date-box"><span class="label">⏰ END</span><span class="date-value">Jan 07, 2026</span></div>
             </div>
-            <div class="countdown-container">
+            <div class="countdown-container fade-in">
               <div class="countdown-header">
                 <h2 id="countdownTitle">⏰ العرض لم يبدأ بعد</h2>
               </div>
@@ -5837,107 +7079,57 @@
         <!-- =========================
      PROMO MEDIA SWIPER SECTION
 ========================= -->
-        <div class="promo-media-section">
-          <div class="promo-media-head">
+        <!-- Status Container moved here to be right above PLATFORM FEATURES -->
+        <div id="mainPageStatusContainer" class="main-page-status-container" style="display: none; background: var(--card-bg, rgba(15, 23, 42, 0.95)); padding: 25px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); backdrop-filter: blur(10px); width: 100%; border: 1px solid var(--border-color, rgba(255,255,255,0.1)); position: relative; margin-bottom: 25px;">
+          <button onclick="document.getElementById('mainPageStatusContainer').style.display='none';" style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.1); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.3s;" onmouseover="this.style.background='rgba(255,0,0,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">✕</button>
+          <div id="codesFileStatus" style="margin-top: 15px;"></div>
+        </div>
+
+        <div id="section-features" class="promo-media-section">
+          <div class="promo-media-head fade-in">
             <h2>PLATFORM FEATURES</h2>
           </div>
 
           <div class="promo-media-swiper" id="promoMediaSwiper">
 
-            <article class="promo-media-card">
-              <h3 class="promo-media-title">SCAN 6 CODE ITEM AND PRINT OFFERS</h3>
-              <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SCAN%206%20CODE%20ITEM%20AND%20PRINT%20OFFERS.mp4')">
-                <video muted playsinline preload="metadata"
-                  poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/scan%20code.jpeg">
-                  <source
-                    src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SCAN%206%20CODE%20ITEM%20AND%20PRINT%20OFFERS.mp4"
-                    type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-              </button>
-            </article>
+            <button class="promo-media-text-btn fade-in" type="button" onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SCAN%206%20CODE%20ITEM%20AND%20PRINT%20OFFERS.mp4')">
+              SCAN 6 CODE ITEM AND PRINT OFFERS <span style="font-size: 12px; opacity: 0.8; margin-left: 5px;">▶</span>
+            </button>
 
-            <article class="promo-media-card">
-              <h3 class="promo-media-title">Sidebar Options</h3>
-              <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDEBAR%20OPTIONS.mp4')">
-                <video muted playsinline preload="metadata"
-                  poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDE%20BAR%20OPTIONS.jpeg">
-                  <source
-                    src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDEBAR%20OPTIONS.mp4"
-                    type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-              </button>
-            </article>
+            <button class="promo-media-text-btn fade-in" type="button" onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/SIDEBAR%20OPTIONS.mp4')">
+              Sidebar Options <span style="font-size: 12px; opacity: 0.8; margin-left: 5px;">▶</span>
+            </button>
 
-            <article class="promo-media-card">
-              <h3 class="promo-media-title">CONNECTION ERROR</h3>
-              <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/CONNECTION%20ERROR.mp4')">
-                <video muted playsinline preload="metadata"
-                  poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/WhatsApp%20Image%202026-04-27%20at%205.56.33%20PM.jpeg">
-                  <source
-                    src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/CONNECTION%20ERROR.mp4"
-                    type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-              </button>
-            </article>
+            <button class="promo-media-text-btn fade-in" type="button" onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/CONNECTION%20ERROR.mp4')">
+              CONNECTION ERROR <span style="font-size: 12px; opacity: 0.8; margin-left: 5px;">▶</span>
+            </button>
 
-            <article class="promo-media-card">
-              <h3 class="promo-media-title">كيف تفلتر</h3>
-              <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/FILTERS.mp4')">
-                <video muted playsinline preload="metadata">
-                  <source
-                    src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/FILTERS.mp4"
-                    type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-              </button>
-            </article>
+            <button class="promo-media-text-btn fade-in" type="button" onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/FILTERS.mp4')">
+              كيف تفلتر <span style="font-size: 12px; opacity: 0.8; margin-left: 5px;">▶</span>
+            </button>
 
-            <article class="promo-media-card">
-              <h3 class="promo-media-title">print setting</h3>
-              <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('image','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/d4f83b18f5ac37fac564406d27a2b3dc990c9d31/PRINTER%20SETTING.png')">
-                <img
-                  src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/d4f83b18f5ac37fac564406d27a2b3dc990c9d31/PRINTER%20SETTING.png"
-                  alt="Printer Settings" loading="lazy">
-              </button>
-            </article>
+            <button class="promo-media-text-btn fade-in" type="button" onclick="openPromoMedia('image','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/d4f83b18f5ac37fac564406d27a2b3dc990c9d31/PRINTER%20SETTING.png')">
+              print setting <span style="font-size: 12px; opacity: 0.8; margin-left: 5px;">👁</span>
+            </button>
 
-            <article class="promo-media-card">
-              <h3 class="promo-media-title">PRINT OFFERS FROM FILE</h3>
-              <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/PRINT%20OFFERS%20FROM%20FILE%20.mp4')">
-                <video muted playsinline preload="metadata">
-                  <source
-                    src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/PRINT%20OFFERS%20FROM%20FILE%20.mp4"
-                    type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-              </button>
-            </article>
+            <button class="promo-media-text-btn fade-in" type="button" onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/PRINT%20OFFERS%20FROM%20FILE%20.mp4')">
+              PRINT OFFERS FROM FILE <span style="font-size: 12px; opacity: 0.8; margin-left: 5px;">▶</span>
+            </button>
 
-            <article class="promo-media-card">
-              <h3 class="promo-media-title">Magazine offers file</h3>
-              <button class="promo-media-thumb" type="button"
-                onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazine%20offers%20print.mp4')">
-                <video muted playsinline preload="metadata"
-                  poster="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazie%20offers.jpeg">
-                  <source
-                    src="https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazine%20offers%20print.mp4"
-                    type="video/mp4">
-                </video>
-                <span class="promo-play-badge">▶</span>
-              </button>
-            </article>
+            <button class="promo-media-text-btn fade-in" type="button" onclick="openPromoMedia('video','https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/main/magazine%20offers%20print.mp4')">
+              Magazine offers file <span style="font-size: 12px; opacity: 0.8; margin-left: 5px;">▶</span>
+            </button>
 
           </div>
         </div>
+        <!-- STARTUP ANNOUNCEMENT MODAL -->
+        <div id="startupAnnouncementModal" style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100000; flex-direction:column; align-items:center; justify-content:center; padding:15px; opacity:0; transition: opacity 0.5s ease; backdrop-filter: blur(5px);" onclick="if(event.target === this) closeStartupAnnouncement()">
+          <div style="position:relative; width:100%; max-width:850px; border-radius:20px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.5); transform:scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="startupAnnouncementBox">
+            <button onclick="closeStartupAnnouncement()" style="position:absolute; top:15px; right:15px; width:40px; height:40px; border-radius:50%; background:rgba(0,0,0,0.6); color:white; border:none; font-size:20px; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s;">✕</button>
+            <img id="startupAnnouncementImg" src="" style="width:100%; height:auto; display:block; object-fit:cover;" alt="Announcement">
+          </div>
+        </div>
+        
         <!-- FULLSCREEN LIGHTBOX -->
         <div id="promoMediaLightbox" class="promo-media-lightbox" onclick="closePromoMedia(event)">
           <button class="promo-media-close" type="button" onclick="closePromoMedia()">✕</button>
@@ -5946,14 +7138,12 @@
         <!-- SCANNER PROMO SECTION (Above Search) -->
         <div class="scanner-promo-section"
           style="margin: 20px 15px 15px; background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 24px; border: 2px dashed rgba(102, 126, 234, 0.3); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; transition: all 0.3s ease;">
-          <button onclick="openBarcodeScanner()"
-            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; width: 80px; height: 80px; border-radius: 22px; cursor: pointer; font-size: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);"
+          <button class="fade-in" onclick="openBarcodeScanner()" style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: white; border: none; width: 80px; height: 80px; border-radius: 22px; cursor: pointer; font-size: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);"
             onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i class="fas fa-qrcode"></i>
           </button>
           <div class="scanner-promo-text">
-            <h4 style="margin: 0; color: #667eea; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;">اسكانر
-              الاكواد السداسية</h4>
+            <h4 style="margin: 0; color: #f59e0b; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;">SCANNER</h4>
             <p
               style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px; font-weight: 500; line-height: 1.4; max-width: 320px;">
               لمعرفة العروض الاوفلاين والاونلاين وطباعة اكواد معينة
@@ -5961,14 +7151,14 @@
           </div>
         </div>
 
-        <div class="global-search-wrapper" style="display: flex; gap: 8px; align-items: center; padding: 0 15px 15px;">
-          <input id="globalSearch" class="global-search-box" type="text" placeholder="Search by code or name..."
+        <div id="section-search"  class="global-search-wrapper" style="display: flex; gap: 8px; align-items: center; padding: 0 15px 15px;">
+          <input id="globalSearch" class="global-search-box fade-in" type="text" placeholder="Search by code or name..."
             style="flex: 1; margin: 0; height: 50px; border-radius: 15px;">
         </div>
 
         <div id="scannerModalOverlay"
           style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:100000; flex-direction:column; align-items:center; justify-content:center; padding:8px;">
-          <div class="scanner-shell">
+          <div class="scanner-shell"><h2 style="color:white; text-align:center; padding-top:15px; margin:0;">SCANNER</h2>
 
             <button onclick="toggleScannerLayout()" title="تغيير العرض (أفقي/رأسي)"
               style="position:absolute; right:60px; top:12px; z-index:1001; background:#3b82f6; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">⇄</button>
@@ -6150,20 +7340,28 @@
           </div>
 
         </div>
-        <button onclick="clearAllFilters()" class="reset-all-btn" style="margin-top: 25px; 
+        <button onclick="clearAllFilters()" class="reset-all-btn" style="
+               display: flex !important;
+               align-items: center;
+               justify-content: center;
+               margin: 20px auto; 
                width: auto; 
                padding: 12px 35px; 
-               background: linear-gradient(135deg, #e74c3c, #c0392b) !important; 
+               background: rgba(15, 23, 42, 0.9) !important; 
                color: white !important; 
-               border: none !important; 
+               border: 1px solid #d4af37 !important; 
                border-radius: 8px !important; 
                cursor: pointer; 
                font-size: 14px; 
                font-weight: 700; 
-               box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4) !important; 
+               box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2) !important; 
                transition: all 0.3s ease; 
                text-transform: uppercase; 
-               letter-spacing: 1px;">
+               letter-spacing: 1px;
+               visibility: visible !important;
+               opacity: 1 !important;
+               position: relative !important;
+               z-index: 99 !important;">
           🔄 Reset All Filters
         </button>
       </div>
@@ -6196,23 +7394,19 @@
               <span id="modalDropdownText" style="font-weight:bold;">Search & Select List...</span>
               <span class="arrow">▼</span>
             </div>
-            <div id="modalDropdownOptions"
-              style="display:none; background:#1a1a2e; border:1px solid #d4af37; border-radius:10px; margin-top:5px; max-height:200px; overflow-y:auto; position:absolute; width:100%; z-index:100000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-              <div style="display:flex; gap:5px; padding:10px; border-bottom:1px solid rgba(212,175,55,0.2);">
-                <button onclick="selectAllCustomOffers(event)"
-                  style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#10b981; color:white; border:none; border-radius:5px; cursor:pointer;">✅
-                  Select All</button>
-                <button onclick="deselectAllCustomOffers(event)"
-                  style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌
-                  Clear All</button>
-              </div>
-              <input type="text" placeholder="🔍 Filter list..." oninput="filterCustomOffersModal(this.value)"
-                onclick="event.stopPropagation()"
-                style="width:calc(100% - 20px); margin:10px; padding:10px; background:#0f172a; border:1px solid rgba(255,255,255,0.2); color:white; border-radius:5px; outline:none; box-sizing:border-box;">
-              <div id="customOfferTypesList" style="padding:5px;"></div>
-            </div>
-          </div>
-
+           <div id="modalDropdownOptions"
+  style="display:none; background:#0f172a; border:1px solid #d4af37; border-radius:10px; margin-top:5px; max-height:220px; overflow-y:auto; position:absolute; width:100%; z-index:999999; box-shadow: 0 15px 35px rgba(0,0,0,0.95); opacity: 1;">
+  <div style="display:flex; gap:5px; padding:10px; border-bottom:1px solid rgba(212,175,55,0.2); background:#0f172a;">
+    <button onclick="selectAllCustomOffers(event)"
+      style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#10b981; color:white; border:none; border-radius:5px; cursor:pointer;">✅ Select All</button>
+    <button onclick="deselectAllCustomOffers(event)"
+      style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌ Clear All</button>
+  </div>
+  <input type="text" placeholder="🔍 Filter list..." oninput="filterCustomOffersModal(this.value)"
+    onclick="event.stopPropagation()"
+    style="width:calc(100% - 20px); margin:10px; padding:10px; background:#1e293b; border:1px solid rgba(255,255,255,0.2); color:white; border-radius:5px; outline:none; box-sizing:border-box;">
+  <div id="customOfferTypesList" style="padding:5px; background:#0f172a;"></div>
+</div>
           <!-- 🔥 ملخص الفلاتر النشطة في الصفحة الرئيسية -->
           <div id="activeFiltersSummary"
             style="margin-bottom:20px; display:none; background:rgba(102, 126, 234, 0.1); border:1px dashed #667eea; padding:15px; border-radius:12px;">
@@ -6233,104 +7427,71 @@
             </div>
           </div>
 
-          <!-- 🔘 Fallback Scope Message (When no filters) -->
-          <div id="printScopeAllMessage"
-            style="margin-bottom:20px; padding:10px; background:rgba(102, 126, 234, 0.1); border-left:4px solid #667eea; border-radius:8px;">
-            <p style="color:#667eea; font-size:13px; font-weight:bold; margin:0;">
-              ✅ Printing ALL Current Offers
-            </p>
-          </div>
+        <!-- 🔘 Fallback Scope Message (When no filters) -->
+<div id="printScopeAllMessage"
+  style="margin-bottom:20px; padding:10px; background:rgba(102, 126, 234, 0.1); border-left:4px solid #667eea; border-radius:8px;">
+  <p style="color:#667eea; font-size:13px; font-weight:bold; margin:0;">
+    ✅ Printing ALL Current Offers
+  </p>
+</div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-            <div>
-              <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold;">✍️
-                Title
-                (EN):</label>
-              <input type="text" id="customOfferEN" placeholder="e.g. 40% OFF"
-                style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; outline:none; box-sizing: border-box; font-weight: 600; font-size: 13px;">
-            </div>
-            <div>
-              <label
-                style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold; text-align: right;">✍️
-                العنوان (عربي):</label>
-              <input type="text" id="customOfferAR" placeholder="مثال: خصم 40%"
-                style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; direction:rtl; outline:none; box-sizing: border-box; font-family:'Cairo', sans-serif; font-weight: 600; font-size: 13px;">
-            </div>
-          </div>
-
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+  <div>
+    <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold;">✍️ Title (EN):</label>
+    <input type="text" id="customOfferEN" placeholder="e.g. 40% OFF"
+      style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; outline:none; box-sizing: border-box; font-weight: 600; font-size: 13px;">
+  </div>
+  <div>
+    <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold; text-align: right;">✍️ العنوان (عربي):</label>
+    <input type="text" id="customOfferAR" placeholder="مثال: خصم 40%"
+      style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; direction:rtl; text-align:right; unicode-bidi:plaintext; outline:none; box-sizing: border-box; font-family:'Cairo', sans-serif; font-weight: 600; font-size: 13px;">
+  </div>
+</div>
           <!-- 🛠️ Offer Builder (Enhanced) -->
-          <div
-            style="margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid rgba(212,175,55,0.2);">
-            <label
-              style="color:#d4af37; display:block; margin-bottom:12px; font-weight:bold; font-size:14px; text-align:center;">🛠️
-              Offer Builder (Quick Tap)</label>
+<div style="margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid rgba(212,175,55,0.2);">
+  <label style="color:#d4af37; display:block; margin-bottom:12px; font-weight:bold; font-size:14px; text-align:center;">🛠️ Offer Builder (Quick Tap)</label>
 
-            <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
-              <button onclick="appendToCustomOffer('Buy ')"
-                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Buy</button>
-              <button onclick="appendToCustomOffer('Get ')"
-                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Get</button>
-              <button onclick="appendToCustomOffer('Free')"
-                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Free</button>
-              <button onclick="appendToCustomOffer('Discount ')"
-                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:65px;">Discount</button>
-              <button onclick="appendToCustomOffer('OFF ')"
-                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">OFF</button>
-              <button onclick="appendToCustomOffer(' @ ')"
-                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;"
-                title="Use @ to separate text from price">@</button>
-              <button onclick="appendToCustomOffer(' % ')"
-                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;">%</button>
-              <button onclick="appendToCustomOffer('SAR')"
-                style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">SAR</button>
-              <button onclick="appendToCustomOffer('Halala')"
-                style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:55px;">Halala</button>
-              <button onclick="appendToCustomOffer('Pcs')"
-                style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Pcs</button>
-              <button onclick="appendToCustomOffer('sec')"
-                style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">sec</button>
-            </div>
+  <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
+    <button type="button" onclick="appendToCustomOffer('Buy ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Buy</button>
+    <button type="button" onclick="appendToCustomOffer('Get ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Get</button>
+    <button type="button" onclick="appendToCustomOffer('Free')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Free</button>
+    <button type="button" onclick="appendToCustomOffer('Discount ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:65px;">Discount</button>
+    <button type="button" onclick="appendToCustomOffer('OFF ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">OFF</button>
+    <button type="button" onclick="appendToCustomOffer(' @ ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;" title="Use @ to separate text from price">@</button>
+    <button type="button" onclick="appendToCustomOffer(' % ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;">%</button>
+    <button type="button" onclick="appendToCustomOffer('SAR')" style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">SAR</button>
+    <button type="button" onclick="appendToCustomOffer('Halala')" style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:55px;">Halala</button>
+    <button type="button" onclick="appendToCustomOffer('Pcs')" style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Pcs</button>
+    <button type="button" onclick="appendToCustomOffer('sec')" style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">sec</button>
+  </div>
 
-            <div style="font-size:10px; color:#94a3b8; margin-bottom:12px; text-align:center; font-family:sans-serif;">
-              💡 Use <b style="color:#d4af37">@</b> to separate quantity/text from the price (e.g. <b>Buy 1 @ 25</b>)
-            </div>
+  <div style="font-size:10px; color:#94a3b8; margin-bottom:12px; text-align:center; font-family:sans-serif;">
+    💡 Use <b style="color:#d4af37">@</b> to separate quantity/text from the price (e.g. <b>Buy 1 @ 25</b>)
+  </div>
 
+  <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
+    <button type="button" onclick="appendToCustomOffer('1')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">1</button>
+    <button type="button" onclick="appendToCustomOffer('2')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">2</button>
+    <button type="button" onclick="appendToCustomOffer('3')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">3</button>
+    <button type="button" onclick="appendToCustomOffer('4')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">4</button>
+    <button type="button" onclick="appendToCustomOffer('5')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">5</button>
+    <button type="button" onclick="appendToCustomOffer('6')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">6</button>
+    <button type="button" onclick="appendToCustomOffer('7')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">7</button>
+    <button type="button" onclick="appendToCustomOffer('8')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">8</button>
+    <button type="button" onclick="appendToCustomOffer('9')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">9</button>
+    
+    <!-- 🔴 زر النقطة محدد بخلفية متميزة لضمان الاستجابة -->
+    <button type="button" onclick="appendToCustomOffer('.')" style="width:30px; height:30px; background:#f59e0b; color:#000; border:none; border-radius:6px; cursor:pointer; font-weight:900; font-size:18px; line-height:1;">.</button>
+    
+    <button type="button" onclick="appendToCustomOffer('0')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">0</button>
+    <button type="button" onclick="appendToCustomOffer('10')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">10</button>
+    <button type="button" onclick="clearCustomOffer()" style="padding:0 10px; height:30px; background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:11px;">Clear</button>
+  </div>
 
-
-            <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
-              <button onclick="appendToCustomOffer('1')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">1</button>
-              <button onclick="appendToCustomOffer('2')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">2</button>
-              <button onclick="appendToCustomOffer('3')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">3</button>
-              <button onclick="appendToCustomOffer('4')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">4</button>
-              <button onclick="appendToCustomOffer('5')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">5</button>
-              <button onclick="appendToCustomOffer('6')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">6</button>
-              <button onclick="appendToCustomOffer('7')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">7</button>
-              <button onclick="appendToCustomOffer('8')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">8</button>
-              <button onclick="appendToCustomOffer('9')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">9</button>
-              <button onclick="appendToCustomOffer('0')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">0</button>
-              <button onclick="appendToCustomOffer('10')"
-                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">10</button>
-              <button onclick="clearCustomOffer()"
-                style="padding:0 10px; height:30px; background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:11px;">Clear</button>
-
-            </div>
-
-            <button onclick="addCurrentToStagedOffers()"
-              style="width:100%; padding:12px; background:linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color:#000; border:none; border-radius:10px; font-weight:900; cursor:pointer; font-size:14px; box-shadow:0 4px 12px rgba(212,175,55,0.2);">
-              ➕ ADD TO PRINT LIST
-            </button>
-          </div>
-
+  <button type="button" onclick="addCurrentToStagedOffers()" style="width:100%; padding:12px; background:linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color:#000; border:none; border-radius:10px; font-weight:900; cursor:pointer; font-size:14px; box-shadow:0 4px 12px rgba(212,175,55,0.2);">
+    ➕ ADD TO PRINT LIST
+  </button>
+</div>
 
           <!-- 📋 Staged Offers List (The Scrollable Box) -->
           <div id="stagedOffersSection" style="display:none; margin-bottom:20px;">
@@ -6396,7 +7557,7 @@
 
       <div class="print-container" id="printContainer"></div>
 
-      <div class="print-button-wrapper" style="top: 50%; right: 0; transform: translateY(-50%);">
+      <div class="print-button-wrapper" style="top: 55%; right: 10px; transform: translateY(-50%); z-index: 999999 !important;">
         <button class="print-fab" onclick="startPrintProcess()" title="Export PDF">🖨️</button>
       </div>
       <div id="statusAlertOverlay"
@@ -24285,8 +25446,18 @@
           document.getElementById('gatewayView').style.display = 'none';
           document.getElementById('mainOffersContainer').style.display = 'block';
           document.getElementById('fixedHeader').style.display = 'flex';
+          document.querySelectorAll('.print-button-wrapper').forEach(el => el.style.setProperty('display', 'block', 'important'));
           if (document.getElementById('toolsSidebarToggle')) {
-            document.getElementById('toolsSidebarToggle').style.display = 'flex';
+            document.getElementById('toolsSidebarToggle').style.display = window.isInlineMenuMode ? 'none' : 'flex';
+          }
+          
+          if (document.getElementById('themeHintPointer')) {
+            const hint = document.getElementById('themeHintPointer');
+            hint.classList.add('show-hint');
+            setTimeout(() => {
+              hint.style.display = 'none';
+              hint.classList.remove('show-hint');
+            }, 4500);
           }
 
           document.body.style.overflow = 'auto';
@@ -24338,6 +25509,7 @@
           document.getElementById('gatewayView').style.display = 'flex';
           document.getElementById('mainOffersContainer').style.display = 'none';
           document.getElementById('fixedHeader').style.display = 'none';
+          document.querySelectorAll('.print-button-wrapper').forEach(el => el.style.setProperty('display', 'none', 'important'));
 
           // 2️⃣ إخفاء زرار السايدبار (🛠️) فوراً
           const sidebarToggle = document.getElementById('toolsSidebarToggle');
@@ -26785,7 +27957,7 @@
           const isScannerVisible = document.getElementById('scannerModalOverlay') && document.getElementById('scannerModalOverlay').style.display === 'flex';
 
           if (toggleBtn) {
-            if (!isGatewayVisible && !isScannerVisible) {
+            if (!isGatewayVisible && !isScannerVisible && !window.isInlineMenuMode) {
               toggleBtn.style.display = 'flex';
             } else {
               toggleBtn.style.display = 'none';
@@ -27240,7 +28412,7 @@
 
                   const brandCluster = document.createElement('div');
                   brandCluster.className = 'brand-cluster-card';
-                  brandCluster.style.cssText = `width: ${widthPercent}%; display: flex; flex-direction: column; background: #f8fafc; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0;`;
+                  brandCluster.style.cssText = `width: ${widthPercent}%; display: flex; flex-direction: column; background: var(--card-bg, #f8fafc); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid var(--offer-group-border, #e2e8f0);`;
 
                   const clusterHeader = document.createElement('div');
                   clusterHeader.style.cssText = `background: ${brandColor}; color: white; padding: 8px; font-size: 13px; font-weight: 800; text-align: center; text-transform: uppercase;`;
@@ -27261,8 +28433,8 @@
                     const productLink = `https://www.al-dawaa.com/en/p/${product.Code}`;
 
                     const cardHTML = `
-                          <div class="product-card" style="background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 400px; border: 1px solid #f1f5f9; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                            <div style="position: relative; height: 180px; width: 100%; background: #fff; padding: 10px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f8fafc;">
+                          <div class="product-card" style="background: var(--card-bg, white); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 400px; border: 1px solid var(--offer-group-border, #f1f5f9); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                            <div style="position: relative; height: 180px; width: 100%; background: transparent; padding: 10px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--offer-group-border, #f8fafc);">
                                 <div class="checkbox-container" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                                     <input type="checkbox" class="product-card-checkbox" data-code="${product.Code}" onchange="updateSelectedCount()" style="width:18px; height:18px; cursor:pointer;"/>
                                 </div>
@@ -27271,10 +28443,10 @@
                                 </div>
                                 <img data-code="${product.Code}" data-brand="${product.Brand || 'Generic'}" data-itemurl="${product.image_url || product.itemurl || product.ItemURL || product.Image || product.image || product.imageurl || product.imageUrl || product.ImageURL || product.itemURL || ''}" referrerpolicy="no-referrer" class="product-image smart-lazy-img" style="max-width: 100%; max-height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.3s;" alt="${product["Item Description"]}"/>
                             </div>
-                            <div style="flex: 1; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; background: #fff;">
+                            <div style="flex: 1; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; background: transparent;">
                                 <div>
                                     <div style="font-size: 10px; color: #94a3b8; font-family: monospace; text-align: left;">CODE: ${product.Code}</div>
-                                    <div style="font-size: 12px; font-weight: 700; color: #1e293b; line-height: 1.3; margin-bottom: 5px; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-align: left;">${product["Item Description"]}</div>
+                                    <div style="font-size: 12px; font-weight: 700; color: var(--text-main, #1e293b); line-height: 1.3; margin-bottom: 5px; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-align: left;">${product["Item Description"]}</div>
                                     <div style="font-size: 11px; font-weight: 700; color: #7c3aed; margin-bottom: 10px; text-align: left;">Offline: ${convertTextNumbersToDigits(offer.offerType)}</div>
 
                                     <div id="${onlineBoxId}" style="margin-bottom: 10px; min-height: 25px; display: flex; align-items: center; justify-content: center;">
@@ -27314,8 +28486,13 @@
             }
             processed++;
           }
-          if (renderingQueue.length > 0) setTimeout(processRenderQueue, 0);
-          else { if (loader) loader.style.display = "none"; initSmartImageLoader(); }
+          if (renderingQueue.length > 0) {
+            setTimeout(processRenderQueue, 0);
+          } else {
+            if(typeof initFadeInObserver === 'function') initFadeInObserver();
+            if (loader) loader.style.display = "none";
+            if (typeof initSmartImageLoader === 'function') initSmartImageLoader();
+          }
         }
         async function triggerMainPageOnlineCheck(code, onlineBoxId, priceId, dbPrice) {
           const onlineBox = document.getElementById(onlineBoxId);
@@ -27541,41 +28718,43 @@
           if (modal) modal.style.display = 'none';
         }
 
-        // --- 🛠️ Offer Builder Helpers ---
-        function appendToCustomOffer(text) {
-          const enInput = document.getElementById('customOfferEN');
-          const arInput = document.getElementById('customOfferAR');
-          if (enInput) enInput.value += text;
+      // --- 🛠️ Offer Builder Helpers ---
+function appendToCustomOffer(text) {
+  const enInput = document.getElementById('customOfferEN');
+  const arInput = document.getElementById('customOfferAR');
+  
+  if (enInput) enInput.value += text;
 
-          const arMap = {
-            'Buy ': 'اشتري ',
-            'Get ': 'احصل على ',
-            'Free': 'مجاناً',
-            'Discount ': 'خصم ',
-            'OFF ': 'خصم ',
-            'SAR': 'ريال',
-            'Halala': 'هللة',
-            'Pcs': 'حبة',
-            'sec': 'الحبة الثانية',
-            ' % ': ' % ',
+  const arMap = {
+    'Buy ': 'اشتري ',
+    'Get ': 'احصل على ',
+    'Free': 'مجاناً',
+    'Discount ': 'خصم ',
+    'OFF ': 'خصم ',
+    'SAR': 'ريال',
+    'Halala': 'هللة',
+    'Pcs': 'حبة',
+    'sec': 'الحبة الثانية',
+    ' % ': ' % ',
+    ' + ': ' + ',
+    ' @ ': ' @ '
+  };
 
-            ' + ': ' + ',
-            ' @ ': ' @ '
-          };
+  if (arInput) {
+    if (arMap[text]) {
+      arInput.value += arMap[text];
+    } else if (/^[\d.]+$/.test(text.trim()) || text === '.') {
+      // السماح بالأرقام والنقطة (.) لضمان إضافتها في الحقل العربي
+      arInput.value += text;
+    } else if (text === ' @ ' || text === ' + ' || text === ' % ') {
+      arInput.value += text;
+    }
+  }
 
-
-          if (arInput) {
-            if (arMap[text]) {
-              arInput.value += arMap[text];
-            } else if (/^\d+$/.test(text.trim())) {
-              arInput.value += text;
-            } else if (text === ' @ ' || text === ' + ' || text === ' % ') {
-              arInput.value += text;
-            }
-          }
-          saveCustomModalData();
-        }
-
+  if (typeof saveCustomModalData === 'function') {
+    saveCustomModalData();
+  }
+}
         function clearCustomOffer() {
           const enInput = document.getElementById('customOfferEN');
           const arInput = document.getElementById('customOfferAR');
@@ -30070,16 +31249,11 @@
         // ========== THEME SWITCHER ==========
         const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
         if (toggleSwitch) {
-          function switchTheme(e) {
-            const theme = e.target.checked ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', light);
-            localStorage.setItem('theme', theme);
-            console.log(`🎨 Theme: ${theme}`);
-          }
-          toggleSwitch.addEventListener('change', switchTheme);
+          toggleSwitch.addEventListener('change', function(e) {
+             toggleTheme();
+          });
           const currentTheme = localStorage.getItem('theme') || 'light';
-          document.documentElement.setAttribute('data-theme', currentTheme);
-          toggleSwitch.checked = (currentTheme === 'light');
+          toggleSwitch.checked = (currentTheme === 'dark' || currentTheme === 'night');
         }
 
         // ====== 🍎 IOS DETECTION ======
@@ -30169,21 +31343,40 @@
         // Apply on page load
         window.addEventListener('DOMContentLoaded', function () {
           setTimeout(applyDarkModeTextFix, 500);
+          const themeCheckbox = document.getElementById('checkbox');
+          if (themeCheckbox) {
+            themeCheckbox.checked = document.body.classList.contains('dark-mode') || document.body.getAttribute('data-theme') === 'dark';
+            themeCheckbox.addEventListener('change', function() {
+              toggleTheme();
+            });
+          }
         });
 
         // Apply on theme change - UPDATE YOUR toggleTheme function
         function toggleTheme() {
-          isDarkMode = !isDarkMode;
-          document.body.classList.toggle('dark-mode', isDarkMode);
+          const isCurrentlyDark = document.body.classList.contains('dark-mode') || document.body.getAttribute('data-theme') === 'dark';
+          const newDarkMode = !isCurrentlyDark;
+          
+          document.body.classList.toggle('dark-mode', newDarkMode);
 
-          if (isDarkMode) {
+          if (newDarkMode) {
             document.body.setAttribute('data-theme', 'dark');
           } else {
             document.body.setAttribute('data-theme', 'light');
           }
 
-          updateThemeIcon();
-          localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+          const themeCheckbox = document.getElementById('checkbox');
+          if (themeCheckbox) themeCheckbox.checked = newDarkMode;
+          
+          const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+          if (toggleSwitch) toggleSwitch.checked = newDarkMode;
+
+          const themeIcon = document.getElementById('themeIcon');
+          if (themeIcon) {
+            themeIcon.className = newDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+          }
+
+          localStorage.setItem('theme', newDarkMode ? 'night' : 'day');
 
           // Force fix after theme change
           setTimeout(applyDarkModeTextFix, 200);
@@ -31240,6 +32433,107 @@
 
           console.log(`✅ تم إرسال ${productsToPrint.length} منتج إلى الطابعة.`);
         }
+        // ==========================================
+        // 🖨️ طباعة أنواع العروض فقط للأكواد المرفوعة
+        // ==========================================
+        async function printUploadedOfferTypesDirectly() {
+          if (!uploadedCodesFilter || uploadedCodesFilter.length === 0) {
+            alert('⚠️ حمّل أكواد الأول! 📤');
+            return;
+          }
+
+          console.log('🖨️ بدء طباعة أنواع العروض لـ', uploadedCodesFilter.length, 'كود');
+
+          const uniqueOffersMap = new Map();
+
+          uploadedCodesFilter.forEach(code => {
+            const cleanCode = String(code).trim().replace(/\s+/g, '');
+            let product = null;
+            if (typeof findProductByCode === 'function') {
+              product = findProductByCode(cleanCode);
+            } else if (typeof productsDB !== 'undefined') {
+              product = productsDB.find(p => String(p.Code).trim() === cleanCode);
+            }
+
+            if (product && typeof getOffer === 'function') {
+              const offer = getOffer(product.Code);
+              if (offer && offer.offerType) {
+                const key = offer.offerType.trim();
+                if (!uniqueOffersMap.has(key)) {
+                  uniqueOffersMap.set(key, {
+                    en: key,
+                    ar: (offer.offerTypeAR || offer.offerType).trim()
+                  });
+                }
+              }
+            }
+          });
+
+          const finalOffers = Array.from(uniqueOffersMap.values());
+
+          if (finalOffers.length === 0) {
+            alert('⚠️ لم يتم العثور على أي عروض للأكواد المرفوعة.');
+            return;
+          }
+
+          const quantityInput = document.getElementById('customQuantity');
+          const quantity = (quantityInput && parseInt(quantityInput.value) > 0) ? parseInt(quantityInput.value) : 6;
+
+          const customData = {
+            dateRange: '',
+            productEN: '',
+            productAR: '',
+            category: ''
+          };
+
+          const customCards = [];
+          
+          finalOffers.forEach(off => {
+            for (let i = 0; i < quantity; i++) {
+              customCards.push({
+                Code: "",
+                customData: { ...customData, offerEN: off.en, offerAR: off.ar }
+              });
+            }
+          });
+
+          const container = document.getElementById('printContainer');
+          const loader = document.getElementById('printLoader');
+
+          if (!container) return;
+
+          container.innerHTML = '';
+          if (loader) loader.style.display = 'flex';
+
+          if (typeof injectPrintStylesOnce === 'function') {
+            injectPrintStylesOnce();
+          }
+
+          setTimeout(async () => {
+            try {
+              if (typeof renderCustomPrint === 'function') {
+                renderCustomPrint(customCards);
+              }
+              
+              if (typeof exportRiyalSymbolsForPrint === 'function') {
+                 await exportRiyalSymbolsForPrint();
+              }
+              if (typeof waitForPrintAssets === 'function') {
+                 await waitForPrintAssets();
+              }
+
+              setTimeout(() => {
+                window.print();
+              }, 100);
+
+            } catch (err) {
+              console.error("حدث خطأ أثناء تجهيز الطباعة:", err);
+            } finally {
+              if (loader) loader.style.display = 'none';
+            }
+          }, 300);
+        }
+
         // ============================================================
         // 🔔 Wake Up Server قبل أي طلب PDF
         // ============================================================
@@ -31271,7 +32565,18 @@
           }
 
           const fileName = file.name.toLowerCase();
-          const statusDiv = document.getElementById('codesFileStatus');
+          const _statusDivElement = document.getElementById('codesFileStatus');
+          const statusDiv = {
+            set innerHTML(html) {
+              const container = document.getElementById('mainPageStatusContainer');
+              if (html.includes('spinner')) {
+                if (container) container.classList.add('is-processing-modal');
+              } else {
+                if (container) container.classList.remove('is-processing-modal');
+              }
+              if (_statusDivElement) _statusDivElement.innerHTML = html;
+            }
+          };
 
           // ✅ لو PDF → صحّي السيرفر الأول
           if (fileName.endsWith('.pdf')) {
@@ -31295,9 +32600,12 @@
           statusDiv.innerHTML = `
     <div style="display:flex; align-items:center; gap:10px; color:#3b82f6; font-weight:bold;">
       <div class="spinner" style="width:15px; height:15px; border:2px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite;"></div>
-      <span>جاري معالجة ملف ${fileName} سحابياً...</span>
+      <span>جاري معالجة ملف ${fileName}...</span>
     </div>
   `;
+
+          // Give browser a chance to render the loading indicator before heavy parsing
+          await new Promise(r => setTimeout(r, 100));
 
           try {
             let rawCodes = [];
@@ -31511,7 +32819,19 @@
           transition: all 0.3s ease;
         " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)';" 
           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)';">
-          🖨️ طباعة العروض
+          🖨️ طباعة العروض (لكل كود)
+        </button>
+
+        <button onclick="printUploadedOfferTypesDirectly()" style="
+          flex:1; padding: 12px 24px;
+          background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+          color: white; border: none; border-radius: 8px;
+          font-weight: 700; font-size: 14px; cursor: pointer;
+          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+          transition: all 0.3s ease;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(139, 92, 246, 0.5)';" 
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(139, 92, 246, 0.4)';">
+          🏷️ طباعة أنواع العروض فقط
         </button>
 
         <button onclick="resetUploadedFilters()" style="
@@ -31673,6 +32993,9 @@
             renderProducts();
           }
 
+          const statusContainer = document.getElementById('mainPageStatusContainer');
+          if (statusContainer) statusContainer.classList.remove('is-processing-modal');
+
           const statusDiv = document.getElementById('codesFileStatus');
           if (statusDiv) {
             statusDiv.innerHTML = `
@@ -31757,7 +33080,6 @@
             const currentCatA = item.catA || 'General';
             const currentCatD = item.catD || '';
 
-            // Add Category A full-width header
             if (currentCatA !== lastCatA) {
               contentHTML += `
                 <div class="cat-a-header-wrapper" style="grid-column: 1 / -1; width: 100%; margin: 20px 0 10px 0;">
@@ -31774,7 +33096,7 @@
             const displayCat = item.catC || item.catD || item.catA;
             if (displayCat && displayCat !== 'General') {
                 const catColor = (typeof getCategoryDColor === 'function' && item.catD) ? getCategoryDColor(item.catD) : '#00235B';
-                categoryBadgeHTML = `<div style="position: absolute; top: 0; left: 0; background: ${catColor}; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 12px 0 12px 0; z-index: 100; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);">${displayCat}</div>`;
+                categoryBadgeHTML = `<div style="position: absolute; top: 0; right: 0; background: ${catColor}; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 0 12px 0 12px; z-index: 100; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);">${displayCat}</div>`;
             }
 
             // 📦 تجهيز الكارت
@@ -32001,7 +33323,38 @@
                 .control-panel { display: none !important; }
                 .print-container { margin: 0 auto !important; border: 5px solid #00235B !important; width: 98% !important; min-height: 99vh !important; }
             }
-        </style>
+        
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+</style>
     `;
 
           // ============ نافذة المعاينة ============
@@ -32025,6 +33378,9 @@
             ${css}
         </head>
         <body>
+
+
+
             <img id="bg-image-fixed" src="${originalBgImage}" crossorigin="anonymous" />
             
             <div class="control-panel">
@@ -32151,7 +33507,53 @@
                     }, 500);
                 }
             <\/script>
-        </body>
+        
+
+<style>
+.category-a-header, .category-b-header {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+</style>
+
+
+
+
+
+</body>
+
         </html>
     `);
           win.document.close();
@@ -32161,6 +33563,41 @@
             btn.disabled = false;
           }
         }
+        window.isInlineMenuMode = false;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(() => {
+            if (!window.isInlineMenuMode) toggleMenuLayoutMode();
+          }, 300);
+        });
+
+        function toggleMenuLayoutMode() {
+          const sidebarContent = document.getElementById('sidebarContentWrapper');
+          const toolsSidebar = document.getElementById('toolsSidebar');
+          const promoMediaSection = document.querySelector('.promo-media-section');
+          const layoutToggleText = document.getElementById('layoutToggleText');
+          const topMenuBtn = document.getElementById('toolsSidebarToggle');
+          
+          if (!window.isInlineMenuMode) {
+            // Move out to inline
+            sidebarContent.classList.add('inline-layout-mode');
+            if (promoMediaSection && promoMediaSection.parentNode) {
+              promoMediaSection.parentNode.insertBefore(sidebarContent, promoMediaSection);
+            }
+            if (layoutToggleText) layoutToggleText.innerText = '🔄 Sections Menu';
+            if (toolsSidebar.classList.contains('active')) toggleToolsSidebar();
+            if (topMenuBtn) topMenuBtn.style.setProperty('display', 'none', 'important');
+            window.isInlineMenuMode = true;
+          } else {
+            // Move back to sidebar
+            sidebarContent.classList.remove('inline-layout-mode');
+            toolsSidebar.appendChild(sidebarContent);
+            if (layoutToggleText) layoutToggleText.innerText = '🔄 Inline Layout';
+            if (topMenuBtn) topMenuBtn.style.setProperty('display', 'flex', 'important');
+            window.isInlineMenuMode = false;
+          }
+        }
+
         // دوال فتح وقفل السايدبار
         function toggleToolsSidebar() {
           const sidebar = document.getElementById('toolsSidebar');
@@ -32189,10 +33626,17 @@
 
         // دالة رفع الملف وفتح بوكس الإحصائيات في الصفحة الرئيسية
         function handleSidebarFileUpload(event) {
-          toggleToolsSidebar();
+          const sidebar = document.getElementById('toolsSidebar');
+          if (sidebar && sidebar.classList.contains('active')) {
+            toggleToolsSidebar();
+          }
           const statusContainer = document.getElementById('mainPageStatusContainer');
+          const overlay = document.getElementById('mainPageStatusOverlay');
           if (statusContainer) {
             statusContainer.style.display = 'block';
+          }
+          if (overlay) {
+            overlay.style.display = 'block';
           }
           if (typeof handleCodesFileUpload === 'function') {
             handleCodesFileUpload(event);
@@ -32274,7 +33718,23 @@
           // 2. تحديث خلفية بوكس الكاونت داون (Hero Banner)
           const heroBanner = document.querySelector('.hero-banner');
           if (heroBanner) {
-            heroBanner.style.backgroundImage = `linear-gradient(135deg, rgba(30, 60, 114, 0.85), rgba(42, 82, 152, 0.85)), url('${currentConfig.countdownBg}')`;
+            const gradients = [
+              "linear-gradient(-45deg, rgba(30, 60, 114, 0.85), rgba(42, 82, 152, 0.85), rgba(102, 126, 234, 0.7), rgba(118, 75, 162, 0.7))",
+              "linear-gradient(135deg, rgba(15, 32, 39, 0.9), rgba(32, 58, 67, 0.9), rgba(44, 83, 100, 0.9))",
+              "linear-gradient(135deg, rgba(17, 153, 142, 0.85), rgba(56, 239, 125, 0.8))",
+              "linear-gradient(135deg, rgba(142, 45, 226, 0.85), rgba(74, 0, 224, 0.85))",
+              "linear-gradient(135deg, rgba(20, 30, 48, 0.9), rgba(36, 59, 85, 0.9))",
+              "linear-gradient(135deg, rgba(106, 17, 203, 0.85), rgba(37, 117, 252, 0.85))",
+              "linear-gradient(135deg, rgba(255, 65, 108, 0.85), rgba(255, 75, 43, 0.85))",
+              "linear-gradient(135deg, rgba(0, 4, 40, 0.9), rgba(0, 78, 146, 0.9))",
+              "linear-gradient(135deg, rgba(234, 175, 200, 0.85), rgba(101, 78, 163, 0.85))",
+              "linear-gradient(135deg, rgba(2, 170, 176, 0.85), rgba(0, 205, 172, 0.85))"
+            ];
+            const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+            
+            heroBanner.style.backgroundImage = `${randomGradient}, url('${currentConfig.countdownBg}')`;
+            heroBanner.style.backgroundSize = "400% 400%, cover";
+            heroBanner.style.backgroundBlendMode = "overlay";
           }
         }
         // ضيف السطر ده تحت updateCountdown() في آخر الـ Script
@@ -32857,72 +34317,90 @@
           });
         }
 
-        function renderScannerSavedState() {
-          ensureScannerUiExtras();
+       function renderScannerSavedState() {
+  ensureScannerUiExtras();
 
-          const listEl = document.getElementById('scannedItemsList');
-          if (listEl) listEl.innerHTML = '';
+  const listEl = document.getElementById('scannedItemsList');
+  if (listEl) listEl.innerHTML = '';
 
-          // 1. استعادة البيانات من الجلسة (Session) وتحديث الذاكرة الحية فوراً
-          const saved = sessionStorage.getItem('scanned_items_session');
-          if (saved) {
-            try {
-              scannedItemsMemory = JSON.parse(saved);
-              // تحديث الـ Set لضمان منع التكرار وعدم تعليق الفلترة
-              scannedCodesSet = new Set(scannedItemsMemory.map(i => String(i.cleanCode).trim()));
-            } catch (e) {
-              console.error("❌ Error parsing scanner session:", e);
-              scannedItemsMemory = [];
-              scannedCodesSet.clear();
-            }
-          }
+  // 1. استعادة البيانات من الجلسة (Session) وتحديث الذاكرة الحية فوراً
+  const saved = sessionStorage.getItem('scanned_items_session');
+  if (saved) {
+    try {
+      scannedItemsMemory = JSON.parse(saved);
+      // تحديث الـ Set لضمان منع التكرار وعدم تعليق الفلترة
+      scannedCodesSet = new Set(scannedItemsMemory.map(i => String(i.cleanCode).trim()));
+    } catch (e) {
+      console.error("❌ Error parsing scanner session:", e);
+      scannedItemsMemory = [];
+      scannedCodesSet.clear();
+    }
+  }
 
-          // 2. رسم الكروت من الذاكرة (إرسال الـ onlineOffer الحالي لضمان عدم ظهور "جاري الفحص")
-          // استخدمنا reverse() أو ترتيب عكسي لو حابب الأحدث يظهر في الأول دائماً
-          scannedItemsMemory.forEach(item => {
-            addScannerRowToList({
-              imageUrl: item.imageUrl,
-              nameEN: item.nameEN,
-              nameAR: item.nameAR,
-              cleanCode: item.cleanCode,
-              offerLabel: item.offerLabel,
-              offerLabelEN: item.offerLabelEN,
-              statusColor: item.statusColor,
-              onlineOffer: item.onlineOffer || '' // ✅ القيمة هنا بتمنع اللودر من الظهور لو العرض موجود
-            });
-          });
+  // 2. رسم الكروت من الذاكرة (إرسال الـ onlineOffer الحالي لضمان عدم ظهور "جاري الفحص")
+  scannedItemsMemory.forEach(item => {
+    addScannerRowToList({
+      imageUrl: item.imageUrl,
+      nameEN: item.nameEN,
+      nameAR: item.nameAR,
+      cleanCode: item.cleanCode,
+      offerLabel: item.offerLabel,
+      offerLabelEN: item.offerLabelEN,
+      statusColor: item.statusColor,
+      onlineOffer: item.onlineOffer || '' // ✅ القيمة هنا بتمنع اللودر من الظهور لو العرض موجود
+    });
+  });
 
-          if (scannedItemsMemory.length) {
-            // ترتيب الذاكرة عشان نجيب آخر واحد (عادة بيكون أول عنصر في المصفوفة)
-            const lastItem = scannedItemsMemory[0];
+  if (scannedItemsMemory.length) {
+    // ترتيب الذاكرة عشان نجيب آخر واحد (عادة بيكون أول عنصر في المصفوفة)
+    const lastItem = scannedItemsMemory[0];
 
-            setLatestScannerMessage(
-              buildScannerCardHtml({
-                imageUrl: lastItem.imageUrl,
-                nameEN: lastItem.nameEN,
-                nameAR: lastItem.nameAR,
-                cleanCode: lastItem.cleanCode,
-                offerLabel: lastItem.offerLabel,
-                offerLabelEN: lastItem.offerLabelEN,
-                statusColor: lastItem.statusColor,
-                onlineOffer: lastItem.onlineOffer || '', // ✅ عرض النتيجة النهائية في رسالة الحالة
-                compact: false
-              })
-            );
+    setLatestScannerMessage(
+      buildScannerCardHtml({
+        imageUrl: lastItem.imageUrl,
+        nameEN: lastItem.nameEN,
+        nameAR: lastItem.nameAR,
+        cleanCode: lastItem.cleanCode,
+        offerLabel: lastItem.offerLabel,
+        offerLabelEN: lastItem.offerLabelEN,
+        statusColor: lastItem.statusColor,
+        onlineOffer: lastItem.onlineOffer || '', // ✅ عرض النتيجة النهائية في رسالة الحالة
+        compact: false
+      })
+    );
 
-            setScannerFeedback('idle', '📷 جاهز لمسح جديد', `تم استعادة ${scannedItemsMemory.length} صنف من الجلسة`);
-            resetScannerSwipeState();
-          } else {
-            setLatestScannerMessage(getScannerWaitingHtml());
-            setScannerFeedback('idle', '📷 جاهز للمسح', 'وجّه الباركود داخل الإطار');
-            resetScannerSwipeState();
-          }
+    setScannerFeedback('idle', '📷 جاهز لمسح جديد', `تم استعادة ${scannedItemsMemory.length} صنف من الجلسة`);
+    resetScannerSwipeState();
+  } else {
+    setLatestScannerMessage(getScannerWaitingHtml());
+    setScannerFeedback('idle', '📷 جاهز للمسح', 'وجّه الباركود داخل الإطار');
+    resetScannerSwipeState();
+  }
 
-          // تحديث نقاط السلايدر والعداد بعد الرندر
-          if (typeof updateScannerDots === 'function') updateScannerDots();
-          if (typeof updateSelectedCount === 'function') updateSelectedCount();
-        }
+  // تحديث نقاط السلايدر والعداد بعد الرندر
+  if (typeof updateScannerDots === 'function') updateScannerDots();
+  if (typeof updateSelectedCount === 'function') updateSelectedCount();
 
+  // 🔴 السكرول التلقائي لأحدث كارت تم إنشاؤه (يدعم الاتجاهين الأفقي والرأسي مع السكرول الخارجي)
+  setTimeout(() => {
+    if (listEl) {
+      listEl.scrollTo({
+        left: listEl.scrollWidth,
+        top: listEl.scrollHeight,
+        behavior: 'smooth'
+      });
+
+      // تمرير الكارت الأحدث لو كان التمرير يعتمد على العناصر الداخلية
+      if (listEl.lastElementChild) {
+        listEl.lastElementChild.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end',
+          inline: 'end'
+        });
+      }
+    }
+  }, 100);
+}
         function resetScannerSession() {
           scannedItemsMemory = [];
 
@@ -33539,181 +35017,217 @@
         // =====================================================
         // Open Scanner
         // =====================================================
-        async function openBarcodeScanner() {
-          const overlay = document.getElementById('scannerModalOverlay');
-          const readerEl = document.getElementById('reader');
-          const printPanel = document.getElementById('scannerPrintPanel');
-          const manualInput = document.getElementById('scannerManualCode');
+       async function openBarcodeScanner() {
+    // 🔴 إضافة الكلاس لجسم الصفحة لإخفاء زر الطباعة البرتقالي العائم تلقائياً
+    document.body.classList.add('scanner-mode-active', 'scanner-active');
 
-          if (overlay) overlay.style.display = 'flex';
+    const overlay = document.getElementById('scannerModalOverlay');
+    const readerEl = document.getElementById('reader');
+    const printPanel = document.getElementById('scannerPrintPanel');
+    const manualInput = document.getElementById('scannerManualCode');
+    
+    if (overlay) {
+      if (overlay.parentElement !== document.body) {
+        document.body.appendChild(overlay);
+      }
+      overlay.style.display = 'flex';
+    }
 
-          // إخفاء زر المنيو مؤقتاً أثناء عمل السكاينر عشان ميبقاش فوق الكاميرا
-          const toggleBtn = document.getElementById('toolsSidebarToggle');
-          if (toggleBtn) toggleBtn.style.display = 'none';
+    const shell = document.querySelector('.scanner-shell');
+    if (shell) {
+      if (window.innerWidth >= 768) {
+        shell.classList.add('scanner-shell-horizontal');
+      } else {
+        shell.classList.remove('scanner-shell-horizontal');
+      }
+    }
 
-          ensureScannerUiExtras();
+    // إخفاء زر المنيو مؤقتاً أثناء عمل السكانر عشان ميبقاش فوق الكاميرا
+    const toggleBtn = document.getElementById('toolsSidebarToggle');
+    if (toggleBtn) toggleBtn.style.display = 'none';
 
-          if (readerEl) {
-            readerEl.innerHTML = '';
-            readerEl.style.width = '90%';
-            readerEl.style.marginLeft = 'auto';
-            readerEl.style.marginRight = 'auto';
-            readerEl.style.height = window.innerWidth <= 400 ? '220px' : '280px';
-            readerEl.style.minHeight = window.innerWidth <= 400 ? '220px' : '280px';
-            readerEl.style.background = '#000';
-            readerEl.style.borderRadius = '18px';
-            readerEl.style.overflow = 'hidden';
-            readerEl.style.position = 'relative';
-          }
+    ensureScannerUiExtras();
 
-          if (printPanel) printPanel.style.display = 'none';
+    if (readerEl) {
+      readerEl.innerHTML = '';
+      readerEl.style.width = '90%';
+      readerEl.style.marginLeft = 'auto';
+      readerEl.style.marginRight = 'auto';
+      readerEl.style.height = window.innerWidth <= 400 ? '220px' : '280px';
+      readerEl.style.minHeight = window.innerWidth <= 400 ? '220px' : '280px';
+      readerEl.style.background = '#000';
+      readerEl.style.borderRadius = '18px';
+      readerEl.style.overflow = 'hidden';
+      readerEl.style.position = 'relative';
+    }
 
-          // 🔴 التعديل هنا: استخدام inputmode="numeric" لفتح كيبورد الأرقام فقط
-          if (manualInput) {
-            manualInput.value = '';
+    if (printPanel) printPanel.style.display = 'none';
 
-            // 1. إيقاف الكيبورد التلقائي عند فتح المودل
-            manualInput.setAttribute('inputmode', 'none');
+    // التعديل: استخدام inputmode="numeric" لفتح كيبورد الأرقام فقط
+    if (manualInput) {
+      manualInput.value = '';
 
-            // التأكد من أن نوع الحقل text وليس number لمنع مشاكل الأسهم في المتصفح،
-            // لكننا نستخدم inputmode و pattern لفرض كيبورد الأرقام
-            manualInput.setAttribute('type', 'text');
-            manualInput.setAttribute('pattern', '[0-9]*');
+      // 1. إيقاف الكيبورد التلقائي عند فتح المودل
+      manualInput.setAttribute('inputmode', 'none');
 
-            // 2. لو المستخدم لمس الحقل بنفسه عشان يكتب، نفتح كيبورد الأرقام
-            manualInput.addEventListener('click', function () {
-              this.setAttribute('inputmode', 'numeric');
-            });
+      // التأكد من أن نوع الحقل text وليس number لمنع مشاكل الأسهم في المتصفح،
+      // لكننا نستخدم inputmode و pattern لفرض كيبورد الأرقام
+      manualInput.setAttribute('type', 'text');
+      manualInput.setAttribute('pattern', '[0-9]*');
 
-            // 3. لما يطلع من الحقل، نرجع نمنع الكيبورد تاني عشان المرات الجاية
-            manualInput.addEventListener('blur', function () {
-              this.setAttribute('inputmode', 'none');
-            });
-          }
+      // 2. لو المستخدم لمس الحقل بنفسه عشان يكتب، نفتح كيبورد الأرقام
+      manualInput.addEventListener('click', function () {
+        this.setAttribute('inputmode', 'numeric');
+      });
 
-          renderScannerSavedState();
+      // 3. لما يطلع من الحقل، نرجع نمنع الكيبورد تاني عشان المرات الجاية
+      manualInput.addEventListener('blur', function () {
+        this.setAttribute('inputmode', 'none');
+      });
+    }
 
-          lastScannedValue = "";
-          lastScannedAt = 0;
+    renderScannerSavedState();
 
-          if (typeof Html5Qrcode === 'undefined') {
-            setLatestScannerMessage(`
-            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                مكتبة html5-qrcode غير محملة
-            </div>
-        `);
-            setScannerFeedback('error', 'خطأ في المكتبة', 'مكتبة html5-qrcode غير محملة');
-            flashScannerSwipe('error');
-            focusManualScannerInput(150);
-            return;
-          }
+    // 🟢 التمرير التلقائي لأحدث كارت مضاف في القائمة فور فتح الواجهة
+    setTimeout(() => {
+      const scannedList = document.getElementById('scannedItemsList');
+      if (scannedList) {
+        scannedList.scrollTo({
+          left: scannedList.scrollWidth,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
 
-          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            setLatestScannerMessage(`
-            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                المتصفح لا يدعم الكاميرا
-            </div>
-        `);
-            setScannerFeedback('error', 'الكاميرا غير مدعومة', 'المتصفح لا يدعم تشغيل الكاميرا');
-            flashScannerSwipe('error');
-            focusManualScannerInput(150);
-            return;
-          }
+    lastScannedValue = "";
+    lastScannedAt = 0;
 
-          try {
-            await destroyScannerInstance();
+    if (typeof Html5Qrcode === 'undefined') {
+      setLatestScannerMessage(`
+      <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+          مكتبة html5-qrcode غير محملة
+      </div>
+  `);
+      setScannerFeedback('error', 'خطأ في المكتبة', 'مكتبة html5-qrcode غير محملة');
+      flashScannerSwipe('error');
+      focusManualScannerInput(150);
+      return;
+    }
 
-            html5QrScanner = new Html5Qrcode("reader");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setLatestScannerMessage(`
+      <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+          المتصفح لا يدعم الكاميرا
+      </div>
+  `);
+      setScannerFeedback('error', 'الكاميرا غير مدعومة', 'المتصفح لا يدعم تشغيل الكاميرا');
+      flashScannerSwipe('error');
+      focusManualScannerInput(150);
+      return;
+    }
 
-            const config = {
-              fps: 30,
-              qrbox: (viewfinderWidth, viewfinderHeight) => {
-                // تكبير مساحة المسح لتشمل أغلب الشاشة كما طلب المستخدم
-                const w = Math.min(viewfinderWidth * 0.95, 600);
-                const h = Math.min(viewfinderHeight * 0.85, 600);
-                return { width: w, height: h };
-              },
-              // إزالة aspectRatio الثابت لتجنب أي تمطيط في الصورة على بعض الأجهزة
-              experimentalFeatures: {
-                useBarCodeDetectorIfSupported: true
-              }
-            };
+    try {
+      await destroyScannerInstance();
 
-            if (typeof Html5QrcodeSupportedFormats !== 'undefined') {
-              // إضافة التنسيقات بكل المسميات الممكنة (بشرطة وبدون) لضمان العمل على أي نسخة
-              config.formatsToSupport = [
-                Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.QRCODE,
-                Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE128,
-                Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE39,
-                Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN13,
-                Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.EAN8,
-                Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPCA,
-                Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.UPCE,
-                Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.DATAMATRIX,
-                Html5QrcodeSupportedFormats.ITF
-              ].filter(f => f !== undefined);
-            }
+      html5QrScanner = new Html5Qrcode("reader");
 
-            await html5QrScanner.start(
-              { facingMode: "environment" },
-              config,
-              (decodedText) => {
-                const cleanDecoded = String(decodedText || "").trim();
-                const nowTs = Date.now();
-
-                if (!cleanDecoded) return;
-                if (cleanDecoded === lastScannedValue && nowTs - lastScannedAt < 1200) return;
-
-                lastScannedValue = cleanDecoded;
-                lastScannedAt = nowTs;
-                processScannedCode(cleanDecoded);
-              },
-              () => { }
-            );
-
-            setTimeout(() => {
-              const video = document.querySelector("#reader video");
-              if (video) {
-                video.setAttribute("playsinline", "true");
-                video.setAttribute("autoplay", "true");
-                video.setAttribute("muted", "true");
-                video.muted = true;
-                video.style.width = "100%";
-                video.style.height = "100%";
-                video.style.objectFit = "cover";
-                video.style.background = "#000";
-                video.play().catch(() => { });
-              }
-            }, 400);
-
-            if (!scannedItemsMemory.length) {
-              setLatestScannerMessage(`
-                <div style="color:#22c55e;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                    الكاميرا شغالة، وجّه الباركود داخل الإطار الواسع
-                </div>
-            `);
-            }
-
-            setScannerFeedback('idle', '📷 الكاميرا شغالة', 'وجّه الباركود داخل الإطار');
-            resetScannerSwipeState();
-
-            focusManualScannerInput(300);
-
-          } catch (err) {
-            console.error("Scanner Error:", err);
-            setLatestScannerMessage(`
-            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                فشل تشغيل الكاميرا<br>
-                ${escapeHtml(err?.message || "Unknown error")}
-            </div>
-        `);
-            setScannerFeedback('error', 'فشل تشغيل الكاميرا', err?.message || 'Unknown error');
-            flashScannerSwipe('error');
-            await destroyScannerInstance();
-            focusManualScannerInput(150);
-          }
+      const config = {
+        fps: 30,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+          // تكبير مساحة المسح لتشمل أغلب الشاشة كما طلب المستخدم
+          const w = Math.min(viewfinderWidth * 0.95, 600);
+          const h = Math.min(viewfinderHeight * 0.85, 600);
+          return { width: w, height: h };
+        },
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
         }
+      };
 
+      if (typeof Html5QrcodeSupportedFormats !== 'undefined') {
+        config.formatsToSupport = [
+          Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.QRCODE,
+          Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE128,
+          Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE39,
+          Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN13,
+          Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.EAN8,
+          Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPCA,
+          Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.UPCE,
+          Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.DATAMATRIX,
+          Html5QrcodeSupportedFormats.ITF
+        ].filter(f => f !== undefined);
+      }
+
+      await html5QrScanner.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          const cleanDecoded = String(decodedText || "").trim();
+          const nowTs = Date.now();
+
+          if (!cleanDecoded) return;
+          if (cleanDecoded === lastScannedValue && nowTs - lastScannedAt < 1200) return;
+
+          lastScannedValue = cleanDecoded;
+          lastScannedAt = nowTs;
+          processScannedCode(cleanDecoded);
+
+          // 🟢 السكرول التلقائي للكارت الجديد المضاف عبر الكاميرا
+          setTimeout(() => {
+            const scannedList = document.getElementById('scannedItemsList');
+            if (scannedList) {
+              scannedList.scrollTo({
+                left: scannedList.scrollWidth,
+                behavior: 'smooth'
+              });
+            }
+          }, 150);
+        },
+        () => { }
+      );
+
+      setTimeout(() => {
+        const video = document.querySelector("#reader video");
+        if (video) {
+          video.setAttribute("playsinline", "true");
+          video.setAttribute("autoplay", "true");
+          video.setAttribute("muted", "true");
+          video.muted = true;
+          video.style.width = "100%";
+          video.style.height = "100%";
+          video.style.objectFit = "cover";
+          video.style.background = "#000";
+          video.play().catch(() => { });
+        }
+      }, 400);
+
+      if (!scannedItemsMemory.length) {
+        setLatestScannerMessage(`
+          <div style="color:#22c55e;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+              الكاميرا شغالة، وجّه الباركود داخل الإطار الواسع
+          </div>
+      `);
+      }
+
+      setScannerFeedback('idle', '📷 الكاميرا شغالة', 'وجّه الباركود داخل الإطار');
+      resetScannerSwipeState();
+
+      focusManualScannerInput(300);
+
+    } catch (err) {
+      console.error("Scanner Error:", err);
+      setLatestScannerMessage(`
+      <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+          فشل تشغيل الكاميرا<br>
+          ${escapeHtml(err?.message || "Unknown error")}
+      </div>
+  `);
+      setScannerFeedback('error', 'فشل تشغيل الكاميرا', err?.message || 'Unknown error');
+      flashScannerSwipe('error');
+      await destroyScannerInstance();
+      focusManualScannerInput(150);
+    }
+}
         // Process Code
         // =====================================================
         async function processScannedCode(code) {
@@ -33925,7 +35439,15 @@
           const finalPrice = hasFinalPrice ? Number(onlineOfferData.finalPrice) : null;
           const originalPrice = hasOriginalPrice ? Number(onlineOfferData.originalPrice) : null;
           const showStrike = originalPrice != null && finalPrice != null && originalPrice > finalPrice;
-
+// أضف هذا السطر فور إنشاء عنصر الكارت الجديد وتذييله للقائمة
+const listContainer = document.getElementById('scannedItemsList');
+if (listContainer) {
+    // التمرير التلقائي لأقصى اليمين/اليسار أو لآخر كارت مضاف
+    listContainer.scrollTo({
+        left: listContainer.scrollWidth,
+        behavior: 'smooth'
+    });
+}
           onlineBox.classList.add('online-offer-badge');
           onlineBox.setAttribute('onclick', `window.open('${productUrl}', '_blank')`);
           onlineBox.style.display = 'flex';
@@ -34006,469 +35528,39 @@
             history.replaceState(null, '', window.location.pathname + window.location.search);
           }
         }
-        // =====================================================
-        // Print helpers
-        // =====================================================
-        function getScannedCodesArray() {
-          const normalizeCode = (code) => String(code || "").trim();
 
-          if (
-            typeof selectedProductCodes !== 'undefined' &&
-            selectedProductCodes instanceof Set &&
-            selectedProductCodes.size > 0
-          ) {
-            return Array.from(
-              new Set(
-                Array.from(selectedProductCodes)
-                  .map(normalizeCode)
-                  .filter(Boolean)
-              )
-            );
-          }
 
-          if (
-            typeof scannedCodesSet !== 'undefined' &&
-            scannedCodesSet instanceof Set &&
-            scannedCodesSet.size > 0
-          ) {
-            return Array.from(
-              new Set(
-                Array.from(scannedCodesSet)
-                  .map(normalizeCode)
-                  .filter(Boolean)
-                  .filter(code => {
-                    const offer =
-                      typeof getOfferForScanner === 'function'
-                        ? getOfferForScanner(code)
-                        : (typeof getOffer === 'function' ? getOffer(code) : null);
-
-                    return typeof isOfferCurrentlyActive === 'function'
-                      ? isOfferCurrentlyActive(offer)
-                      : !!offer;
-                  })
-              )
-            );
-          }
-
-          return [];
-        }
-
-        function getScannerQuantityPerCode() {
-          const input = document.getElementById('scannerQuantityPerCode');
-          const value = input ? parseInt(input.value, 10) : 1;
-          scannerCardsPerCode = Number.isFinite(value) && value > 0 ? value : 1;
-          return scannerCardsPerCode;
-        }
-
-        // =====================================================
-        // Direct custom print from scanner
-        // =====================================================
-        async function printScannedCustom() {
-          const scannedCodes = getScannedCodesArray();
-
-          if (!scannedCodes.length) {
-            alert("⚠️ لم يتم مسح أي أصناف عليها عروض للطباعة!");
-            return;
-          }
-
-          if (typeof injectPrintStylesOnce === 'function') {
-            injectPrintStylesOnce();
-          }
-
-          const quantity = getScannerQuantityPerCode();
-          const customCards = [];
-
-          scannedCodes.forEach(code => {
-            let offerData = null;
-
-            if (typeof getOfferTypeForCode === 'function') {
-              offerData = getOfferTypeForCode(code);
-            } else if (typeof getOffer === 'function') {
-              offerData = getOffer(code);
+        function openPromoMedia(type, url) {
+            const lightbox = document.getElementById('promoMediaLightbox');
+            const stage = document.getElementById('promoMediaStage');
+            
+            if (type === 'video') {
+                stage.innerHTML = '<video controls autoplay style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"><source src="' + url + '" type="video/mp4"></video>';
+            } else if (type === 'image') {
+                stage.innerHTML = '<img src="' + url + '" style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />';
             }
-
-            if (!offerData) return;
-
-            const offerEN = offerData.offerEN || offerData.offerTypeEN || offerData.offerType || '';
-            const offerAR = offerData.offerAR || offerData.offerTypeAR || offerData.offerType || '';
-
-            for (let i = 0; i < quantity; i++) {
-              customCards.push({
-                Code: '',
-                customData: {
-                  offerEN: offerEN,
-                  offerAR: offerAR,
-                  dateRange: '',
-                  productEN: '',
-                  productAR: '',
-                  category: ''
-                }
-              });
-            }
-          });
-
-          if (!customCards.length) {
-            alert("⚠️ لم يتم تجهيز أي كروت Custom Offer.");
-            return;
-          }
-
-          await closeBarcodeScanner();
-
-          const container = document.getElementById('printContainer');
-          const loader = document.getElementById('printLoader');
-
-          if (!container) {
-            alert("⚠️ printContainer غير موجود.");
-            return;
-          }
-
-          container.innerHTML = '';
-          if (loader) loader.style.display = 'flex';
-
-          setTimeout(async () => {
-            try {
-              if (typeof renderCustomPrint === 'function') {
-                renderCustomPrint(customCards);
-              }
-              if (typeof exportRiyalSymbolsForPrint === 'function') {
-                await exportRiyalSymbolsForPrint();
-              }
-              window.print();
-            } catch (err) {
-              console.error("Direct custom print error:", err);
-              alert("حدث خطأ أثناء تجهيز طباعة Custom Offer");
-            } finally {
-              if (loader) loader.style.display = 'none';
-            }
-          }, 150);
-
-          if (typeof restoreRiyalSymbolsAfterPrint === 'function') {
-            window.addEventListener('afterprint', restoreRiyalSymbolsAfterPrint, { once: true });
-          }
-        }
-
-        // =====================================================
-        // Direct normal print
-        // =====================================================
-        async function printScannedFullQR() {
-          const scannedCodes = getScannedCodesArray();
-
-          if (!scannedCodes.length) {
-            alert("⚠️ لم يتم مسح أي أصناف عليها عروض للطباعة!");
-            return;
-          }
-
-          if (!Array.isArray(window.productsDB) || !productsDB.length) {
-            alert("⚠️ قاعدة المنتجات غير جاهزة.");
-            return;
-          }
-
-          // إنشاء خريطة (Map) سريعة للبحث بدلاً من find المتكرر لتسريع العملية خاصة في الموبايل
-          const pMap = new Map();
-          productsDB.forEach(p => {
-            const c = String(p.Code || "").trim();
-            if (c && !pMap.has(c)) pMap.set(c, p);
-          });
-
-          const productsToPrint = scannedCodes.map(code => pMap.get(code)).filter(Boolean);
-
-          if (!productsToPrint.length) {
-            alert("⚠️ لم يتم العثور على المنتجات الممسوحة للطباعة (تأكد أن الأصناف الممسوحة لها عروض نشطة).");
-            return;
-          }
-
-          await closeBarcodeScanner();
-
-          const container = document.getElementById('printContainer');
-          const loader = document.getElementById('printLoader');
-
-          if (!container) {
-            alert("⚠️ printContainer غير موجود.");
-            return;
-          }
-
-          container.innerHTML = "";
-          if (loader) loader.style.display = 'flex';
-
-          try {
-            if (typeof renderPrint !== 'function') {
-              throw new Error("renderPrint is missing");
-            }
-
-            renderPrint(productsToPrint);
-
-            const qrImages = container.querySelectorAll('.qr-code-img');
-
-            if (typeof waitForImagesToLoad === 'function') {
-              await waitForImagesToLoad(qrImages);
-            }
-
-            if (loader) loader.style.display = 'none';
-
-            setTimeout(() => {
-              window.print();
-            }, 50);
-
-          } catch (err) {
-            console.error("Scanner QR print error:", err);
-            if (loader) loader.style.display = 'none';
-            alert("حدث خطأ أثناء تجهيز طباعة QR");
-          }
-        }
-
-        async function printScannedFull() {
-          return printScannedFullQR();
-        }
-
-        function toggleScannerPrintPanel() {
-          const panel = document.getElementById('scannerPrintPanel');
-          if (!panel) return;
-          panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        }
-        /* =========================
-           PROMO MEDIA LIGHTBOX
-        ========================= */
-        function openPromoMedia(type, src, title) {
-          const lightbox = document.getElementById('promoMediaLightbox');
-          const stage = document.getElementById('promoMediaStage');
-
-          if (!lightbox || !stage || !src) return;
-
-          const safeTitle = typeof escapeHtml === 'function'
-            ? escapeHtml(title || '')
-            : String(title || '');
-
-          let mediaHtml = '';
-
-          if (type === 'video') {
-            mediaHtml = `
-            <video controls autoplay playsinline>
-                <source src="${src}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        `;
-          } else {
-            mediaHtml = `<img src="${src}" alt="${safeTitle}">`;
-          }
-
-          stage.innerHTML = `
-        <div class="promo-media-lightbox-title">${safeTitle}</div>
-        ${mediaHtml}
-    `;
-
-          lightbox.classList.add('show');
-          document.body.style.overflow = 'hidden';
+            
+            lightbox.classList.add('show');
         }
 
         function closePromoMedia(event) {
-          const lightbox = document.getElementById('promoMediaLightbox');
-          const stage = document.getElementById('promoMediaStage');
-
-          if (event && event.target && event.target !== lightbox) return;
-
-          if (stage) {
-            const video = stage.querySelector('video');
-            if (video) {
-              try {
-                video.pause();
-                video.currentTime = 0;
-              } catch (e) { }
+            if (event && event.target.id !== 'promoMediaLightbox' && !event.target.classList.contains('promo-media-close')) {
+                return;
             }
-            stage.innerHTML = '';
-          }
-
-          if (lightbox) {
+            const lightbox = document.getElementById('promoMediaLightbox');
+            const stage = document.getElementById('promoMediaStage');
             lightbox.classList.remove('show');
-          }
-
-          document.body.style.overflow = '';
+            stage.innerHTML = '';
         }
-
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') {
-            closePromoMedia();
-          }
-        });
-
-        // 1. وظيفة فتح المودال عند الضغط على الزر
-        function clearAllScannerData() {
-          document.getElementById('deleteConfirmOverlay').style.display = 'flex';
-        }
-
-        // 2. وظيفة إغلاق المودال
-        function closeDeleteModal() {
-          document.getElementById('deleteConfirmOverlay').style.display = 'none';
-        }
-
-        // 3. التنفيذ الفعلي للمسح (يُنادى من زر "نعم")
-        function executeClearAll() {
-          // 1. تصفير الذاكرة الحية (البيانات النشطة)
-          scannedItemsMemory = [];
-          if (typeof scannedCodesSet !== 'undefined') scannedCodesSet.clear();
-
-          // 2. مسح تخزين الجلسة (عشان لما تقفل وتفتح ميرجعوش تاني)
-          sessionStorage.removeItem('scanned_items_session');
-
-          // 3. تنظيف الواجهة (مسح الكروت بصرياً)
-          const listEl = document.getElementById('scannedItemsList');
-          if (listEl) listEl.innerHTML = '';
-
-          // 4. إعادة تعيين رسائل الحالة للوضع الافتراضي
-          setLatestScannerMessage(getScannerWaitingHtml());
-          setScannerFeedback('idle', '🗑️ Session Cleared', 'Ready for new scan');
-
-          // 5. تحديث عداد الكروت المختارة للطباعة
-          if (typeof updateSelectedCount === 'function') {
-            if (typeof selectedProductCodes !== 'undefined') selectedProductCodes.clear();
-            updateSelectedCount();
-          }
-
-          // 6. تصفير خانة الإدخال اليدوي
-          const manualInput = document.getElementById('scannerManualCode');
-          if (manualInput) manualInput.value = '';
-
-          // 7. تحديث العناصر التفاعلية (إخفاء الأسهم ونقاط التمرير)
-          if (typeof updateScannerDots === 'function') updateScannerDots();
-
-          // 8. إغلاق لوحة الطباعة لو كانت مفتوحة
-          const printPanel = document.getElementById('scannerPrintPanel');
-          if (printPanel) printPanel.style.display = 'none';
-
-          // 9. إغلاق مودال التأكيد الـ CSS Art
-          closeDeleteModal();
-
-          console.log("🧹 Depanto session wiped clean successfully!");
-        }
-        let galleryIndex = 0;
-        let galleryScale = 1;
-
-        // 1️⃣ دالة فتح الجاليري
-        function openScannerGallery(code) {
-          const items = scannedItemsMemory; // بنعتمد على الذاكرة اللي انت مخزن فيها البيانات
-          if (!items || items.length === 0) return;
-
-          galleryIndex = items.findIndex(i => i.cleanCode === code);
-          if (galleryIndex === -1) galleryIndex = 0;
-
-          updateGalleryContent();
-          document.getElementById('scannerImageGallery').style.display = 'flex';
-          document.body.style.overflow = 'hidden'; // منع سكرول الصفحة خلف المودال
-        }
-
-        // 2️⃣ تحديث المحتوى داخل الجاليري
-        function updateGalleryContent() {
-          const items = scannedItemsMemory;
-          const current = items[galleryIndex];
-          const imgEl = document.getElementById('galleryImg');
-          const titleEl = document.getElementById('galleryTitle');
-          const counterEl = document.getElementById('galleryCounter');
-
-          if (!current) return;
-
-          // ريسيت للزوم عند كل صورة جديدة
-          galleryScale = 1;
-          imgEl.style.transform = `scale(1)`;
-
-          imgEl.src = current.imageUrl || createPlaceholderSVG(current.cleanCode);
-          titleEl.innerText = current.nameEN + "\n" + (current.nameAR || "");
-          counterEl.innerText = `${galleryIndex + 1} / ${items.length}`;
-        }
-
-        // 3️⃣ التنقل يمين وشمال
-        function navGallery(dir) {
-          const items = scannedItemsMemory;
-          galleryIndex += dir;
-
-          if (galleryIndex >= items.length) galleryIndex = 0;
-          if (galleryIndex < 0) galleryIndex = items.length - 1;
-
-          updateGalleryContent();
-        }
-
-        // 4️⃣ قفل الجاليري
-        function closeScannerGallery() {
-          document.getElementById('scannerImageGallery').style.display = 'none';
-          document.body.style.overflow = '';
-        }
-
-        // 5️⃣ إضافة الـ Zoom (Pinch to Zoom) للموبايل
-        let initialDist = 0;
-        document.getElementById('galleryContainer').addEventListener('touchmove', (e) => {
-          if (e.touches.length === 2) {
-            let dist = Math.hypot(
-              e.touches[0].pageX - e.touches[1].pageX,
-              e.touches[0].pageY - e.touches[1].pageY
-            );
-            if (initialDist === 0) {
-              initialDist = dist;
-            } else {
-              galleryScale = Math.min(Math.max(1, galleryScale + (dist - initialDist) * 0.01), 4);
-              document.getElementById('galleryImg').style.transform = `scale(${galleryScale})`;
-              initialDist = dist;
-            }
-          }
-        });
-        document.getElementById('galleryContainer').addEventListener('touchend', () => { initialDist = 0; });
-        // تشغيل السكانر عند تحميل العناصر مع مهلة لضمان جاهزية المكتبات
-        window.addEventListener("DOMContentLoaded", () => {
-          if (window.location.href.indexOf('scanner') !== -1) {
-            console.log("Scanner Mode Detected via URL");
-
-            // إخفاء الطبقات الأساسية فوراً لضمان عدم ظهورها خلف السكانر
-            const gv = document.getElementById('gatewayView');
-            const mo = document.getElementById('mainOffersContainer');
-            const fh = document.getElementById('fixedHeader');
-            const li = document.getElementById('loadingIndicator');
-            const ls = document.getElementById('loaderScreen');
-            const pl = document.getElementById('printLoader');
-
-            if (gv) gv.style.display = 'none';
-            if (fh) fh.style.display = 'none';
-            if (li) li.style.display = 'none';
-            if (ls) ls.style.display = 'none';
-            if (pl) pl.style.display = 'none';
-
-            // بدلاً من إخفاء الكونتينر الرئيسي، نخفي أطفاله (ما عدا السكانر)
-            if (mo) {
-              mo.style.display = 'block';
-              Array.from(mo.children).forEach(child => {
-                if (child.id !== 'scannerModalOverlay') {
-                  child.style.display = 'none';
-                }
-              });
-            }
-
-            setTimeout(() => {
-              console.log("Attempting to open scanner...");
-              if (typeof openBarcodeScanner === 'function') {
-                if (typeof Html5Qrcode !== 'undefined') {
-                  openBarcodeScanner();
-                } else {
-                  console.error("Html5Qrcode is still undefined after 600ms");
-                  // محاولة أخرى بعد ثانية
-                  setTimeout(() => {
-                    if (typeof Html5Qrcode !== 'undefined') {
-                      openBarcodeScanner();
-                    } else {
-                      alert("تعذر تحميل مكتبة السكانر. يرجى تحديث الصفحة.");
-                    }
-                  }, 1000);
-                }
-              } else {
-                console.error("openBarcodeScanner function not found");
-              }
-            }, 600);
-          }
-        });
-      </script>
-
+</script>
 <style>
-/* Layout Toggle Styles */
 #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
     display: grid !important;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 400px 1fr;
     grid-template-rows: auto 1fr;
-    max-width: 900px !important;
+    max-width: 1200px !important;
+    width: 95% !important;
+    height: 90vh !important;
 }
 #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
     grid-column: 1 / 2;
@@ -34525,6 +35617,37 @@
         margin-bottom: 0 !important;
     }
 }
+
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
 </style>
 <script>
 function toggleScannerLayout() {
@@ -34533,4 +35656,548 @@ function toggleScannerLayout() {
         shell.classList.toggle('scanner-shell-horizontal');
     }
 }
+
+function toggleScannerPrintPanel() {
+    const panel = document.getElementById('scannerPrintPanel');
+    if (panel) {
+        if (panel.style.display === 'none' || panel.style.display === '') {
+            panel.style.display = 'block';
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+}
+function printScannedFullQR() {
+    if (typeof scannedItemsMemory === 'undefined' || !scannedItemsMemory || scannedItemsMemory.length === 0) {
+        alert("لا توجد أصناف في الماسح للطباعة");
+        return;
+    }
+
+    // 1. فلترة العناصر الممسوحة لتضمين الأكواد التي لها عرض نشط فقط[cite: 1]
+    const validItems = scannedItemsMemory.filter(item => {
+        if (typeof getOffer === 'function') {
+            const offer = getOffer(item.cleanCode);
+            return offer !== null && offer !== undefined;
+        }
+        return true;
+    });
+
+    if (validItems.length === 0) {
+        alert("جميع الأصناف الممسوحة لا تحتوي على عروض نشطة في الفترة الحالية!");
+        return;
+    }
+
+    const qtyInput = document.getElementById('scannerQuantityPerCode');
+    const multiplier = (qtyInput && parseInt(qtyInput.value) > 0) ? parseInt(qtyInput.value) : 1;
+    let scannedCodes = validItems.map(item => item.cleanCode.toString());
+    let productsToPrintRaw = (typeof productsDB !== 'undefined' ? productsDB : []).filter(p => scannedCodes.includes(p.Code.toString()));
+    
+    let finalProducts = [];
+    productsToPrintRaw.forEach(p => {
+        for(let i = 0; i < multiplier; i++) {
+            finalProducts.push(p);
+        }
+    });
+
+    if (finalProducts.length === 0) {
+        alert("لم يتم العثور على تفاصيل الأصناف الممسوحة");
+        return;
+    }
+    
+    const backupFiltered = window.currentFilteredProducts;
+    window.currentFilteredProducts = finalProducts;
+    
+    const selectedCheckboxes = document.querySelectorAll('.product-card-checkbox:checked');
+    selectedCheckboxes.forEach(cb => cb.checked = false);
+    
+    if (typeof startPrintProcess === 'function') {
+        startPrintProcess();
+    }
+    
+    setTimeout(() => {
+        window.currentFilteredProducts = backupFiltered;
+    }, 1500);
+}
+
+function printScannedCustom() {
+    if (typeof scannedItemsMemory === 'undefined' || !scannedItemsMemory || scannedItemsMemory.length === 0) {
+        alert("لا توجد أصناف في الماسح للطباعة");
+        return;
+    }
+
+    // 1. فلترة الأصناف التي تحتوي على عرض نشط فقط[cite: 1]
+    const validItems = scannedItemsMemory.filter(item => {
+        if (typeof getOffer === 'function') {
+            const offer = getOffer(item.cleanCode);
+            return offer !== null && offer !== undefined;
+        }
+        return true;
+    });
+
+    if (validItems.length === 0) {
+        alert("جميع الأصناف الممسوحة لا تحتوي على عروض نشطة في الفترة الحالية!");
+        return;
+    }
+
+    const qtyInput = document.getElementById('scannerQuantityPerCode');
+    const quantity = (qtyInput && parseInt(qtyInput.value) > 0) ? parseInt(qtyInput.value) : 1;
+
+    let customCards = [];
+    
+    validItems.forEach(item => {
+        let product = null;
+        if (typeof productsDB !== 'undefined') {
+            product = productsDB.find(p => String(p.Code).trim() === String(item.cleanCode).trim());
+        }
+        for (let i = 0; i < quantity; i++) {
+            customCards.push({
+                Code: item.cleanCode,
+                Product: product || null,
+                customData: {
+                    dateRange: "",
+                    productEN: item.nameEN || "",
+                    productAR: item.nameAR || "",
+                    category: "",
+                    offerEN: item.offerLabelEN || "",
+                    offerAR: item.offerLabel || ""
+                }
+            });
+        }
+    });
+
+    if (customCards.length === 0) {
+        alert("لا يوجد بيانات للطباعة");
+        return;
+    }
+
+    const container = document.getElementById('printContainer');
+    const loader = document.getElementById('printLoader');
+
+    if (!container) {
+        alert('⚠️ خطأ: حاوية الطباعة غير موجودة بالصفحة.');
+        return;
+    }
+
+    container.innerHTML = '';
+    if (loader) loader.style.display = 'flex';
+
+    setTimeout(async () => {
+        try {
+            if (typeof injectPrintStylesOnce === 'function') injectPrintStylesOnce();
+            
+            if (typeof renderCustomPrint === 'function') renderCustomPrint(customCards);
+            
+            if (typeof exportRiyalSymbolsForPrint === 'function') {
+                await exportRiyalSymbolsForPrint();
+            }
+
+            if (typeof waitForPrintAssets === 'function') {
+                await waitForPrintAssets();
+            }
+
+            setTimeout(() => {
+                window.print();
+                if (loader) loader.style.display = 'none';
+            }, 100);
+
+        } catch (err) {
+            console.error("حدث خطأ أثناء تجهيز الطباعة:", err);
+            if (loader) loader.style.display = 'none';
+        }
+    }, 300);
+}
+// Startup Popup Logic
+function checkStartupAnnouncement() {
+  const defaultImage = "https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/0e03439768a3f0e6660c88432d83b387.jpg"; // Fallback image if needed
+  
+  // أضفنا ?t= لمنع المتصفح من تخزين النتيجة القديمة (Cache-Busting)
+  fetch(`https://online.meralmohamed121022.workers.dev/startup-image?t=${new Date().getTime()}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.isActive) {
+        let urlToShow = data.imageUrl || "";
+        
+        // لو الرابط اللي المستخدم حطه ناقص (مثلاً نسي يكتب https://)، نعالجه هنا احتياطياً
+        if (urlToShow && !urlToShow.startsWith("http")) {
+          // يمكن إضافة الرابط الأساسي لـ github لو كان ناقص
+          if(urlToShow.includes("meralmohamed121022")) {
+              urlToShow = "https://raw.githubusercontent.com/" + urlToShow;
+          } else {
+              urlToShow = "https://" + urlToShow;
+          }
+        }
+
+        if (urlToShow) {
+          showStartupAnnouncement(urlToShow);
+        } else {
+          showStartupAnnouncement(defaultImage);
+        }
+      }
+    })
+    .catch(err => {
+      console.error("Failed to fetch startup image", err);
+    });
+}
+
+function showStartupAnnouncement(url) {
+  const modal = document.getElementById('startupAnnouncementModal');
+  const img = document.getElementById('startupAnnouncementImg');
+  const box = document.getElementById('startupAnnouncementBox');
+  if (modal && img && box) {
+    img.src = url;
+    modal.style.display = 'flex';
+    setTimeout(() => {
+      modal.style.opacity = '1';
+      box.style.transform = 'scale(1)';
+    }, 50);
+  }
+}
+
+function closeStartupAnnouncement() {
+  const modal = document.getElementById('startupAnnouncementModal');
+  const box = document.getElementById('startupAnnouncementBox');
+  if (modal && box) {
+    modal.style.opacity = '0';
+    box.style.transform = 'scale(0.9)';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', checkStartupAnnouncement);
+
+function openEmail() { window.location.href = "mailto:Muhammedkhulif@yahoo.com"; }
+function openWhatsApp() { window.open("https://wa.me/966541932559", '_blank'); }
+function openFacebook() { window.open("https://www.facebook.com/share/1Ghv7eEw6A/", '_blank'); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const appearOnScroll = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => appearOnScroll.observe(el));
+    
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) {
+                    if (node.classList.contains('fade-in')) {
+                        appearOnScroll.observe(node);
+                    }
+                    node.querySelectorAll('.fade-in').forEach(el => appearOnScroll.observe(el));
+                }
+            });
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Smooth scroll for anchor links in top-tabs
+    document.querySelectorAll('.top-tabs a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            // Manage active class
+            document.querySelectorAll('.top-tabs .tab-box').forEach(tab => tab.classList.remove('active'));
+            this.classList.add('active');
+            
+            let targetId = this.getAttribute('href').substring(1);
+            
+            if (targetId === 'section-sidebar') {
+                let target = document.querySelector('.inline-layout-mode') || document.querySelector('.tools-sidebar');
+                if (target) {
+                    target.style.display = 'flex'; // Unhide if hidden
+                    const headerHeight = document.getElementById("fixedHeader") ? document.getElementById("fixedHeader").offsetHeight : 60;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 15;
+                    window.scrollTo({ top: targetPosition, behavior: "smooth" });
+                }
+            
+            } else if (targetId === 'section-features') {
+                let target = document.getElementById('section-features');
+                if (!target) target = document.getElementById('codesFileStatus');
+                if (target) {
+                    const headerHeight = document.getElementById("fixedHeader") ? document.getElementById("fixedHeader").offsetHeight : 60;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 15;
+                    window.scrollTo({ top: targetPosition, behavior: "smooth" });
+                }
+            } else {
+                let target = document.getElementById(targetId);
+                if (target) {
+                    const headerHeight = document.getElementById("fixedHeader") ? document.getElementById("fixedHeader").offsetHeight : 60;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 15;
+                    window.scrollTo({ top: targetPosition, behavior: "smooth" });
+                }
+            }
+        });
+    });
+
+        
+        const navLinks = document.querySelectorAll('.tab-box');
+        
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('div[id^="section-"]');
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 250) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    });
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Override the navigation clicks for the tabs
+    setTimeout(() => {
+        document.querySelectorAll('.tab-box').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href').substring(1);
+                
+                if (targetId === 'section-sidebar') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    let inlineMode = document.querySelector('.inline-layout-mode');
+                    let sidebarMode = document.getElementById('toolsSidebar');
+                    let target = inlineMode ? inlineMode : sidebarMode;
+                    
+                    if (target) {
+                        if(target.style.display === 'none') target.style.display = 'flex';
+                        let headerOffset = 100;
+                        let elementPosition = target.getBoundingClientRect().top + window.scrollY;
+                        window.scrollTo({
+                             top: elementPosition - headerOffset,
+                             behavior: "smooth"
+                        });
+                    }
+                } else if (targetId === 'section-features') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    let target = document.getElementById('section-features');
+                    if (!target) target = document.getElementById('codesFileStatus');
+                    if (target) {
+                        let headerHeight = document.getElementById("fixedHeader") ? document.getElementById("fixedHeader").offsetHeight : 60;
+                        let targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 15;
+                        window.scrollTo({ top: targetPosition, behavior: "smooth" });
+                    }
+                
+                }
+            }, true);
+        });
+    }, 1000);
+});
+// مراقبة العناصر وتطبيق تأثير الظهور
+
+
+// تشغيل المراقبة بعد تحميل الصفحات أو رندر المنتجات
+function initFadeInObserver() {
+    const fadeElements = document.querySelectorAll('.category-a-header, .category-d-header, .offer-type-badge-header, .product-card, .offer-group-header, .brand-cluster-card, .fade-in, .filter-group');
+
+    let delayCounter = 0;
+    let delayTimeout = null;
+
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.setProperty('transition-delay', (delayCounter * 0.1) + 's', 'important');
+                delayCounter++;
+                if (delayTimeout) clearTimeout(delayTimeout);
+                delayTimeout = setTimeout(() => { delayCounter = 0; }, 100);
+
+                entry.target.classList.add('visible');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.15
+    });
+
+    fadeElements.forEach(el => {
+        el.classList.add('fade-in');
+        observer.observe(el);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initFadeInObserver);
+
+        function openPromoMedia(type, url) {
+            const lightbox = document.getElementById('promoMediaLightbox');
+            const stage = document.getElementById('promoMediaStage');
+            
+            if (type === 'video') {
+                stage.innerHTML = '<video controls autoplay style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"><source src="' + url + '" type="video/mp4"></video>';
+            } else if (type === 'image') {
+                stage.innerHTML = '<img src="' + url + '" style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />';
+            }
+            
+            lightbox.classList.add('show');
+        }
+
+        function closePromoMedia(event) {
+            if (event && event.target.id !== 'promoMediaLightbox' && !event.target.classList.contains('promo-media-close')) {
+                return;
+            }
+            const lightbox = document.getElementById('promoMediaLightbox');
+            const stage = document.getElementById('promoMediaStage');
+            lightbox.classList.remove('show');
+            stage.innerHTML = '';
+        }
+        
 </script>
+
+
+<style>
+.filter-group {
+    height: auto !important;
+    overflow: visible !important;
+}
+.reset-filter-btn {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+.reset-all-btn, button[onclick="clearAllFilters()"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 10 !important;
+}
+/* Animation initial state for dynamic elements */
+.category-a-header, .category-d-header, .offer-type-badge-header, .product-card, .offer-group-header, .brand-cluster-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: opacity, transform;
+}
+.category-a-header.visible, .category-d-header.visible, .offer-type-badge-header.visible, .product-card.visible, .offer-group-header.visible, .brand-cluster-card.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+body:has(.inline-layout-mode) #toolsSidebarToggle {
+    display: none !important;
+}
+body {
+    padding-bottom: 50vh !important;
+    background: #0f172a;
+}
+#codesFileStatus {
+    background: transparent !important;
+}
+
+/* =========================================================
+   ✨ Hero Section Theme Alignment
+   ========================================================= */
+.hero-banner {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95)), url('https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/0e03439768a3f0e6660c88432d83b387.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-blend-mode: overlay !important;
+    border: 1px solid rgba(212, 175, 55, 0.3) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+.hero-content h1 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(0, 0, 0, 0.8) !important;
+}
+
+.offer-badge {
+    background: rgba(15, 23, 42, 0.9) !important;
+    color: #f59e0b !important;
+    border: 1px solid #d4af37 !important;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3) !important;
+}
+
+.date-box {
+    background: rgba(30, 41, 59, 0.9) !important;
+    border: 1px solid #d4af37 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.date-box .label {
+    color: #94a3b8 !important;
+    text-shadow: none !important;
+}
+
+.date-box .date-value {
+    color: #d4af37 !important;
+    text-shadow: none !important;
+}
+
+#countdownTitle {
+    color: #f59e0b !important;
+}
+
+.countdown-item {
+    background: rgba(15, 23, 42, 0.9) !important;
+    border: 1px solid rgba(212, 175, 55, 0.5) !important;
+}
+.countdown-item .number {
+    color: #ffffff !important;
+}
+.countdown-item .label {
+    color: #d4af37 !important;
+}
+
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
+</style>
+</body></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
