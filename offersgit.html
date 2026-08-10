@@ -7016,7 +7016,113 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
     background: rgba(30, 58, 138, 0.5) !important;
     border-color: #f59e0b !important;
 }
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
+    display: grid !important;
+    grid-template-columns: 380px 1fr !important;
+    grid-template-rows: auto 1fr !important;
+    max-width: 1200px !important;
+    width: 95% !important;
+    height: 90vh !important;
+}
 
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+    border-right: 2px solid #334155 !important;
+    border-bottom: none !important;
+    min-height: 220px !important;
+    width: 100% !important;
+}
+
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 / 3 !important;
+    border-right: 2px solid #334155 !important;
+}
+
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-cards-wrap {
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 3 !important;
+}
+
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scroll-snap-type: y mandatory !important;
+}
+
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList > * {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 140px !important;
+    margin-bottom: 12px !important;
+}
+
+#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .new-scanned-item-flash {
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    margin-bottom: 10px !important;
+}
+
+/* 🟢 تحويل الوضع للرأسي للموبايل الصغير فقط لتجنب كسر الهيكل الأفقي داخل الـ Iframe */
+@media (max-width: 480px) {
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
+        border-right: none !important;
+        border-bottom: 2px solid #334155 !important;
+    }
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
+        border-right: none !important;
+    }
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory !important;
+    }
+    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList > * {
+        flex: 0 0 100% !important;
+        height: 100% !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+.filter-group:has(.custom-select.open),
+.filter-box:has(.custom-select.open) {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease !important;
+}
+
+.inline-layout-mode .inline-title {
+    display: block !important;
+}
+
+.inline-layout-mode #layoutToggleBtn {
+    background: rgba(30, 58, 138, 0.35) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
+    margin-bottom: 20px !important;
+}
+
+.inline-layout-mode #layoutToggleBtn:hover {
+    background: rgba(30, 58, 138, 0.5) !important;
+    border-color: #f59e0b !important;
+}
 </style>
         <div id="themeHintPointer" class="theme-hint-pointer">
           <div class="hand-emoji">👈</div>
@@ -35529,104 +35635,7 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
             lightbox.classList.remove('show');
             stage.innerHTML = '';
         }
-</script>
-<style>
-#scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
-    display: grid !important;
-    grid-template-columns: 400px 1fr;
-    grid-template-rows: auto 1fr;
-    max-width: 1200px !important;
-    width: 95% !important;
-    height: 90vh !important;
-}
-#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
-    border-right: 2px solid #334155;
-    border-bottom: none;
-    min-height: 250px;
-    width: 100%;
-}
-#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-    border-right: 2px solid #334155;
-}
-#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-cards-wrap {
-    grid-column: 2 / 3;
-    grid-row: 1 / 3;
-}
-#scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
-    flex-direction: column !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    scroll-snap-type: y mandatory !important;
-}
-#scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList > * {
-    flex: 0 0 auto !important;
-    height: auto !important;
-    min-height: 140px !important;
-    margin-bottom: 12px !important;
-}
-#scannerModalOverlay .scanner-shell.scanner-shell-horizontal .new-scanned-item-flash {
-    width: 100% !important;
-    flex: 0 0 auto !important;
-    margin-bottom: 10px !important;
-}
-@media (max-width: 768px) {
-    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
-        display: flex !important;
-        flex-direction: column !important;
-    }
-    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
-        border-right: none;
-        border-bottom: 2px solid #334155;
-    }
-    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
-        flex-direction: row !important;
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        scroll-snap-type: x mandatory !important;
-    }
-    #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList > * {
-        flex: 0 0 100% !important;
-        height: 100% !important;
-        margin-bottom: 0 !important;
-    }
-}
 
-.filter-group:has(.custom-select.open),
-.filter-box:has(.custom-select.open) {
-    position: relative !important;
-    z-index: 99999 !important;
-}
-
-.reset-all-btn:active, button[onclick="clearAllFilters()"]:active {
-    background: linear-gradient(135deg, #10b981, #059669) !important;
-    color: white !important;
-    transform: scale(0.95) !important;
-    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
-    transition: all 0.1s ease !important;
-}
-
-.inline-layout-mode .inline-title {
-    display: block !important;
-}
-.inline-layout-mode #layoutToggleBtn {
-    background: rgba(30, 58, 138, 0.35) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
-    border-radius: 30px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18) !important;
-    margin-bottom: 20px !important;
-}
-.inline-layout-mode #layoutToggleBtn:hover {
-    background: rgba(30, 58, 138, 0.5) !important;
-    border-color: #f59e0b !important;
-}
-</style>
-<script>
 function toggleScannerLayout() {
     const shell = document.querySelector('.scanner-shell');
     if(shell) {
