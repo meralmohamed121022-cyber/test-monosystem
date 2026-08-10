@@ -4,14 +4,14 @@
 <head>
   <meta charset="UTF-8" />
 <meta name="referrer" content="same-origin">
-  <meta http-equiv="Content-Security-Policy" content="
+ <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';
         script-src 'self' https: 'unsafe-inline' 'unsafe-eval' blob: data:;
         style-src 'self' https: 'unsafe-inline' data:;
         img-src 'self' https: data: blob:;
         connect-src 'self' https: data: blob:;
         font-src 'self' https: data:;
-        media-src 'self' https: blob: data:;
+        media-src 'self' https: blob: data: mediastream: camera:;
         worker-src 'self' blob:;
         frame-ancestors *;
     ">
