@@ -34358,137 +34358,286 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
           }, 1500);
         }
 
-        // =====================================================
-        // NEW: Manual Code Helpers
-        // =====================================================
-        function normalizeManualScannerCode(value) {
-          return String(value || '')
-            .replace(/\D/g, '')
-            .slice(0, 20)
-            .trim();
+      // =====================================================
+// FULL FIX: GTIN & Camera Scanner Logic Integration
+// =====================================================
+
+// 1. دالة معالجة واستخراج الـ GTIN
+// =====================================================
+// NEW: Universal GTIN Parser & Fully Integrated Scanner
+// =====================================================
+
+// 1. دالة التستخرج والتنظيف للباركود العالمي والسداسي
+function parseBarcode(code) {
+    if (!code) return "";
+    code = String(code).trim();
+    
+    // إزالة بادئات الاسكانر الشهيرة
+    if (code.startsWith("]C1") || code.startsWith("]d2") || code.startsWith("]e0")) {
+        code = code.substring(3);
+    }
+    
+    // استخراج الأرقام فقط
+    let digitsOnly = code.replace(/\D/g, "");
+    
+    // لو الكود كود عالمي أطول من 15 رقم
+    if (digitsOnly.length >= 15) {
+        // أخذ الـ 14 رقم التالية لبعد أول رقمين (من الخانة 2 إلى 16)
+        let gtin14 = digitsOnly.substring(2, 16);
+        
+        if (gtin14.startsWith("0")) {
+            // لو أول رقم صفر -> نشيله ليتبقى 13 رقم
+            return gtin14.substring(1);
+        } else {
+            // لو أول رقم غير الصفر -> نشيل آخر رقم ليتبقى 13 رقم
+            return gtin14.substring(0, 13);
+        }
+    }
+    
+    // لو الكود 15 رقم بالضبط وباديء بصفر
+    if (digitsOnly.length === 15 && digitsOnly.startsWith("0")) {
+        return digitsOnly.substring(1);
+    }
+    
+    return digitsOnly || code;
+}
+
+// 2. تنظيف المدخلات اليدوية
+function normalizeManualScannerCode(value) {
+    if (!value) return '';
+    let parsed = parseBarcode(value);
+    return String(parsed || '').trim();
+}
+
+function clearManualScannerInput() {
+    const input = document.getElementById('scannerManualCode');
+    if (input) input.value = '';
+}
+
+function focusManualScannerInput(delay = 0) {
+    const run = () => {
+        const input = document.getElementById('scannerManualCode');
+        if (!input) return;
+        try {
+            input.focus();
+            input.select();
+        } catch (e) { }
+    };
+
+    if (delay > 0) setTimeout(run, delay);
+    else run();
+}
+
+function handleScannerManualInputKey(event) {
+    if (!event) return;
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        processManualScannerCode();
+    }
+}
+
+// 3. دالة البحث الذكي المطورة (تطابق الكود السداسي أو أي رقم داخل GTIN)
+function findProductByCodeOrGTIN(searchCode, rawCode = "") {
+    if (!searchCode) return null;
+    
+    const cleanSearch = String(searchCode).trim().toLowerCase();
+    const rawSearch = String(rawCode || '').replace(/\D/g, '').toLowerCase();
+    const searchNoZeros = cleanSearch.replace(/^0+/, '');
+
+    const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
+
+    return targetDB.find(product => {
+        // أ) المطابقة برقم الكود السداسي
+        const pCode = String(product.Code || product.code || '').trim().toLowerCase();
+        if (pCode === cleanSearch || (searchNoZeros && pCode.replace(/^0+/, '') === searchNoZeros)) {
+            return true;
         }
 
-        function clearManualScannerInput() {
-          const input = document.getElementById('scannerManualCode');
-          if (input) input.value = '';
+        // ب) المطابقة داخل مصفوفة الـ GTIN الخاصة بالمنتج
+        const gtinData = product.GTIN || product.gtin || product.Gtin;
+        if (gtinData) {
+            const gtinArray = Array.isArray(gtinData) ? gtinData : [gtinData];
+            return gtinArray.some(g => {
+                const gStr = String(g).trim().toLowerCase();
+                const gNoZeros = gStr.replace(/^0+/, '');
+
+                if (!gStr) return false;
+                
+                // 1. مطابقة تامة
+                if (gStr === cleanSearch || gNoZeros === searchNoZeros) return true;
+                
+                // 2. مطابقة بالوجود والتتابع
+                if (rawSearch && rawSearch.includes(gStr)) return true;
+                if (cleanSearch.includes(gStr) || gStr.includes(cleanSearch)) return true;
+
+                return false;
+            });
         }
 
-        function focusManualScannerInput(delay = 0) {
-          const run = () => {
-            const input = document.getElementById('scannerManualCode');
-            if (!input) return;
-            try {
-              input.focus();
-              input.select();
-            } catch (e) { }
-          };
+        return false;
+    });
+}
 
-          if (delay > 0) {
-            setTimeout(run, delay);
-          } else {
-            run();
-          }
-        }
+// 4. معالجة الإدخال اليدوي المعدلة
+function processManualScannerCode() {
+    const input = document.getElementById('scannerManualCode');
+    if (!input) return;
 
-        function handleScannerManualInputKey(event) {
-          if (!event) return;
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            processManualScannerCode();
-          }
-        }
+    ensureScannerUiExtras();
 
-        function processManualScannerCode() {
-          const input = document.getElementById('scannerManualCode');
-          if (!input) return;
-
-          ensureScannerUiExtras();
-
-          const cleanCode = normalizeManualScannerCode(input.value);
-          input.value = cleanCode;
-
-          if (!cleanCode || (cleanCode.length !== 6 && cleanCode.length < 8)) {
-            setLatestScannerMessage(`
+    const rawInput = input.value;
+    const cleanCode = normalizeManualScannerCode(rawInput);
+    
+    if (!cleanCode || (cleanCode.length !== 6 && cleanCode.length < 8)) {
+        setLatestScannerMessage(`
             <div style="color:#f59e0b;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
                 من فضلك اكتب الكود السداسي أو الباركود بشكل صحيح
             </div>
         `);
 
-            setScannerFeedback('error', 'إدخال غير مكتمل', 'اكتب الكود السداسي أو الباركود بشكل صحيح');
-            flashScannerSwipe('error');
+        setScannerFeedback('error', 'إدخال غير مكتمل', 'اكتب الكود السداسي أو الباركود بشكل صحيح');
+        flashScannerSwipe('error');
 
-            if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-            focusManualScannerInput(10);
-            return;
-          }
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+        focusManualScannerInput(10);
+        return;
+    }
 
-          const nowTs = Date.now();
-          if (cleanCode === lastScannedValue && nowTs - lastScannedAt < 1200) return;
+    const nowTs = Date.now();
+    if (cleanCode === lastScannedValue && nowTs - lastScannedAt < 1200) return;
 
-          lastScannedValue = cleanCode;
-          lastScannedAt = nowTs;
+    lastScannedValue = cleanCode;
+    lastScannedAt = nowTs;
 
-          processScannedCode(cleanCode);
+    // استدعاء معالجة الكود مع إمراره على findProductByCodeOrGTIN
+    processScannedCode(cleanCode, rawInput);
 
-          clearManualScannerInput();
-          focusManualScannerInput(50);
+    clearManualScannerInput();
+    focusManualScannerInput(50);
+}
+
+// 5. الربط مع الكاميرا
+function handleCameraScanSuccess(decodedText) {
+    if (!decodedText) return;
+    
+    let cleanCode = parseBarcode(decodedText);
+    
+    const nowTs = Date.now();
+    if (cleanCode === lastScannedValue && nowTs - lastScannedAt < 1200) return;
+    
+    lastScannedValue = cleanCode;
+    lastScannedAt = nowTs;
+    
+    processScannedCode(cleanCode, decodedText);
+}
+
+// 6. دالة تنفيذ معالجة الكود وإظهار كرت الصنف (processScannedCode)
+function processScannedCode(scannedCode, rawInput = "") {
+    // جلب الصنف باستخدام دالة البحث الذكي بدلاً من البحث العادي
+    const product = findProductByCodeOrGTIN(scannedCode, rawInput);
+
+    if (product) {
+        const itemCode = String(product.Code || product.code);
+        const nameEN = product["Item Description"] || product.nameEn || "";
+        const nameAR = product["أسم المنتج"] || product.nameAr || "";
+        const imageUrl = (product.itemurl && product.itemurl !== "No Image") ? product.itemurl : "";
+
+        // جلب العرض إن وجد
+        const offer = (typeof getOffer === 'function') ? getOffer(itemCode) : null;
+        const offerLabel = offer ? (offer.offerTypeAR || offer.offerType) : "لا يوجد عرض نشط حالياً ✕";
+        const offerLabelEN = offer ? (offer.offerType || offer.offerTypeEN) : "No Active Offer";
+        const statusColor = offer ? "#38ef7d" : "#ef4444";
+
+        const scannedItem = {
+            imageUrl,
+            nameEN,
+            nameAR,
+            cleanCode: itemCode, // نستخدم الكود السداسي الحقيقي للصنف عند إضافته
+            offerLabel,
+            offerLabelEN,
+            statusColor
+        };
+
+        // إضافة الصنف للقائمة
+        if (typeof addScannerRowToList === 'function') {
+            addScannerRowToList(scannedItem);
         }
 
-        function rememberScannedItem(item) {
-          if (!item || !item.cleanCode) return;
+        // إظهار كرت الصنف في الواجهة الرئيسية
+        setLatestScannerMessage(
+            buildScannerCardHtml({
+                ...scannedItem,
+                compact: false
+            })
+        );
 
-          scannedItemsMemory.push({
-            imageUrl: item.imageUrl || '',
-            nameEN: item.nameEN || '',
-            nameAR: item.nameAR || '',
-            cleanCode: item.cleanCode || '',
-            offerLabel: item.offerLabel || '',
-            offerLabelEN: item.offerLabelEN || '',
-            statusColor: item.statusColor || '#38ef7d'
-          });
+        rememberScannedItem(scannedItem);
+        setScannerFeedback('success', 'تم العثور على الصنف', `${nameEN}`);
+        flashScannerSwipe('success');
+
+    } else {
+        // في حالة عدم وجود الصنف في الداتا بيز
+        setLatestScannerMessage(`
+            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+                الصنف غير مسجل في قاعدة البيانات<br>
+                <span style="font-family:monospace;font-size:11px;color:#cbd5e1;">(${scannedCode})</span>
+            </div>
+        `);
+        setScannerFeedback('error', 'صنف غير معروف', 'هذا الباركود غير مسجل لديكم');
+        flashScannerSwipe('error');
+    }
+}
+
+function rememberScannedItem(item) {
+    if (!item || !item.cleanCode) return;
+
+    scannedItemsMemory.push({
+        imageUrl: item.imageUrl || '',
+        nameEN: item.nameEN || '',
+        nameAR: item.nameAR || '',
+        cleanCode: item.cleanCode || '',
+        offerLabel: item.offerLabel || '',
+        offerLabelEN: item.offerLabelEN || '',
+        statusColor: item.statusColor || '#38ef7d'
+    });
+}
+
+function renderScannerSavedState() {
+    ensureScannerUiExtras();
+
+    const listEl = document.getElementById('scannedItemsList');
+    if (listEl) listEl.innerHTML = '';
+
+    const saved = sessionStorage.getItem('scanned_items_session');
+    if (saved) {
+        try {
+            scannedItemsMemory = JSON.parse(saved);
+            scannedCodesSet = new Set(scannedItemsMemory.map(i => String(i.cleanCode).trim()));
+        } catch (e) {
+            console.error("❌ Error parsing scanner session:", e);
+            scannedItemsMemory = [];
+            scannedCodesSet.clear();
         }
+    }
 
-        function renderScannerSavedState() {
-          ensureScannerUiExtras();
+    scannedItemsMemory.forEach(item => {
+        addScannerRowToList({
+            imageUrl: item.imageUrl,
+            nameEN: item.nameEN,
+            nameAR: item.nameAR,
+            cleanCode: item.cleanCode,
+            offerLabel: item.offerLabel,
+            offerLabelEN: item.offerLabelEN,
+            statusColor: item.statusColor,
+            onlineOffer: item.onlineOffer || ''
+        });
+    });
 
-          const listEl = document.getElementById('scannedItemsList');
-          if (listEl) listEl.innerHTML = '';
+    if (scannedItemsMemory.length) {
+        const lastItem = scannedItemsMemory[0];
 
-          // 1. استعادة البيانات من الجلسة (Session) وتحديث الذاكرة الحية فوراً
-          const saved = sessionStorage.getItem('scanned_items_session');
-          if (saved) {
-            try {
-              scannedItemsMemory = JSON.parse(saved);
-              // تحديث الـ Set لضمان منع التكرار وعدم تعليق الفلترة
-              scannedCodesSet = new Set(scannedItemsMemory.map(i => String(i.cleanCode).trim()));
-            } catch (e) {
-              console.error("❌ Error parsing scanner session:", e);
-              scannedItemsMemory = [];
-              scannedCodesSet.clear();
-            }
-          }
-
-          // 2. رسم الكروت من الذاكرة (إرسال الـ onlineOffer الحالي لضمان عدم ظهور "جاري الفحص")
-          // استخدمنا reverse() أو ترتيب عكسي لو حابب الأحدث يظهر في الأول دائماً
-          scannedItemsMemory.forEach(item => {
-            addScannerRowToList({
-              imageUrl: item.imageUrl,
-              nameEN: item.nameEN,
-              nameAR: item.nameAR,
-              cleanCode: item.cleanCode,
-              offerLabel: item.offerLabel,
-              offerLabelEN: item.offerLabelEN,
-              statusColor: item.statusColor,
-              onlineOffer: item.onlineOffer || '' // ✅ القيمة هنا بتمنع اللودر من الظهور لو العرض موجود
-            });
-          });
-
-          if (scannedItemsMemory.length) {
-            // ترتيب الذاكرة عشان نجيب آخر واحد (عادة بيكون أول عنصر في المصفوفة)
-            const lastItem = scannedItemsMemory[0];
-
-            setLatestScannerMessage(
-              buildScannerCardHtml({
+        setLatestScannerMessage(
+            buildScannerCardHtml({
                 imageUrl: lastItem.imageUrl,
                 nameEN: lastItem.nameEN,
                 nameAR: lastItem.nameAR,
@@ -34496,72 +34645,70 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
                 offerLabel: lastItem.offerLabel,
                 offerLabelEN: lastItem.offerLabelEN,
                 statusColor: lastItem.statusColor,
-                onlineOffer: lastItem.onlineOffer || '', // ✅ عرض النتيجة النهائية في رسالة الحالة
+                onlineOffer: lastItem.onlineOffer || '',
                 compact: false
-              })
-            );
+            })
+        );
 
-            setScannerFeedback('idle', '📷 جاهز لمسح جديد', `تم استعادة ${scannedItemsMemory.length} صنف من الجلسة`);
-            resetScannerSwipeState();
-          } else {
-            setLatestScannerMessage(getScannerWaitingHtml());
-            setScannerFeedback('idle', '📷 جاهز للمسح', 'وجّه الباركود داخل الإطار');
-            resetScannerSwipeState();
-          }
+        setScannerFeedback('idle', '📷 جاهز لمسح جديد', `تم استعادة ${scannedItemsMemory.length} صنف من الجلسة`);
+        resetScannerSwipeState();
+    } else {
+        setLatestScannerMessage(getScannerWaitingHtml());
+        setScannerFeedback('idle', '📷 جاهز للمسح', 'وجّه الباركود داخل الإطار');
+        resetScannerSwipeState();
+    }
 
-          // تحديث نقاط السلايدر والعداد بعد الرندر
-          if (typeof updateScannerDots === 'function') updateScannerDots();
-          if (typeof updateSelectedCount === 'function') updateSelectedCount();
-        }
+    if (typeof updateScannerDots === 'function') updateScannerDots();
+    if (typeof updateSelectedCount === 'function') updateSelectedCount();
+}
 
-        function resetScannerSession() {
-          scannedItemsMemory = [];
+function resetScannerSession() {
+    scannedItemsMemory = [];
 
-          if (typeof scannedCodesSet !== 'undefined' && scannedCodesSet?.clear) {
-            scannedCodesSet.clear();
-          }
+    if (typeof scannedCodesSet !== 'undefined' && scannedCodesSet?.clear) {
+        scannedCodesSet.clear();
+    }
 
-          if (typeof selectedProductCodes !== 'undefined' && selectedProductCodes?.clear) {
-            selectedProductCodes.clear();
-          }
+    if (typeof selectedProductCodes !== 'undefined' && selectedProductCodes?.clear) {
+        selectedProductCodes.clear();
+    }
 
-          lastScannedValue = "";
-          lastScannedAt = 0;
+    lastScannedValue = "";
+    lastScannedAt = 0;
 
-          clearManualScannerInput();
+    clearManualScannerInput();
 
-          if (typeof updateSelectedCount === 'function') {
-            updateSelectedCount();
-          }
+    if (typeof updateSelectedCount === 'function') {
+        updateSelectedCount();
+    }
 
-          const listEl = document.getElementById('scannedItemsList');
-          if (listEl) listEl.innerHTML = '';
+    const listEl = document.getElementById('scannedItemsList');
+    if (listEl) listEl.innerHTML = '';
 
-          const printPanel = document.getElementById('scannerPrintPanel');
-          if (printPanel) printPanel.style.display = 'none';
+    const printPanel = document.getElementById('scannerPrintPanel');
+    if (printPanel) printPanel.style.display = 'none';
 
-          ensureScannerUiExtras();
-          setLatestScannerMessage(getScannerWaitingHtml());
-          setScannerFeedback('idle', '📷 جاهز للمسح', 'تم تصفير الجلسة الحالية');
-          resetScannerSwipeState();
+    ensureScannerUiExtras();
+    setLatestScannerMessage(getScannerWaitingHtml());
+    setScannerFeedback('idle', '📷 جاهز للمسح', 'تم تصفير الجلسة الحالية');
+    resetScannerSwipeState();
 
-          focusManualScannerInput(50);
-        }
+    focusManualScannerInput(50);
+}
 
-        async function destroyScannerInstance() {
-          if (!html5QrScanner) return;
+async function destroyScannerInstance() {
+    if (!html5QrScanner) return;
 
-          try {
-            await html5QrScanner.stop();
-          } catch (e) { }
+    try {
+        await html5QrScanner.stop();
+    } catch (e) { }
 
-          try {
-            await html5QrScanner.clear();
-          } catch (e) { }
+    try {
+        await html5QrScanner.clear();
+    } catch (e) { }
 
-          html5QrScanner = null;
-        }
-
+    html5QrScanner = null;
+}
         function getOfferForScanner(code) {
           if (typeof getOffer === 'function') {
             try {
@@ -35321,158 +35468,6 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
 
         // Process Code
         // =====================================================
-        async function processScannedCode(code) {
-          let cleanCode = String(code || '').trim();
-          if (!cleanCode) return;
-          
-          let searchCode = cleanCode.replace(/^0+/, '');
-          if (!searchCode) searchCode = cleanCode;
-
-          if (Array.isArray(window.productsDB)) {
-            const prod = window.productsDB.find(p => {
-                const c = String(p.Code || '').trim().replace(/^0+/, '');
-                const matchesCode = c === searchCode;
-                const matchesGTIN = Array.isArray(p.GTIN) && p.GTIN.some(g => String(g).trim().replace(/^0+/, '') === searchCode);
-                return matchesCode || matchesGTIN;
-            });
-            if (prod) {
-               cleanCode = String(prod.Code || '').trim();
-            }
-          }
-
-          if (navigator.vibrate) {
-            if (!scannedCodesSet.has(cleanCode)) {
-              navigator.vibrate(100);
-            } else {
-              navigator.vibrate([50, 50, 50]);
-            }
-          }
-
-          try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.type = 'sine';
-            const freq = scannedCodesSet.has(cleanCode) ? 440 : 880;
-            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.1);
-          } catch (e) { console.log("Audio blocked"); }
-
-          ensureScannerUiExtras();
-
-          if (!Array.isArray(window.productsDB) || !productsDB.length) {
-            setScannerFeedback('error', 'قاعدة البيانات غير جاهزة', 'استنى التحميل وجرب تاني');
-            return;
-          }
-
-          // --- 🟠 معالجة التكرار ---
-          if (scannedCodesSet.has(cleanCode)) {
-            setScannerFeedback('duplicate', 'موجود بالفعل', 'جاري الانتقال للكارت...');
-            const shell = document.querySelector('.scanner-shell');
-            if (shell) {
-              const dupToast = document.createElement('div');
-              dupToast.style.cssText = `
-                position:absolute; top:230px; left:50%;
-                transform:translateX(-50%);
-                background:#f59e0b; color:#fff;
-                padding:10px 22px; border-radius:30px;
-                font-size:14px; font-weight:800; z-index:100000;
-                border:2px solid #fff;
-                box-shadow:0 10px 30px rgba(245,158,11,0.5);
-                pointer-events:none;
-                transition:all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);
-                white-space:nowrap;
-            `;
-              dupToast.innerHTML = `⚠️ ${cleanCode} مضاف بالفعل`;
-              shell.appendChild(dupToast);
-              setTimeout(() => {
-                dupToast.style.opacity = '0';
-                dupToast.style.transform = 'translateX(-50%) translateY(20px)';
-                setTimeout(() => dupToast.remove(), 400);
-              }, 1200);
-            }
-            const card = document.getElementById(`card-row-${cleanCode}`);
-            if (card) {
-              card.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-              card.style.boxShadow = "0 0 25px #f59e0b";
-              setTimeout(() => card.style.boxShadow = "none", 1500);
-            }
-            return;
-          }
-
-          // --- 🟢 إضافة صنف جديد ---
-          const product = productsDB.find(p => String(p.Code || '').trim() === cleanCode);
-          if (!product) {
-            setScannerFeedback('error', `الكود ${cleanCode} غير موجود`, 'تأكد من الرقم المكتوب');
-            return;
-          }
-
-          // ====================================================
-          // 🖼️ الأولوية 1: DB image_url → DB itemurl
-          // ====================================================
-          const imageUrl = String(
-            product?.image_url ||
-            product?.itemurl ||
-            product?.ItemURL ||
-            ""
-          ).trim();
-
-          const offer = getOfferForScanner(cleanCode);
-          const isOfferActive = isOfferCurrentlyActive(offer);
-
-          const itemData = {
-            imageUrl,
-            needsWorkerImage: !imageUrl,
-            cleanCode,
-            nameEN: product["Item Description English"] || product["Item Description"] || "Unknown",
-            nameAR: product["أسم المنتج"] || "",
-            offerLabel: isOfferActive ? (offer?.offerTypeAR || 'العرض متاح') : '❌ لا يوجد عرض نشط حالياً',
-            offerLabelEN: isOfferActive ? (offer?.offerType || 'Offer Active') : 'No Active Offer',
-            statusColor: isOfferActive ? '#38ef7d' : '#ef4444',
-            onlineOffer: "",
-            onlineOfferData: null
-          };
-
-          addScannerRowToList(itemData);
-          scannedItemsMemory.unshift(itemData);
-          scannedCodesSet.add(cleanCode);
-          persistScannerSession();
-
-          const shell = document.querySelector('.scanner-shell');
-          if (shell) {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-            position:absolute; top:230px; left:50%;
-            transform:translateX(-50%);
-            background:rgba(15,23,42,0.9); color:#38ef7d;
-            padding:10px 22px; border-radius:30px;
-            font-size:14px; font-weight:800; z-index:100000;
-            border:2px solid #38ef7d;
-            box-shadow:0 10px 30px rgba(0,0,0,0.6);
-            pointer-events:none;
-            transition:all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);
-            white-space:nowrap;
-        `;
-            toast.innerHTML = `✅ Added: ${cleanCode}`;
-            shell.appendChild(toast);
-            setTimeout(() => {
-              toast.style.opacity = '0';
-              toast.style.transform = 'translateX(-50%) translateY(20px)';
-              setTimeout(() => toast.remove(), 400);
-            }, 1200);
-          }
-
-          setScannerFeedback('success', `تمت إضافة ${cleanCode}`, 'اضغط على زر الأونلاين لجلب العرض');
-          flashScannerSwipe('success');
-
-          function persistScannerSession() {
-            try { sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); } catch (e) { }
-          }
-        }
         function updateCardWithOnlineOffer(code, onlineOfferText, onlineOfferData = null) {
           const cleanCode = String(code || '').trim();
           if (!cleanCode) return;
@@ -36116,6 +36111,39 @@ function clearAllScannerData() {
 
     console.log("✅ Scanner data cleared successfully.");
 }
+function parseBarcode(code) {
+    if (!code) return "";
+    code = String(code).trim();
+    
+    // 1. تنظيف أي رموز غريبة غير مرئية أو رموز بداية الاسكانر
+    code = code.replace(/^[^a-zA-Z0-9\](]+/, "");
+    
+    // 2. إزالة بادئات Symbology Identifiers
+    if (code.startsWith("]C1") || code.startsWith("]d2") || code.startsWith("]e0")) {
+        code = code.substring(3);
+    }
+    
+    // 3. تنظيف أي رموز متبقية قبل الأرقام
+    code = code.replace(/^[^0-9]+/, "");
+    
+    // 4. استخراج كود الـ GTIN الـ 14 رقم بعد "01" (GS1 DataMatrix)
+    if (code.startsWith("01") && code.length > 15) {
+        let gtin = code.substring(2, 16);
+        // حذف الصفر في البداية إن وجد للتوافق مع باركود الأصناف (EAN-13)
+        if (gtin.startsWith("0")) {
+            gtin = gtin.substring(1);
+        }
+        return gtin;
+    }
+    
+    // 5. إذا كان الباركود 15 رقم ويبدأ بصفر
+    if (code.length === 15 && code.startsWith("0")) {
+        return code.substring(1);
+    }
+    
+    return code;
+}
+
 </script>
 
 
