@@ -1481,19 +1481,24 @@ body.day-mode .sadaqa-badge {
                 والتنبيه</button>
         </div>
     </div>
+<div id="iframeContainer">
+    <button id="floatingBackBtn" onclick="closeIframe()">
+        <div class="back-arrow"></div>
+    </button>
+    
+    <!-- تم حذف الـ sandbox القاسي وإضافة السماح الصريح للكاميرا والميديا -->
+    <iframe id="embeddedFrame" 
+            src="about:blank" 
+            allow="camera *; microphone *; autoplay; fullscreen" 
+            allowfullscreen 
+            scrolling="yes"></iframe>
 
-    <div id="iframeContainer">
-        <button id="floatingBackBtn" onclick="closeIframe()">
-            <div class="back-arrow"></div>
-        </button>
-       <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="camera; microphone; geolocation; autoplay; fullscreen" scrolling="yes"
-    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-downloads"></iframe>
-        <div id="iframeError">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>Connection Error</h3>
-            <p>Unable to load the requested content. Please check your internet connection and try again.</p>
-        </div>
+    <div id="iframeError">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Connection Error</h3>
+        <p>Unable to load the requested content. Please check your internet connection.</p>
     </div>
+</div>
 
     <!-- LIGHTBOX -->
     <div id="lightbox" onclick="closeLightbox(event)">
@@ -2477,11 +2482,12 @@ body.day-mode .sadaqa-badge {
             }, 5000);
         }
 
-        function openScannerDirectly() {
-            openLink('offersgit.html?mode=scanner');
-        }
+function openScannerDirectly() {
+    // الفتح المباشر للصفحة بوضع الاسكانر لضمان طلب إذن الكاميرا وتفادي قيود الـ iframe
+    window.location.href = 'offersgit.html?mode=scanner';
+}
 
-        window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
             if (window.location.href.indexOf('mode=scanner') !== -1) {
                 openScannerDirectly();
             }
