@@ -36081,6 +36081,32 @@ const secureFetchUrl = atob("aHR0cHM6Ly9zdGdwcmV2YXBpLmFsLWRhd2FhLmNvbS9tZWRpYXM
         block();
     } catch (err) {}
 })();
+function clearAllScannerData() {
+    // 1. تفريغ جميع مصفوفات وذاكرة السكانر
+    if (typeof scannedItemsMemory !== 'undefined') scannedItemsMemory = [];
+    if (typeof window.scannedItemsMemory !== 'undefined') window.scannedItemsMemory = [];
+    if (typeof scannedItems !== 'undefined') scannedItems = [];
+    if (typeof window.scannedItems !== 'undefined') window.scannedItems = [];
+
+    // 2. تفريغ الحاوية التي تعرض الكروت الممسوحة في الشاشة
+    const listContainer = document.getElementById('scannedItemsList');
+    if (listContainer) {
+        listContainer.innerHTML = '';
+    }
+
+    // 3. إخفاء أو إعادة إغلاق المودالات المفتوحة إن وجدت
+    const confirmOverlay = document.getElementById('deleteConfirmOverlay');
+    if (confirmOverlay) {
+        confirmOverlay.style.display = 'none';
+    }
+
+    // 4. إظهار رسالة تأكيد للعميل باستخدام البوب اب الفخم
+    if (typeof showCustomScannerAlert === 'function') {
+        showCustomScannerAlert("تم المسح", "تم تفريغ جميع الأصناف الممسوحة بنجاح");
+    }
+
+    console.log("✅ Scanner data cleared successfully.");
+}
 </script>
 
 
