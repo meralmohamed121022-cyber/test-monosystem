@@ -35283,7 +35283,7 @@ async function openBarcodeScanner() {
   const printPanel = document.getElementById('scannerPrintPanel');
   const manualInput = document.getElementById('scannerManualCode');
   
-  // 1. نقل الـ overlay أولاً وإظهاره لتهيئة الـ DOM
+  // 1. نقل الـ overlay أولاً وقبل أي عمليات رندر لمنع تدمير بث الفيديو (Fix Black Screen)
   if (overlay) {
     if (overlay.parentElement !== document.body) {
       document.body.appendChild(overlay);
@@ -35300,7 +35300,7 @@ async function openBarcodeScanner() {
     }
   }
 
-  // إخفاء زر المنيو مؤقتاً أثناء عمل السكاينر
+  // إخفاء زر المنيو مؤقتاً أثناء عمل السكاينر عشان ميبقاش فوق الكاميرا
   const toggleBtn = document.getElementById('toolsSidebarToggle');
   if (toggleBtn) toggleBtn.style.display = 'none';
 
@@ -35321,21 +35321,22 @@ async function openBarcodeScanner() {
 
   if (printPanel) printPanel.style.display = 'none';
 
-  // إعدادات حقل الإدخال اليدوي
+  // 🔴 التعديل: إعدادات حقل الإدخال اليدوي
   if (manualInput) {
     manualInput.value = '';
 
-    // إيقاف الكيبورد التلقائي عند فتح المودل
+    // 1. إيقاف الكيبورد التلقائي عند فتح المودل
     manualInput.setAttribute('inputmode', 'none');
+
     manualInput.setAttribute('type', 'text');
     manualInput.setAttribute('pattern', '[0-9]*');
 
-    // لو المستخدم لمس الحقل بنفسه، نفتح كيبورد الأرقام
+    // 2. لو المستخدم لمس الحقل بنفسه عشان يكتب، نفتح كيبورد الأرقام
     manualInput.addEventListener('click', function () {
       this.setAttribute('inputmode', 'numeric');
     });
 
-    // لما يطلع من الحقل، نرجع نمنع الكيبورد
+    // 3. لما يطلع من الحقل، نرجع نمنع الكيبورد تاني
     manualInput.addEventListener('blur', function () {
       this.setAttribute('inputmode', 'none');
     });
@@ -35370,12 +35371,10 @@ async function openBarcodeScanner() {
     return;
   }
 
-  // 🔴 إضافة هامة: إجبار استقرار الـ DOM بانتظار 300 ملي ثانية لضمان اكتمال أبعاد الحاوية
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  // طلب إذن الكاميرا الصريح من المتصفح
+  // 🔴 إضافة هامة جداً: إجبار المتصفح على إظهار نافذة طلب إذن الكاميرا صراحة فوراً
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    // إيقاف الـ stream المؤقت فوراً حتى تتمكن مكتبة Html5Qrcode من المباشرة بحصريتها
     stream.getTracks().forEach(track => track.stop());
   } catch (permErr) {
     console.warn("Direct camera permission prompt error:", permErr);
@@ -35389,6 +35388,7 @@ async function openBarcodeScanner() {
     const config = {
       fps: 30,
       qrbox: (viewfinderWidth, viewfinderHeight) => {
+        // تكبير مساحة المسح لتشمل أغلب الشاشة
         const w = Math.min(viewfinderWidth * 0.95, 600);
         const h = Math.min(viewfinderHeight * 0.85, 600);
         return { width: w, height: h };
@@ -35421,7 +35421,7 @@ async function openBarcodeScanner() {
 
         if (!cleanDecoded) return;
         
-        // استخراج الكود النظيف أو الـ GTIN باستخدام الدالة المعدلة
+        // استخراج الكود النظيف أو الـ GTIN باستخدام دالتنا المعدلة
         const processedCode = (typeof parseBarcode === 'function') ? parseBarcode(cleanDecoded) : cleanDecoded;
 
         if (processedCode === lastScannedValue && nowTs - lastScannedAt < 1200) return;
@@ -35435,7 +35435,7 @@ async function openBarcodeScanner() {
       () => { }
     );
 
-    // تأخير إجبار تشغيل عنصر الفيديو لمنع التجمد
+    // تأخير إجبار تشغيل الفيديو لضمان عدم تعليق الكاميرا باللون الأسود داخل الـ Iframe
     setTimeout(() => {
       const video = document.querySelector("#reader video");
       if (video) {
@@ -35449,7 +35449,7 @@ async function openBarcodeScanner() {
         video.style.background = "#000";
         video.play().catch(() => { });
       }
-    }, 200);
+    }, 450);
 
     if (!scannedItemsMemory.length) {
       setLatestScannerMessage(`
@@ -35479,6 +35479,7 @@ async function openBarcodeScanner() {
     focusManualScannerInput(150);
   }
 }
+
 // Process Code
         // =====================================================
         function updateCardWithOnlineOffer(code, onlineOfferText, onlineOfferData = null) {
