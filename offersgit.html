@@ -35277,196 +35277,210 @@ async function destroyScannerInstance() {
         // =====================================================
         // Open Scanner
         // =====================================================
-        async function openBarcodeScanner() {
-          const overlay = document.getElementById('scannerModalOverlay');
-          const readerEl = document.getElementById('reader');
-          const printPanel = document.getElementById('scannerPrintPanel');
-          const manualInput = document.getElementById('scannerManualCode');
-          
-          if (overlay) {
-            if (overlay.parentElement !== document.body) {
-              document.body.appendChild(overlay);
-            }
-            overlay.style.display = 'flex';
-          }
+async function openBarcodeScanner() {
+  const overlay = document.getElementById('scannerModalOverlay');
+  const readerEl = document.getElementById('reader');
+  const printPanel = document.getElementById('scannerPrintPanel');
+  const manualInput = document.getElementById('scannerManualCode');
+  
+  // 1. نقل الـ overlay أولاً وقبل أي عمليات رندر لمنع تدمير بث الفيديو (Fix Black Screen)
+  if (overlay) {
+    if (overlay.parentElement !== document.body) {
+      document.body.appendChild(overlay);
+    }
+    overlay.style.display = 'flex';
+  }
 
-          const shell = document.querySelector('.scanner-shell');
-          if (shell) {
-            if (window.innerWidth >= 768) {
-              shell.classList.add('scanner-shell-horizontal');
-            } else {
-              shell.classList.remove('scanner-shell-horizontal');
-            }
-          }
+  const shell = document.querySelector('.scanner-shell');
+  if (shell) {
+    if (window.innerWidth >= 768) {
+      shell.classList.add('scanner-shell-horizontal');
+    } else {
+      shell.classList.remove('scanner-shell-horizontal');
+    }
+  }
 
-          // إخفاء زر المنيو مؤقتاً أثناء عمل السكاينر عشان ميبقاش فوق الكاميرا
-          const toggleBtn = document.getElementById('toolsSidebarToggle');
-          if (toggleBtn) toggleBtn.style.display = 'none';
+  // إخفاء زر المنيو مؤقتاً أثناء عمل السكاينر عشان ميبقاش فوق الكاميرا
+  const toggleBtn = document.getElementById('toolsSidebarToggle');
+  if (toggleBtn) toggleBtn.style.display = 'none';
 
-          ensureScannerUiExtras();
+  ensureScannerUiExtras();
 
-          if (readerEl) {
-            readerEl.innerHTML = '';
-            readerEl.style.width = '90%';
-            readerEl.style.marginLeft = 'auto';
-            readerEl.style.marginRight = 'auto';
-            readerEl.style.height = window.innerWidth <= 400 ? '220px' : '280px';
-            readerEl.style.minHeight = window.innerWidth <= 400 ? '220px' : '280px';
-            readerEl.style.background = '#000';
-            readerEl.style.borderRadius = '18px';
-            readerEl.style.overflow = 'hidden';
-            readerEl.style.position = 'relative';
-          }
+  if (readerEl) {
+    readerEl.innerHTML = '';
+    readerEl.style.width = '90%';
+    readerEl.style.marginLeft = 'auto';
+    readerEl.style.marginRight = 'auto';
+    readerEl.style.height = window.innerWidth <= 400 ? '220px' : '280px';
+    readerEl.style.minHeight = window.innerWidth <= 400 ? '220px' : '280px';
+    readerEl.style.background = '#000';
+    readerEl.style.borderRadius = '18px';
+    readerEl.style.overflow = 'hidden';
+    readerEl.style.position = 'relative';
+  }
 
-          if (printPanel) printPanel.style.display = 'none';
+  if (printPanel) printPanel.style.display = 'none';
 
-          // 🔴 التعديل هنا: استخدام inputmode="numeric" لفتح كيبورد الأرقام فقط
-          if (manualInput) {
-            manualInput.value = '';
+  // 🔴 التعديل: إعدادات حقل الإدخال اليدوي
+  if (manualInput) {
+    manualInput.value = '';
 
-            // 1. إيقاف الكيبورد التلقائي عند فتح المودل
-            manualInput.setAttribute('inputmode', 'none');
+    // 1. إيقاف الكيبورد التلقائي عند فتح المودل
+    manualInput.setAttribute('inputmode', 'none');
 
-            // التأكد من أن نوع الحقل text وليس number لمنع مشاكل الأسهم في المتصفح،
-            // لكننا نستخدم inputmode و pattern لفرض كيبورد الأرقام
-            manualInput.setAttribute('type', 'text');
-            manualInput.setAttribute('pattern', '[0-9]*');
+    manualInput.setAttribute('type', 'text');
+    manualInput.setAttribute('pattern', '[0-9]*');
 
-            // 2. لو المستخدم لمس الحقل بنفسه عشان يكتب، نفتح كيبورد الأرقام
-            manualInput.addEventListener('click', function () {
-              this.setAttribute('inputmode', 'numeric');
-            });
+    // 2. لو المستخدم لمس الحقل بنفسه عشان يكتب، نفتح كيبورد الأرقام
+    manualInput.addEventListener('click', function () {
+      this.setAttribute('inputmode', 'numeric');
+    });
 
-            // 3. لما يطلع من الحقل، نرجع نمنع الكيبورد تاني عشان المرات الجاية
-            manualInput.addEventListener('blur', function () {
-              this.setAttribute('inputmode', 'none');
-            });
-          }
+    // 3. لما يطلع من الحقل، نرجع نمنع الكيبورد تاني
+    manualInput.addEventListener('blur', function () {
+      this.setAttribute('inputmode', 'none');
+    });
+  }
 
-          renderScannerSavedState();
+  renderScannerSavedState();
 
-          lastScannedValue = "";
-          lastScannedAt = 0;
+  lastScannedValue = "";
+  lastScannedAt = 0;
 
-          if (typeof Html5Qrcode === 'undefined') {
-            setLatestScannerMessage(`
-            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                مكتبة html5-qrcode غير محملة
-            </div>
-        `);
-            setScannerFeedback('error', 'خطأ في المكتبة', 'مكتبة html5-qrcode غير محملة');
-            flashScannerSwipe('error');
-            focusManualScannerInput(150);
-            return;
-          }
+  if (typeof Html5Qrcode === 'undefined') {
+    setLatestScannerMessage(`
+    <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+        مكتبة html5-qrcode غير محملة
+    </div>
+`);
+    setScannerFeedback('error', 'خطأ في المكتبة', 'مكتبة html5-qrcode غير محملة');
+    flashScannerSwipe('error');
+    focusManualScannerInput(150);
+    return;
+  }
 
-          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            setLatestScannerMessage(`
-            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                المتصفح لا يدعم الكاميرا
-            </div>
-        `);
-            setScannerFeedback('error', 'الكاميرا غير مدعومة', 'المتصفح لا يدعم تشغيل الكاميرا');
-            flashScannerSwipe('error');
-            focusManualScannerInput(150);
-            return;
-          }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setLatestScannerMessage(`
+    <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+        المتصفح لا يدعم الكاميرا
+    </div>
+`);
+    setScannerFeedback('error', 'الكاميرا غير مدعومة', 'المتصفح لا يدعم تشغيل الكاميرا');
+    flashScannerSwipe('error');
+    focusManualScannerInput(150);
+    return;
+  }
 
-          try {
-            await destroyScannerInstance();
+  // 🔴 إضافة هامة جداً: إجبار المتصفح على إظهار نافذة طلب إذن الكاميرا صراحة فوراً
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    // إيقاف الـ stream المؤقت فوراً حتى تتمكن مكتبة Html5Qrcode من المباشرة بحصريتها
+    stream.getTracks().forEach(track => track.stop());
+  } catch (permErr) {
+    console.warn("Direct camera permission prompt error:", permErr);
+  }
 
-            html5QrScanner = new Html5Qrcode("reader");
+  try {
+    await destroyScannerInstance();
 
-            const config = {
-              fps: 30,
-              qrbox: (viewfinderWidth, viewfinderHeight) => {
-                // تكبير مساحة المسح لتشمل أغلب الشاشة كما طلب المستخدم
-                const w = Math.min(viewfinderWidth * 0.95, 600);
-                const h = Math.min(viewfinderHeight * 0.85, 600);
-                return { width: w, height: h };
-              },
-              // إزالة aspectRatio الثابت لتجنب أي تمطيط في الصورة على بعض الأجهزة
-              experimentalFeatures: {
-                useBarCodeDetectorIfSupported: true
-              }
-            };
+    html5QrScanner = new Html5Qrcode("reader");
 
-            if (typeof Html5QrcodeSupportedFormats !== 'undefined') {
-              // إضافة التنسيقات بكل المسميات الممكنة (بشرطة وبدون) لضمان العمل على أي نسخة
-              config.formatsToSupport = [
-                Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.QRCODE,
-                Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE128,
-                Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE39,
-                Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN13,
-                Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.EAN8,
-                Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPCA,
-                Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.UPCE,
-                Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.DATAMATRIX,
-                Html5QrcodeSupportedFormats.ITF
-              ].filter(f => f !== undefined);
-            }
+    const config = {
+      fps: 30,
+      qrbox: (viewfinderWidth, viewfinderHeight) => {
+        // تكبير مساحة المسح لتشمل أغلب الشاشة
+        const w = Math.min(viewfinderWidth * 0.95, 600);
+        const h = Math.min(viewfinderHeight * 0.85, 600);
+        return { width: w, height: h };
+      },
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true
+      }
+    };
 
-            await html5QrScanner.start(
-              { facingMode: "environment" },
-              config,
-              (decodedText) => {
-                const cleanDecoded = String(decodedText || "").trim();
-                const nowTs = Date.now();
+    if (typeof Html5QrcodeSupportedFormats !== 'undefined') {
+      config.formatsToSupport = [
+        Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.QRCODE,
+        Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE128,
+        Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE39,
+        Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN13,
+        Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.EAN8,
+        Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPCA,
+        Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.UPCE,
+        Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.DATAMATRIX,
+        Html5QrcodeSupportedFormats.ITF
+      ].filter(f => f !== undefined);
+    }
 
-                if (!cleanDecoded) return;
-                if (cleanDecoded === lastScannedValue && nowTs - lastScannedAt < 1200) return;
+    await html5QrScanner.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText) => {
+        const cleanDecoded = String(decodedText || "").trim();
+        const nowTs = Date.now();
 
-                lastScannedValue = cleanDecoded;
-                lastScannedAt = nowTs;
-                processScannedCode(cleanDecoded);
-              },
-              () => { }
-            );
+        if (!cleanDecoded) return;
+        
+        // استخراج الكود النظيف أو الـ GTIN باستخدام دالتنا المعدلة
+        const processedCode = (typeof parseBarcode === 'function') ? parseBarcode(cleanDecoded) : cleanDecoded;
 
-            setTimeout(() => {
-              const video = document.querySelector("#reader video");
-              if (video) {
-                video.setAttribute("playsinline", "true");
-                video.setAttribute("autoplay", "true");
-                video.setAttribute("muted", "true");
-                video.muted = true;
-                video.style.width = "100%";
-                video.style.height = "100%";
-                video.style.objectFit = "cover";
-                video.style.background = "#000";
-                video.play().catch(() => { });
-              }
-            }, 400);
+        if (processedCode === lastScannedValue && nowTs - lastScannedAt < 1200) return;
 
-            if (!scannedItemsMemory.length) {
-              setLatestScannerMessage(`
-                <div style="color:#22c55e;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                    الكاميرا شغالة، وجّه الباركود داخل الإطار الواسع
-                </div>
-            `);
-            }
+        lastScannedValue = processedCode;
+        lastScannedAt = nowTs;
 
-            setScannerFeedback('idle', '📷 الكاميرا شغالة', 'وجّه الباركود داخل الإطار');
-            resetScannerSwipeState();
+        // إمرار الكود المعالج ومعه النص الخام للمطابقة
+        processScannedCode(processedCode, cleanDecoded);
+      },
+      () => { }
+    );
 
-            focusManualScannerInput(300);
+    // تأخير إجبار تشغيل الفيديو لضمان عدم تعليق الكاميرا باللون الأسود داخل الـ Iframe
+    setTimeout(() => {
+      const video = document.querySelector("#reader video");
+      if (video) {
+        video.setAttribute("playsinline", "true");
+        video.setAttribute("autoplay", "true");
+        video.setAttribute("muted", "true");
+        video.muted = true;
+        video.style.width = "100%";
+        video.style.height = "100%";
+        video.style.objectFit = "cover";
+        video.style.background = "#000";
+        video.play().catch(() => { });
+      }
+    }, 450);
 
-          } catch (err) {
-            console.error("Scanner Error:", err);
-            setLatestScannerMessage(`
-            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                فشل تشغيل الكاميرا<br>
-                ${escapeHtml(err?.message || "Unknown error")}
-            </div>
-        `);
-            setScannerFeedback('error', 'فشل تشغيل الكاميرا', err?.message || 'Unknown error');
-            flashScannerSwipe('error');
-            await destroyScannerInstance();
-            focusManualScannerInput(150);
-          }
-        }
+    if (!scannedItemsMemory.length) {
+      setLatestScannerMessage(`
+        <div style="color:#22c55e;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+            الكاميرا شغالة، وجّه الباركود داخل الإطار الواسع
+        </div>
+    `);
+    }
 
-        // Process Code
+    setScannerFeedback('idle', '📷 الكاميرا شغالة', 'وجّه الباركود داخل الإطار');
+    resetScannerSwipeState();
+
+    focusManualScannerInput(300);
+
+  } catch (err) {
+    console.error("Scanner Error:", err);
+    const errMsg = String(err?.message || err || "Unknown error");
+    setLatestScannerMessage(`
+    <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+        فشل تشغيل الكاميرا<br>
+        ${errMsg}
+    </div>
+`);
+    setScannerFeedback('error', 'فشل تشغيل الكاميرا', errMsg);
+    flashScannerSwipe('error');
+    await destroyScannerInstance();
+    focusManualScannerInput(150);
+  }
+}
+
+// Process Code
         // =====================================================
         function updateCardWithOnlineOffer(code, onlineOfferText, onlineOfferData = null) {
           const cleanCode = String(code || '').trim();
