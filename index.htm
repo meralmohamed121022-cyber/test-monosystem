@@ -7,10 +7,73 @@
     <title>MONO SYSTEM</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon"
-        href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
-    <link rel="apple-touch-icon"
-        href="https://raw.githubusercontent.com/meralmohamed12/1022-cyberDrug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d86/20251129_184528_0005.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="app-icon.jpg">
+    <link rel="apple-touch-icon" href="app-icon.jpg">
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script>
+        if (window.location.href.indexOf('mode=scanner') !== -1) {
+            document.documentElement.classList.add('scanner-mode-active');
+        }
+    </script>
+    <style>
+        .scanner-mode-active #loginOverlay,
+        .scanner-mode-active #homePage,
+        .scanner-mode-active #bottomNav,
+        .scanner-mode-active #modeToggle,
+        .scanner-mode-active #scrollBtn,
+        .scanner-mode-active #userInfoBadge {
+            display: none !important;
+        }
+        .scanner-mode-active #iframeContainer {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 999999 !important;
+        }
+
+        /* PREMIUM ANIMATIONS */
+        .move-top-left {
+            animation: moveTopLeftAnim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+        @keyframes moveTopLeftAnim {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(-45vw, -45vh) scale(0.3); opacity: 0; }
+        }
+        
+        /* Premium Menu Nav Improvements */
+        #bottomNav {
+            background: rgba(13, 33, 55, 0.6) !important;
+            backdrop-filter: blur(25px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-top: 1px solid rgba(255,255,255,0.1) !important;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.2) !important;
+        }
+        .nav-btn {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            padding: 8px 15px;
+        }
+        .nav-btn.active {
+            background: rgba(255, 107, 53, 0.15);
+            box-shadow: inset 0 0 10px rgba(255, 107, 53, 0.05);
+        }
+        .nav-btn:active::after {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100px; height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple 0.4s ease-out;
+        }
+        @keyframes ripple {
+            to { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+    </style>
 
     <style>
         @media screen and (max-width: 0px) {}
@@ -202,7 +265,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-primary);
+            background: transparent;
             z-index: 21000;
             display: none;
             flex-direction: column;
@@ -220,7 +283,7 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            display: flex;
+            display: none !important;
             align-items: center;
             justify-content: center;
             padding: 8px;
@@ -920,6 +983,7 @@
         }
 
         #floatingBackBtn {
+            display: none !important;
             position: fixed;
             top: 60px;
             left: 10px;
@@ -1142,11 +1206,212 @@
                 font-size: 20px;
             }
         }
+        .sadaqa-badge {
+    text-align: center;
+    margin: 40px auto 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    max-width: 400px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.sadaqa-badge:hover {
+    opacity: 1;
+}
+
+.sadaqa-badge i {
+    font-size: 20px;
+    color: var(--accent-orange);
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+.sadaqa-badge p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+}
+
+body.day-mode .sadaqa-badge {
+    background: rgba(0, 0, 0, 0.02);
+}
+/* تنسيق النافذة الترحيبية للصدقة الجارية */
+.sadaqa-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 35000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.sadaqa-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sadaqa-modal {
+    background: var(--glass-bg);
+    border: 1px solid var(--accent-orange);
+    padding: 30px 25px;
+    border-radius: 20px;
+    width: 88%;
+    max-width: 380px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 107, 53, 0.15);
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.sadaqa-overlay.show .sadaqa-modal {
+    transform: translateY(0) scale(1);
+}
+
+.sadaqa-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-secondary);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s ease;
+}
+
+.sadaqa-close-btn:hover {
+    background: var(--accent-orange);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.sadaqa-modal i.main-icon {
+    font-size: 42px;
+    color: var(--accent-orange);
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 8px rgba(255, 107, 53, 0.3));
+}
+
+.sadaqa-modal h3 {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.sadaqa-modal p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+}
+
+#installAppBanner {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: linear-gradient(135deg, var(--accent-orange), #ff4b2b);
+    color: white;
+    padding: 12px 15px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 20000;
+    box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+    transition: opacity 0.4s, transform 0.4s;
+}
+
+#installAppBanner.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 20px);
+}
+
+.install-app-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    cursor: pointer;
+}
+
+.install-app-icon {
+    font-size: 28px;
+}
+
+.install-app-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.install-app-text span:first-child {
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.install-app-text span:last-child {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.install-app-close {
+    background: rgba(0,0,0,0.2);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.install-app-close:hover {
+    background: rgba(0,0,0,0.4);
+    transform: scale(1.1);
+}
     </style>
 </head>
 
 <body>
-
+<!-- لاير الصدقة الجارية الترحيبي -->
+<div id="sadaqaOverlay" class="sadaqa-overlay">
+    <div class="sadaqa-modal">
+        <button class="sadaqa-close-btn" onclick="closeSadaqaModal()" title="إغلاق">&times;</button>
+        <i class="fas fa-hands-praying main-icon"></i>
+        <h3>صدقة جارية</h3>
+        <p>هذا العمل صدقة جارية على روح والدي.<br>نسألكم الدعاء له بالرحمة والمغفرة.</p>
+    </div>
+</div>
     <div id="userInfoBadge">
         <i class="fas fa-user-md"></i>
         <span id="pharmacyDisplay">Pharmacy --</span>
@@ -1156,12 +1421,16 @@
         preload="auto"></audio>
 
     <div id="loginOverlay" class="custom-modal-overlay">
-        <div class="custom-modal-box">
-            <h2>
-                <i class="fas fa-lock" style="color:var(--accent-orange);"></i>
+        <div class="custom-modal-box" style="overflow: hidden; position: relative;">
+            <div class="premium-glow" style="position: absolute; top: -50px; left: -50px; width: 100px; height: 100px; background: var(--accent-orange); filter: blur(50px); opacity: 0.3; border-radius: 50%;"></div>
+            
+            <lottie-player id="loginLottie" src="https://lottie.host/e3f4e3c4-4b57-4648-bdf3-8e404b901a18/sH1X3V1kX7.json" background="transparent" speed="1" style="width: 120px; height: 120px; margin: -20px auto 10px;" loop autoplay></lottie-player>
+
+            <h2 style="font-weight: 800; letter-spacing: 1px;">
+                <i class="fas fa-lock" style="color:var(--accent-orange); font-size: 0.8em; margin-right: 5px;"></i>
                 Login
             </h2>
-            <p style="font-size: 14px; margin-top: 10px; color: var(--text-secondary);">
+            <p style="font-size: 14px; margin-top: 5px; color: var(--text-secondary);">
                 Enter your pharmacy number
             </p>
             <div id="app-version-info"
@@ -1169,12 +1438,12 @@
                 onclick="window.location.reload(true)">
                 Version 1.1.6 (Click to update)
             </div>
-            <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)">
-            <button onclick="doLogin()" style="background: var(--accent-orange);">
+            <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)" style="text-align: center; font-weight: bold; font-size: 18px; letter-spacing: 2px;">
+            <button id="loginBtn" onclick="doLogin()" style="background: linear-gradient(135deg, var(--accent-orange), #ff4b2b); box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3); margin-top: 15px;">
                 Login <i class="fas fa-sign-in-alt"></i>
             </button>
 
-            <a href="https://wa.me/966541932559?text=Hello%20I%20need%20support" target="_blank" style="
+            <a href="https://wa.me/966541932559?text=Hello%20I%20need%20support%20to%20login%20Monosystem%20platform" target="_blank" style="
                     display: flex; align-items: center; justify-content: center; gap: 10px;
                     width: 100%; margin-top: 12px; padding: 12px 18px; border-radius: 12px;
                     text-decoration: none; font-size: 16px; font-weight: bold;
@@ -1241,8 +1510,27 @@
             class="fas fa-arrow-down"></i></button>
 
     <div id="homePage">
+        <div class="app-logo-header" style="text-align: center; margin-bottom: 25px; padding: 15px 10px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.1); backdrop-filter: blur(10px);">
+            <i class="fas fa-prescription-bottle-alt" style="font-size: 45px; color: var(--accent-orange); filter: drop-shadow(0 4px 8px rgba(255, 107, 53, 0.4)); margin-bottom: 10px;"></i>
+            <h1 style="font-size: 26px; font-weight: 900; letter-spacing: 2px; color: var(--text-primary); text-transform: uppercase;">MONO <span style="color: var(--accent-orange);">SYSTEM</span></h1>
+            <p style="font-size: 13px; color: var(--text-secondary); letter-spacing: 1px; font-weight: 500; margin-top: 5px;">Smart Pharmacy Management</p>
+        </div>
         <div class="banner-container" id="bannerContainer"></div>
         <div class="content-grid" id="contentGrid"></div>
+    </div>
+
+    <!-- شريط تثبيت التطبيق -->
+    <div id="installAppBanner">
+        <div class="install-app-content" onclick="promptAppInstall()">
+            <i class="fas fa-mobile-alt install-app-icon"></i>
+            <div class="install-app-text">
+                <span>تثبيت الموقع كتطبيق</span>
+                <span>تنزيل نسخة للموبايل لتجربة أسرع</span>
+            </div>
+        </div>
+        <button class="install-app-close" onclick="closeInstallBanner()">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
 
     <nav id="bottomNav">
@@ -1307,7 +1595,20 @@
         <i class="fas fa-qrcode"></i>
         <span class="btn-tooltip">Scanner</span>
     </button>
-
+<!-- الصدقة الجارية -->
+<div class="sadaqa-badge">
+    <i class="fas fa-hands-praying"></i>
+    <p>هذا العمل صدقة جارية على روح والدي.<br>نسألكم الدعاء له بالرحمة والمغفرة.</p>
+</div>
+<div id="sadaqaModal" class="custom-modal-overlay" style="display: none; z-index: 35000;">
+    <div class="custom-modal-box" style="position: relative; animation: modalSlideUp 0.4s ease;">
+        <span onclick="closeSadaqaPopup()" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: var(--text-secondary); transition: 0.3s;">&times;</span>
+        <i class="fas fa-hands-praying" style="font-size: 35px; color: var(--accent-orange); margin-bottom: 15px; display: block;"></i>
+        <p style="font-size: 16px; line-height: 1.8; margin: 0; font-weight: bold; color: var(--text-primary);">
+            هذا العمل صدقة جارية على روح والدي.<br>نسألكم الدعاء له بالرحمة والمغفرة.
+        </p>
+    </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script>
         "use strict";
@@ -1336,24 +1637,50 @@
                 .catch(err => console.error('SW Error:', err));
         }
 
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function closeInstallBanner() {
+            document.getElementById('installAppBanner').style.display = 'none';
+        }
+
+        function promptAppInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    closeInstallBanner();
+                });
+            } else {
+                // If it doesn't trigger natively, guide the user
+                alert('لتثبيت التطبيق على جهازك:\n\nفي الايفون (Safari): اضغط على أيقونة المشاركة بالأسفل ⍗ ثم اختر "Add to Home Screen".\n\nفي الاندرويد (Chrome): اضغط على القائمة (⋮) ثم اختر "Add to Home Screen" أو "Install App".');
+            }
+        }
+
 
         const START_OFFERS = [
             {
                 id: 'offer_may_10_test_v2',
                 title: 'MAY 10 TEST OFFER',
-                start_date: '2026-05-12T03:20:00',
+                start_date: '2026-06-20T00:00:00',
                 image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png'
             },
             {
                 id: 'offer_alert_may_15',
                 title: 'MID-MONTH OFFERS',
-                start_date: '2026-05-15T00:00:00',
-                image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png'
+                start_date: '2026-06-05T00:00:00',
+                image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/Gemini_Generated_Image_qhlri8qhlri8qhlr.png'
             },
             {
                 id: 'offer_alert_may_25',
                 title: 'MONTHLY OFFERS',
-                start_date: '2026-05-25T00:00:00',
+                start_date: '2026-06-12T00:00:00',
                 image: 'https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/25%20april%20offers%20photof.png'
             }
         ];
@@ -1361,7 +1688,7 @@
         const LOCAL_BANNERS = [
             {
                 id: 'banner_1', title: 'owner items', desc: 'RONZAC', link: 'offersgit.html',
-                imageUrl: 'https://stgprevapi.al-dawaa.com/medias/6-AR-gorner-1600x400.png?context=bWFzdGVyfGltYWdlc3w4NzgwMDF8aW1hZ2UvcG5nfGFEYzRMMmcxTUM4NU5UWTNOekkwTlRNMU9ETTRMell0UVZJdFoyOXlibVZ5TFRFMk1EQjROREF3TG5CdVp3fDc3OGQ2MTk0OTFkMTI3NzZhNjU0YmI1YTRlYjZjMjM3ZGJhOTI2ZDgzZDA0Mzc3ZDYyOTQyMGZlM2I0NDNiN2Q',
+                imageUrl: '',
                 videoUrl: '', color: ''
             }
         ];
@@ -1469,16 +1796,29 @@
         async function doLogin() {
             const val = document.getElementById('pharmacyInput').value.trim();
             if (val) {
-                currentPharmacy = val;
-                localStorage.setItem('pharmacy_number', val);
-                requestNotificationPermission();
-                try {
-                    await supabaseClient.from('login_logs').upsert(
-                        { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() },
-                        { onConflict: 'pharmacy_number' }
-                    );
-                } catch (e) { console.error("Failed to log login:", e); }
-                checkAuth();
+                const btn = document.getElementById('loginBtn');
+                if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+
+                // Play success animation (placeholder clapping Lottie URL)
+                const lottie = document.getElementById('loginLottie');
+                if (lottie) {
+                    lottie.load('https://lottie.host/80164c92-75d1-4b13-8874-8b6fa2021197/H8wH0P9O7i.json');
+                    lottie.loop = false;
+                }
+
+                setTimeout(async () => {
+                    currentPharmacy = val;
+                    localStorage.setItem('pharmacy_number', val);
+                    requestNotificationPermission();
+                    try {
+                        await supabaseClient.from('login_logs').upsert(
+                            { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() },
+                            { onConflict: 'pharmacy_number' }
+                        );
+                    } catch (e) { console.error("Failed to log login:", e); }
+                    checkAuth();
+                    if (btn) btn.innerHTML = 'Login <i class="fas fa-sign-in-alt"></i>';
+                }, 1500); // Give time for clapping animation to show
             } else { alert("يرجى إدخال رقم الصيدلية!"); }
         }
 
@@ -1497,66 +1837,103 @@
             checkAuth();
         }
 
-        async function initSystem() {
-            const loader = document.getElementById('loadingOverlay');
-            if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
-            try {
-                APPDATA.banners = Array.isArray(LOCAL_BANNERS) ? [...LOCAL_BANNERS] : [];
-                APPDATA.content = Array.isArray(LOCAL_CONTENTS) ? [...LOCAL_CONTENTS] : [];
-                try {
-                    const response = await fetch(WORKER_BANNERS_URL);
-                    if (response.ok) {
-                        const result = await response.json();
-                        if (result && result.success && result.banners && result.banners.length > 0) {
-                            const dawaaBanners = result.banners.map((b, index) => ({
-                                id: `dawaa_banner_${index}`, title: "", desc: "", link: "https://www.al-dawaa.com/ar/",
-                                imageUrl: b.url, videoUrl: "", color: ""
-                            }));
-                            APPDATA.banners = [...APPDATA.banners, ...dawaaBanners];
-                        }
-                    }
-                } catch (workerError) { console.warn("تم تخطي بنرات الدواء:", workerError); }
-
-                renderBanners();
-                renderContent();
-
-                if (loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => { loader.style.display = 'none'; }, 300);
+      async function initSystem() {
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
+    try {
+        APPDATA.banners = Array.isArray(LOCAL_BANNERS) ? [...LOCAL_BANNERS] : [];
+        APPDATA.content = Array.isArray(LOCAL_CONTENTS) ? [...LOCAL_CONTENTS] : [];
+        try {
+            const response = await fetch(WORKER_BANNERS_URL);
+            if (response.ok) {
+                const result = await response.json();
+                if (result && result.success && result.banners && result.banners.length > 0) {
+                    const dawaaBanners = result.banners.map((b, index) => ({
+                        id: `dawaa_banner_${index}`, title: "", desc: "", link: "https://www.al-dawaa.com/ar/",
+                        imageUrl: b.url, videoUrl: "", color: ""
+                    }));
+                    APPDATA.banners = [...APPDATA.banners, ...dawaaBanners];
                 }
-
-                requestNotificationPermission();
-                await autoScheduleReminders();
-                await fetchReminders();
-                startAlarmChecker();
-            } catch (err) {
-                console.error('System Critical Error:', err);
-                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.display = 'none'; }, 300); }
             }
+        } catch (workerError) { console.warn("تم تخطي بنرات الدواء:", workerError); }
+
+        renderBanners();
+        renderContent();
+
+        if (loader) {
+            const hand = document.querySelector('.🤚');
+            if (hand) hand.classList.add('move-top-left');
+
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => { 
+                    loader.style.display = 'none'; 
+                    setTimeout(showSadaqaPopup, 300);
+                }, 300);
+            }, 1000); // Allow time for hand animation
+        } else {
+            setTimeout(showSadaqaPopup, 500);
         }
 
+        requestNotificationPermission();
+        await autoScheduleReminders();
+        await fetchReminders();
+        startAlarmChecker();
+    } catch (err) {
+        console.error('System Critical Error:', err);
+        if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.display = 'none'; }, 300); }
+    }
+}
         async function autoScheduleReminders() {
             if (!currentPharmacy) return;
-            for (let offer of START_OFFERS) {
-                const offerStartTime = new Date(offer.start_date);
-                const triggerTimes = [
-                    { id: offer.id + '_30min', time: new Date(offerStartTime.getTime() - (30 * 60000)) },
-                    { id: offer.id + '_exact', time: offerStartTime }
-                ];
-                for (let t of triggerTimes) {
-                    console.log(`[System] Scheduling ${t.id} at ${t.time.toLocaleString()}`);
-                    // حذف الموعد القديم أولاً
-                    await supabaseClient.from('reminders').delete().eq('pharmacy_number', currentPharmacy).eq('offer_id', t.id);
 
-                    // إضافة الموعد الجديد
-                    await supabaseClient.from('reminders').insert([{
-                        pharmacy_number: currentPharmacy,
-                        offer_id: t.id,
-                        offer_title: offer.title,
-                        trigger_time: t.time.toISOString(),
-                        status: 'pending'
-                    }]);
+            try {
+                // 1. تجميع كل الـ IDs الحالية (30 دقيقة والوقت الفعلي) لعمل تنظيف
+                const activeOfferIds = [];
+                START_OFFERS.forEach(offer => {
+                    activeOfferIds.push(offer.id + '_30min');
+                    activeOfferIds.push(offer.id + '_exact');
+                });
+
+                // 2. حذف أي تنبيهات "معلقة" لم تعد موجودة في مصفوفة العروض الحالية (لحذف القديم تماماً)
+                await supabaseClient.from('reminders')
+                    .delete()
+                    .eq('pharmacy_number', currentPharmacy)
+                    .eq('status', 'pending')
+                    .not('offer_id', 'in', `(${activeOfferIds.join(',')})`);
+
+                const now = new Date();
+
+                for (let offer of START_OFFERS) {
+                    const offerStartTime = new Date(offer.start_date);
+                    const triggerTimes = [
+                        { id: offer.id + '_30min', time: new Date(offerStartTime.getTime() - (30 * 60000)) },
+                        { id: offer.id + '_exact', time: offerStartTime }
+                    ];
+
+                    for (let t of triggerTimes) {
+                        // 3. منع جدولة أي تنبيه فات وقته بأكثر من 5 دقائق لتجنب التنبيهات المزعجة القديمة
+                        if (t.time.getTime() < now.getTime() - (5 * 60000)) {
+                            // إذا كان التنبيه قديماً، نتأكد من أنه ليس "معلقاً" في القاعدة أو نحذفه
+                            await supabaseClient.from('reminders').delete().eq('pharmacy_number', currentPharmacy).eq('offer_id', t.id).eq('status', 'pending');
+                            continue;
+                        }
+
+                        console.log(`[System] Scheduling/Updating ${t.id} at ${t.time.toLocaleString()}`);
+                        
+                        // 4. استخدام upsert لضمان تحديث التنبيه الموجود بدلاً من إضافة جديد
+                        // ملاحظة: يتطلب هذا وجود Unique Constraint على (pharmacy_number, offer_id) في سوبابيز
+                        await supabaseClient.from('reminders').upsert({
+                            pharmacy_number: currentPharmacy,
+                            offer_id: t.id,
+                            offer_title: offer.title,
+                            trigger_time: t.time.toISOString(),
+                            status: 'pending'
+                        }, { onConflict: 'pharmacy_number,offer_id' });
+                    }
                 }
+            } catch (err) {
+                console.error("Error in autoScheduleReminders:", err);
             }
         }
 
@@ -2091,7 +2468,7 @@
                 const nowMs = new Date().getTime();
                 userReminders.forEach((rem) => {
                     const trigTimeMs = new Date(rem.trigger_time).getTime();
-                    const isTooOld = (nowMs - trigTimeMs) > (60 * 60 * 1000);
+                    const isTooOld = (nowMs - trigTimeMs) > (15 * 60 * 1000); // تقليل المدة لـ 15 دقيقة فقط لتجنب التنبيهات القديمة جداً
                     if ((rem.status === 'pending' || rem.status === 'snoozed') && nowMs >= trigTimeMs && !isTooOld) {
                         console.log(`Triggering alarm: ${rem.offer_title}`);
                         rem.status = 'firing';
@@ -2104,6 +2481,28 @@
         function openScannerDirectly() {
             openLink('offersgit.html?mode=scanner');
         }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            if (window.location.href.indexOf('mode=scanner') !== -1) {
+                openScannerDirectly();
+            }
+        });
+        function showSadaqaPopup() {
+    if (!sessionStorage.getItem('sadaqaShown')) {
+        const modal = document.getElementById('sadaqaModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            sessionStorage.setItem('sadaqaShown', 'true');
+        }
+    }
+}
+
+function closeSadaqaPopup() {
+    const modal = document.getElementById('sadaqaModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
     </script>
 </body>
 

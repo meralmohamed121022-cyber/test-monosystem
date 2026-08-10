@@ -6997,31 +6997,6 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
     background: rgba(30, 58, 138, 0.5) !important;
     border-color: #f59e0b !important;
 }
-/* ضبط حاوية السكانر لإعطاء مساحة أمان للأزرار */
-#scannerModalOverlay .scanner-shell {
-    position: relative !important;
-    padding-top: 55px !important; /* مساحة أمان للأزرار العلوية */
-}
-
-/* إعادة تموضع أزرار الإغلاق والتبديل في أعلى اليمين بشكل منظم */
-#scannerModalOverlay .scanner-shell > button[onclick*="closeBarcodeScanner"],
-#scannerModalOverlay .scanner-shell > button[onclick*="toggleScannerLayout"] {
-    top: 10px !important;
-    z-index: 1010 !important; /* التأكد من وجودها أعلى الطبقات دون إغلاق الرؤية */
-}
-
-#scannerModalOverlay .scanner-camera-wrap {
-    margin-top: 5px !important; /* زحزحة بوكس الكاميرا تحت الأزرار تماماً */
-    position: relative !important;
-    z-index: 1 !important;
-}
-/* إخفاء زر الطباعة البرتقالي العائم عند فتح مودال السكانر */
-body.scanner-active .print-button-wrapper,
-body.scanner-active .print-fab {
-    display: none !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
 </style>
         <div id="themeHintPointer" class="theme-hint-pointer">
           <div class="hand-emoji">👈</div>
@@ -7394,19 +7369,23 @@ body.scanner-active .print-fab {
               <span id="modalDropdownText" style="font-weight:bold;">Search & Select List...</span>
               <span class="arrow">▼</span>
             </div>
-           <div id="modalDropdownOptions"
-  style="display:none; background:#0f172a; border:1px solid #d4af37; border-radius:10px; margin-top:5px; max-height:220px; overflow-y:auto; position:absolute; width:100%; z-index:999999; box-shadow: 0 15px 35px rgba(0,0,0,0.95); opacity: 1;">
-  <div style="display:flex; gap:5px; padding:10px; border-bottom:1px solid rgba(212,175,55,0.2); background:#0f172a;">
-    <button onclick="selectAllCustomOffers(event)"
-      style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#10b981; color:white; border:none; border-radius:5px; cursor:pointer;">✅ Select All</button>
-    <button onclick="deselectAllCustomOffers(event)"
-      style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌ Clear All</button>
-  </div>
-  <input type="text" placeholder="🔍 Filter list..." oninput="filterCustomOffersModal(this.value)"
-    onclick="event.stopPropagation()"
-    style="width:calc(100% - 20px); margin:10px; padding:10px; background:#1e293b; border:1px solid rgba(255,255,255,0.2); color:white; border-radius:5px; outline:none; box-sizing:border-box;">
-  <div id="customOfferTypesList" style="padding:5px; background:#0f172a;"></div>
-</div>
+            <div id="modalDropdownOptions"
+              style="display:none; background:#1a1a2e; border:1px solid #d4af37; border-radius:10px; margin-top:5px; max-height:200px; overflow-y:auto; position:absolute; width:100%; z-index:100000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+              <div style="display:flex; gap:5px; padding:10px; border-bottom:1px solid rgba(212,175,55,0.2);">
+                <button onclick="selectAllCustomOffers(event)"
+                  style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#10b981; color:white; border:none; border-radius:5px; cursor:pointer;">✅
+                  Select All</button>
+                <button onclick="deselectAllCustomOffers(event)"
+                  style="flex:1; font-size:12px; font-weight:bold; padding:8px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌
+                  Clear All</button>
+              </div>
+              <input type="text" placeholder="🔍 Filter list..." oninput="filterCustomOffersModal(this.value)"
+                onclick="event.stopPropagation()"
+                style="width:calc(100% - 20px); margin:10px; padding:10px; background:#0f172a; border:1px solid rgba(255,255,255,0.2); color:white; border-radius:5px; outline:none; box-sizing:border-box;">
+              <div id="customOfferTypesList" style="padding:5px;"></div>
+            </div>
+          </div>
+
           <!-- 🔥 ملخص الفلاتر النشطة في الصفحة الرئيسية -->
           <div id="activeFiltersSummary"
             style="margin-bottom:20px; display:none; background:rgba(102, 126, 234, 0.1); border:1px dashed #667eea; padding:15px; border-radius:12px;">
@@ -7427,71 +7406,106 @@ body.scanner-active .print-fab {
             </div>
           </div>
 
-        <!-- 🔘 Fallback Scope Message (When no filters) -->
-<div id="printScopeAllMessage"
-  style="margin-bottom:20px; padding:10px; background:rgba(102, 126, 234, 0.1); border-left:4px solid #667eea; border-radius:8px;">
-  <p style="color:#667eea; font-size:13px; font-weight:bold; margin:0;">
-    ✅ Printing ALL Current Offers
-  </p>
-</div>
+          <!-- 🔘 Fallback Scope Message (When no filters) -->
+          <div id="printScopeAllMessage"
+            style="margin-bottom:20px; padding:10px; background:rgba(102, 126, 234, 0.1); border-left:4px solid #667eea; border-radius:8px;">
+            <p style="color:#667eea; font-size:13px; font-weight:bold; margin:0;">
+              ✅ Printing ALL Current Offers
+            </p>
+          </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-  <div>
-    <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold;">✍️ Title (EN):</label>
-    <input type="text" id="customOfferEN" placeholder="e.g. 40% OFF"
-      style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; outline:none; box-sizing: border-box; font-weight: 600; font-size: 13px;">
-  </div>
-  <div>
-    <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold; text-align: right;">✍️ العنوان (عربي):</label>
-    <input type="text" id="customOfferAR" placeholder="مثال: خصم 40%"
-      style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; direction:rtl; text-align:right; unicode-bidi:plaintext; outline:none; box-sizing: border-box; font-family:'Cairo', sans-serif; font-weight: 600; font-size: 13px;">
-  </div>
-</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div>
+              <label style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold;">✍️
+                Title
+                (EN):</label>
+              <input type="text" id="customOfferEN" placeholder="e.g. 40% OFF"
+                style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; outline:none; box-sizing: border-box; font-weight: 600; font-size: 13px;">
+            </div>
+            <div>
+              <label
+                style="color: #ffd700; display:block; margin-bottom:8px; font-size:13px; font-weight:bold; text-align: right;">✍️
+                العنوان (عربي):</label>
+              <input type="text" id="customOfferAR" placeholder="مثال: خصم 40%"
+                style="width:100%; padding:12px; background:#0f172a; border:1px solid #444; color:#fff; border-radius:10px; direction:rtl; outline:none; box-sizing: border-box; font-family:'Cairo', sans-serif; font-weight: 600; font-size: 13px;">
+            </div>
+          </div>
+
           <!-- 🛠️ Offer Builder (Enhanced) -->
-<div style="margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid rgba(212,175,55,0.2);">
-  <label style="color:#d4af37; display:block; margin-bottom:12px; font-weight:bold; font-size:14px; text-align:center;">🛠️ Offer Builder (Quick Tap)</label>
+          <div
+            style="margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid rgba(212,175,55,0.2);">
+            <label
+              style="color:#d4af37; display:block; margin-bottom:12px; font-weight:bold; font-size:14px; text-align:center;">🛠️
+              Offer Builder (Quick Tap)</label>
 
-  <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
-    <button type="button" onclick="appendToCustomOffer('Buy ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Buy</button>
-    <button type="button" onclick="appendToCustomOffer('Get ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Get</button>
-    <button type="button" onclick="appendToCustomOffer('Free')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Free</button>
-    <button type="button" onclick="appendToCustomOffer('Discount ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:65px;">Discount</button>
-    <button type="button" onclick="appendToCustomOffer('OFF ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">OFF</button>
-    <button type="button" onclick="appendToCustomOffer(' @ ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;" title="Use @ to separate text from price">@</button>
-    <button type="button" onclick="appendToCustomOffer(' % ')" style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;">%</button>
-    <button type="button" onclick="appendToCustomOffer('SAR')" style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">SAR</button>
-    <button type="button" onclick="appendToCustomOffer('Halala')" style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:55px;">Halala</button>
-    <button type="button" onclick="appendToCustomOffer('Pcs')" style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Pcs</button>
-    <button type="button" onclick="appendToCustomOffer('sec')" style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">sec</button>
-  </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
+              <button onclick="appendToCustomOffer('Buy ')"
+                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Buy</button>
+              <button onclick="appendToCustomOffer('Get ')"
+                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Get</button>
+              <button onclick="appendToCustomOffer('Free')"
+                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Free</button>
+              <button onclick="appendToCustomOffer('Discount ')"
+                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:65px;">Discount</button>
+              <button onclick="appendToCustomOffer('OFF ')"
+                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">OFF</button>
+              <button onclick="appendToCustomOffer(' @ ')"
+                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;"
+                title="Use @ to separate text from price">@</button>
+              <button onclick="appendToCustomOffer(' % ')"
+                style="padding:6px 8px; background:#1e293b; color:#fff; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:35px;">%</button>
+              <button onclick="appendToCustomOffer('SAR')"
+                style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">SAR</button>
+              <button onclick="appendToCustomOffer('Halala')"
+                style="padding:6px 8px; background:#10b981; color:#fff; border:1px solid #059669; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:55px;">Halala</button>
+              <button onclick="appendToCustomOffer('Pcs')"
+                style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">Pcs</button>
+              <button onclick="appendToCustomOffer('sec')"
+                style="padding:6px 8px; background:#3b82f6; color:#fff; border:1px solid #2563eb; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; min-width:45px;">sec</button>
+            </div>
 
-  <div style="font-size:10px; color:#94a3b8; margin-bottom:12px; text-align:center; font-family:sans-serif;">
-    💡 Use <b style="color:#d4af37">@</b> to separate quantity/text from the price (e.g. <b>Buy 1 @ 25</b>)
-  </div>
+            <div style="font-size:10px; color:#94a3b8; margin-bottom:12px; text-align:center; font-family:sans-serif;">
+              💡 Use <b style="color:#d4af37">@</b> to separate quantity/text from the price (e.g. <b>Buy 1 @ 25</b>)
+            </div>
 
-  <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
-    <button type="button" onclick="appendToCustomOffer('1')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">1</button>
-    <button type="button" onclick="appendToCustomOffer('2')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">2</button>
-    <button type="button" onclick="appendToCustomOffer('3')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">3</button>
-    <button type="button" onclick="appendToCustomOffer('4')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">4</button>
-    <button type="button" onclick="appendToCustomOffer('5')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">5</button>
-    <button type="button" onclick="appendToCustomOffer('6')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">6</button>
-    <button type="button" onclick="appendToCustomOffer('7')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">7</button>
-    <button type="button" onclick="appendToCustomOffer('8')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">8</button>
-    <button type="button" onclick="appendToCustomOffer('9')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">9</button>
-    
-    <!-- 🔴 زر النقطة محدد بخلفية متميزة لضمان الاستجابة -->
-    <button type="button" onclick="appendToCustomOffer('.')" style="width:30px; height:30px; background:#f59e0b; color:#000; border:none; border-radius:6px; cursor:pointer; font-weight:900; font-size:18px; line-height:1;">.</button>
-    
-    <button type="button" onclick="appendToCustomOffer('0')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">0</button>
-    <button type="button" onclick="appendToCustomOffer('10')" style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">10</button>
-    <button type="button" onclick="clearCustomOffer()" style="padding:0 10px; height:30px; background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:11px;">Clear</button>
-  </div>
 
-  <button type="button" onclick="addCurrentToStagedOffers()" style="width:100%; padding:12px; background:linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color:#000; border:none; border-radius:10px; font-weight:900; cursor:pointer; font-size:14px; box-shadow:0 4px 12px rgba(212,175,55,0.2);">
-    ➕ ADD TO PRINT LIST
-  </button>
-</div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
+              <button onclick="appendToCustomOffer('1')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">1</button>
+              <button onclick="appendToCustomOffer('2')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">2</button>
+              <button onclick="appendToCustomOffer('3')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">3</button>
+              <button onclick="appendToCustomOffer('4')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">4</button>
+              <button onclick="appendToCustomOffer('5')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">5</button>
+              <button onclick="appendToCustomOffer('6')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">6</button>
+              <button onclick="appendToCustomOffer('7')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">7</button>
+              <button onclick="appendToCustomOffer('8')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">8</button>
+              <button onclick="appendToCustomOffer('9')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">9</button>
+              <button onclick="appendToCustomOffer('.')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:16px;">.</button>
+              <button onclick="appendToCustomOffer('0')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">0</button>
+              <button onclick="appendToCustomOffer('10')"
+                style="width:30px; height:30px; background:#334155; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">10</button>
+              <button onclick="clearCustomOffer()"
+                style="padding:0 10px; height:30px; background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:11px;">Clear</button>
+
+            </div>
+
+            <button onclick="addCurrentToStagedOffers()"
+              style="width:100%; padding:12px; background:linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color:#000; border:none; border-radius:10px; font-weight:900; cursor:pointer; font-size:14px; box-shadow:0 4px 12px rgba(212,175,55,0.2);">
+              ➕ ADD TO PRINT LIST
+            </button>
+          </div>
+
 
           <!-- 📋 Staged Offers List (The Scrollable Box) -->
           <div id="stagedOffersSection" style="display:none; margin-bottom:20px;">
@@ -28718,43 +28732,41 @@ body.scanner-active .print-fab {
           if (modal) modal.style.display = 'none';
         }
 
-      // --- 🛠️ Offer Builder Helpers ---
-function appendToCustomOffer(text) {
-  const enInput = document.getElementById('customOfferEN');
-  const arInput = document.getElementById('customOfferAR');
-  
-  if (enInput) enInput.value += text;
+        // --- 🛠️ Offer Builder Helpers ---
+        function appendToCustomOffer(text) {
+          const enInput = document.getElementById('customOfferEN');
+          const arInput = document.getElementById('customOfferAR');
+          if (enInput) enInput.value += text;
 
-  const arMap = {
-    'Buy ': 'اشتري ',
-    'Get ': 'احصل على ',
-    'Free': 'مجاناً',
-    'Discount ': 'خصم ',
-    'OFF ': 'خصم ',
-    'SAR': 'ريال',
-    'Halala': 'هللة',
-    'Pcs': 'حبة',
-    'sec': 'الحبة الثانية',
-    ' % ': ' % ',
-    ' + ': ' + ',
-    ' @ ': ' @ '
-  };
+          const arMap = {
+            'Buy ': 'اشتري ',
+            'Get ': 'احصل على ',
+            'Free': 'مجاناً',
+            'Discount ': 'خصم ',
+            'OFF ': 'خصم ',
+            'SAR': 'ريال',
+            'Halala': 'هللة',
+            'Pcs': 'حبة',
+            'sec': 'الحبة الثانية',
+            ' % ': ' % ',
 
-  if (arInput) {
-    if (arMap[text]) {
-      arInput.value += arMap[text];
-    } else if (/^[\d.]+$/.test(text.trim()) || text === '.') {
-      // السماح بالأرقام والنقطة (.) لضمان إضافتها في الحقل العربي
-      arInput.value += text;
-    } else if (text === ' @ ' || text === ' + ' || text === ' % ') {
-      arInput.value += text;
-    }
-  }
+            ' + ': ' + ',
+            ' @ ': ' @ '
+          };
 
-  if (typeof saveCustomModalData === 'function') {
-    saveCustomModalData();
-  }
-}
+
+          if (arInput) {
+            if (arMap[text]) {
+              arInput.value += arMap[text];
+            } else if (/^\d+$/.test(text.trim())) {
+              arInput.value += text;
+            } else if (text === ' @ ' || text === ' + ' || text === ' % ') {
+              arInput.value += text;
+            }
+          }
+          saveCustomModalData();
+        }
+
         function clearCustomOffer() {
           const enInput = document.getElementById('customOfferEN');
           const arInput = document.getElementById('customOfferAR');
@@ -34317,90 +34329,72 @@ function appendToCustomOffer(text) {
           });
         }
 
-       function renderScannerSavedState() {
-  ensureScannerUiExtras();
+        function renderScannerSavedState() {
+          ensureScannerUiExtras();
 
-  const listEl = document.getElementById('scannedItemsList');
-  if (listEl) listEl.innerHTML = '';
+          const listEl = document.getElementById('scannedItemsList');
+          if (listEl) listEl.innerHTML = '';
 
-  // 1. استعادة البيانات من الجلسة (Session) وتحديث الذاكرة الحية فوراً
-  const saved = sessionStorage.getItem('scanned_items_session');
-  if (saved) {
-    try {
-      scannedItemsMemory = JSON.parse(saved);
-      // تحديث الـ Set لضمان منع التكرار وعدم تعليق الفلترة
-      scannedCodesSet = new Set(scannedItemsMemory.map(i => String(i.cleanCode).trim()));
-    } catch (e) {
-      console.error("❌ Error parsing scanner session:", e);
-      scannedItemsMemory = [];
-      scannedCodesSet.clear();
-    }
-  }
+          // 1. استعادة البيانات من الجلسة (Session) وتحديث الذاكرة الحية فوراً
+          const saved = sessionStorage.getItem('scanned_items_session');
+          if (saved) {
+            try {
+              scannedItemsMemory = JSON.parse(saved);
+              // تحديث الـ Set لضمان منع التكرار وعدم تعليق الفلترة
+              scannedCodesSet = new Set(scannedItemsMemory.map(i => String(i.cleanCode).trim()));
+            } catch (e) {
+              console.error("❌ Error parsing scanner session:", e);
+              scannedItemsMemory = [];
+              scannedCodesSet.clear();
+            }
+          }
 
-  // 2. رسم الكروت من الذاكرة (إرسال الـ onlineOffer الحالي لضمان عدم ظهور "جاري الفحص")
-  scannedItemsMemory.forEach(item => {
-    addScannerRowToList({
-      imageUrl: item.imageUrl,
-      nameEN: item.nameEN,
-      nameAR: item.nameAR,
-      cleanCode: item.cleanCode,
-      offerLabel: item.offerLabel,
-      offerLabelEN: item.offerLabelEN,
-      statusColor: item.statusColor,
-      onlineOffer: item.onlineOffer || '' // ✅ القيمة هنا بتمنع اللودر من الظهور لو العرض موجود
-    });
-  });
+          // 2. رسم الكروت من الذاكرة (إرسال الـ onlineOffer الحالي لضمان عدم ظهور "جاري الفحص")
+          // استخدمنا reverse() أو ترتيب عكسي لو حابب الأحدث يظهر في الأول دائماً
+          scannedItemsMemory.forEach(item => {
+            addScannerRowToList({
+              imageUrl: item.imageUrl,
+              nameEN: item.nameEN,
+              nameAR: item.nameAR,
+              cleanCode: item.cleanCode,
+              offerLabel: item.offerLabel,
+              offerLabelEN: item.offerLabelEN,
+              statusColor: item.statusColor,
+              onlineOffer: item.onlineOffer || '' // ✅ القيمة هنا بتمنع اللودر من الظهور لو العرض موجود
+            });
+          });
 
-  if (scannedItemsMemory.length) {
-    // ترتيب الذاكرة عشان نجيب آخر واحد (عادة بيكون أول عنصر في المصفوفة)
-    const lastItem = scannedItemsMemory[0];
+          if (scannedItemsMemory.length) {
+            // ترتيب الذاكرة عشان نجيب آخر واحد (عادة بيكون أول عنصر في المصفوفة)
+            const lastItem = scannedItemsMemory[0];
 
-    setLatestScannerMessage(
-      buildScannerCardHtml({
-        imageUrl: lastItem.imageUrl,
-        nameEN: lastItem.nameEN,
-        nameAR: lastItem.nameAR,
-        cleanCode: lastItem.cleanCode,
-        offerLabel: lastItem.offerLabel,
-        offerLabelEN: lastItem.offerLabelEN,
-        statusColor: lastItem.statusColor,
-        onlineOffer: lastItem.onlineOffer || '', // ✅ عرض النتيجة النهائية في رسالة الحالة
-        compact: false
-      })
-    );
+            setLatestScannerMessage(
+              buildScannerCardHtml({
+                imageUrl: lastItem.imageUrl,
+                nameEN: lastItem.nameEN,
+                nameAR: lastItem.nameAR,
+                cleanCode: lastItem.cleanCode,
+                offerLabel: lastItem.offerLabel,
+                offerLabelEN: lastItem.offerLabelEN,
+                statusColor: lastItem.statusColor,
+                onlineOffer: lastItem.onlineOffer || '', // ✅ عرض النتيجة النهائية في رسالة الحالة
+                compact: false
+              })
+            );
 
-    setScannerFeedback('idle', '📷 جاهز لمسح جديد', `تم استعادة ${scannedItemsMemory.length} صنف من الجلسة`);
-    resetScannerSwipeState();
-  } else {
-    setLatestScannerMessage(getScannerWaitingHtml());
-    setScannerFeedback('idle', '📷 جاهز للمسح', 'وجّه الباركود داخل الإطار');
-    resetScannerSwipeState();
-  }
+            setScannerFeedback('idle', '📷 جاهز لمسح جديد', `تم استعادة ${scannedItemsMemory.length} صنف من الجلسة`);
+            resetScannerSwipeState();
+          } else {
+            setLatestScannerMessage(getScannerWaitingHtml());
+            setScannerFeedback('idle', '📷 جاهز للمسح', 'وجّه الباركود داخل الإطار');
+            resetScannerSwipeState();
+          }
 
-  // تحديث نقاط السلايدر والعداد بعد الرندر
-  if (typeof updateScannerDots === 'function') updateScannerDots();
-  if (typeof updateSelectedCount === 'function') updateSelectedCount();
+          // تحديث نقاط السلايدر والعداد بعد الرندر
+          if (typeof updateScannerDots === 'function') updateScannerDots();
+          if (typeof updateSelectedCount === 'function') updateSelectedCount();
+        }
 
-  // 🔴 السكرول التلقائي لأحدث كارت تم إنشاؤه (يدعم الاتجاهين الأفقي والرأسي مع السكرول الخارجي)
-  setTimeout(() => {
-    if (listEl) {
-      listEl.scrollTo({
-        left: listEl.scrollWidth,
-        top: listEl.scrollHeight,
-        behavior: 'smooth'
-      });
-
-      // تمرير الكارت الأحدث لو كان التمرير يعتمد على العناصر الداخلية
-      if (listEl.lastElementChild) {
-        listEl.lastElementChild.scrollIntoView({
-          behavior: 'smooth',
-          block: 'end',
-          inline: 'end'
-        });
-      }
-    }
-  }, 100);
-}
         function resetScannerSession() {
           scannedItemsMemory = [];
 
@@ -35017,217 +35011,195 @@ function appendToCustomOffer(text) {
         // =====================================================
         // Open Scanner
         // =====================================================
-       async function openBarcodeScanner() {
-    // 🔴 إضافة الكلاس لجسم الصفحة لإخفاء زر الطباعة البرتقالي العائم تلقائياً
-    document.body.classList.add('scanner-mode-active', 'scanner-active');
-
-    const overlay = document.getElementById('scannerModalOverlay');
-    const readerEl = document.getElementById('reader');
-    const printPanel = document.getElementById('scannerPrintPanel');
-    const manualInput = document.getElementById('scannerManualCode');
-    
-    if (overlay) {
-      if (overlay.parentElement !== document.body) {
-        document.body.appendChild(overlay);
-      }
-      overlay.style.display = 'flex';
-    }
-
-    const shell = document.querySelector('.scanner-shell');
-    if (shell) {
-      if (window.innerWidth >= 768) {
-        shell.classList.add('scanner-shell-horizontal');
-      } else {
-        shell.classList.remove('scanner-shell-horizontal');
-      }
-    }
-
-    // إخفاء زر المنيو مؤقتاً أثناء عمل السكانر عشان ميبقاش فوق الكاميرا
-    const toggleBtn = document.getElementById('toolsSidebarToggle');
-    if (toggleBtn) toggleBtn.style.display = 'none';
-
-    ensureScannerUiExtras();
-
-    if (readerEl) {
-      readerEl.innerHTML = '';
-      readerEl.style.width = '90%';
-      readerEl.style.marginLeft = 'auto';
-      readerEl.style.marginRight = 'auto';
-      readerEl.style.height = window.innerWidth <= 400 ? '220px' : '280px';
-      readerEl.style.minHeight = window.innerWidth <= 400 ? '220px' : '280px';
-      readerEl.style.background = '#000';
-      readerEl.style.borderRadius = '18px';
-      readerEl.style.overflow = 'hidden';
-      readerEl.style.position = 'relative';
-    }
-
-    if (printPanel) printPanel.style.display = 'none';
-
-    // التعديل: استخدام inputmode="numeric" لفتح كيبورد الأرقام فقط
-    if (manualInput) {
-      manualInput.value = '';
-
-      // 1. إيقاف الكيبورد التلقائي عند فتح المودل
-      manualInput.setAttribute('inputmode', 'none');
-
-      // التأكد من أن نوع الحقل text وليس number لمنع مشاكل الأسهم في المتصفح،
-      // لكننا نستخدم inputmode و pattern لفرض كيبورد الأرقام
-      manualInput.setAttribute('type', 'text');
-      manualInput.setAttribute('pattern', '[0-9]*');
-
-      // 2. لو المستخدم لمس الحقل بنفسه عشان يكتب، نفتح كيبورد الأرقام
-      manualInput.addEventListener('click', function () {
-        this.setAttribute('inputmode', 'numeric');
-      });
-
-      // 3. لما يطلع من الحقل، نرجع نمنع الكيبورد تاني عشان المرات الجاية
-      manualInput.addEventListener('blur', function () {
-        this.setAttribute('inputmode', 'none');
-      });
-    }
-
-    renderScannerSavedState();
-
-    // 🟢 التمرير التلقائي لأحدث كارت مضاف في القائمة فور فتح الواجهة
-    setTimeout(() => {
-      const scannedList = document.getElementById('scannedItemsList');
-      if (scannedList) {
-        scannedList.scrollTo({
-          left: scannedList.scrollWidth,
-          behavior: 'smooth'
-        });
-      }
-    }, 100);
-
-    lastScannedValue = "";
-    lastScannedAt = 0;
-
-    if (typeof Html5Qrcode === 'undefined') {
-      setLatestScannerMessage(`
-      <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-          مكتبة html5-qrcode غير محملة
-      </div>
-  `);
-      setScannerFeedback('error', 'خطأ في المكتبة', 'مكتبة html5-qrcode غير محملة');
-      flashScannerSwipe('error');
-      focusManualScannerInput(150);
-      return;
-    }
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setLatestScannerMessage(`
-      <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-          المتصفح لا يدعم الكاميرا
-      </div>
-  `);
-      setScannerFeedback('error', 'الكاميرا غير مدعومة', 'المتصفح لا يدعم تشغيل الكاميرا');
-      flashScannerSwipe('error');
-      focusManualScannerInput(150);
-      return;
-    }
-
-    try {
-      await destroyScannerInstance();
-
-      html5QrScanner = new Html5Qrcode("reader");
-
-      const config = {
-        fps: 30,
-        qrbox: (viewfinderWidth, viewfinderHeight) => {
-          // تكبير مساحة المسح لتشمل أغلب الشاشة كما طلب المستخدم
-          const w = Math.min(viewfinderWidth * 0.95, 600);
-          const h = Math.min(viewfinderHeight * 0.85, 600);
-          return { width: w, height: h };
-        },
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true
-        }
-      };
-
-      if (typeof Html5QrcodeSupportedFormats !== 'undefined') {
-        config.formatsToSupport = [
-          Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.QRCODE,
-          Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE128,
-          Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE39,
-          Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN13,
-          Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.EAN8,
-          Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPCA,
-          Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.UPCE,
-          Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.DATAMATRIX,
-          Html5QrcodeSupportedFormats.ITF
-        ].filter(f => f !== undefined);
-      }
-
-      await html5QrScanner.start(
-        { facingMode: "environment" },
-        config,
-        (decodedText) => {
-          const cleanDecoded = String(decodedText || "").trim();
-          const nowTs = Date.now();
-
-          if (!cleanDecoded) return;
-          if (cleanDecoded === lastScannedValue && nowTs - lastScannedAt < 1200) return;
-
-          lastScannedValue = cleanDecoded;
-          lastScannedAt = nowTs;
-          processScannedCode(cleanDecoded);
-
-          // 🟢 السكرول التلقائي للكارت الجديد المضاف عبر الكاميرا
-          setTimeout(() => {
-            const scannedList = document.getElementById('scannedItemsList');
-            if (scannedList) {
-              scannedList.scrollTo({
-                left: scannedList.scrollWidth,
-                behavior: 'smooth'
-              });
+        async function openBarcodeScanner() {
+          const overlay = document.getElementById('scannerModalOverlay');
+          const readerEl = document.getElementById('reader');
+          const printPanel = document.getElementById('scannerPrintPanel');
+          const manualInput = document.getElementById('scannerManualCode');
+          
+          if (overlay) {
+            if (overlay.parentElement !== document.body) {
+              document.body.appendChild(overlay);
             }
-          }, 150);
-        },
-        () => { }
-      );
+            overlay.style.display = 'flex';
+          }
 
-      setTimeout(() => {
-        const video = document.querySelector("#reader video");
-        if (video) {
-          video.setAttribute("playsinline", "true");
-          video.setAttribute("autoplay", "true");
-          video.setAttribute("muted", "true");
-          video.muted = true;
-          video.style.width = "100%";
-          video.style.height = "100%";
-          video.style.objectFit = "cover";
-          video.style.background = "#000";
-          video.play().catch(() => { });
+          const shell = document.querySelector('.scanner-shell');
+          if (shell) {
+            if (window.innerWidth >= 768) {
+              shell.classList.add('scanner-shell-horizontal');
+            } else {
+              shell.classList.remove('scanner-shell-horizontal');
+            }
+          }
+
+          // إخفاء زر المنيو مؤقتاً أثناء عمل السكاينر عشان ميبقاش فوق الكاميرا
+          const toggleBtn = document.getElementById('toolsSidebarToggle');
+          if (toggleBtn) toggleBtn.style.display = 'none';
+
+          ensureScannerUiExtras();
+
+          if (readerEl) {
+            readerEl.innerHTML = '';
+            readerEl.style.width = '90%';
+            readerEl.style.marginLeft = 'auto';
+            readerEl.style.marginRight = 'auto';
+            readerEl.style.height = window.innerWidth <= 400 ? '220px' : '280px';
+            readerEl.style.minHeight = window.innerWidth <= 400 ? '220px' : '280px';
+            readerEl.style.background = '#000';
+            readerEl.style.borderRadius = '18px';
+            readerEl.style.overflow = 'hidden';
+            readerEl.style.position = 'relative';
+          }
+
+          if (printPanel) printPanel.style.display = 'none';
+
+          // 🔴 التعديل هنا: استخدام inputmode="numeric" لفتح كيبورد الأرقام فقط
+          if (manualInput) {
+            manualInput.value = '';
+
+            // 1. إيقاف الكيبورد التلقائي عند فتح المودل
+            manualInput.setAttribute('inputmode', 'none');
+
+            // التأكد من أن نوع الحقل text وليس number لمنع مشاكل الأسهم في المتصفح،
+            // لكننا نستخدم inputmode و pattern لفرض كيبورد الأرقام
+            manualInput.setAttribute('type', 'text');
+            manualInput.setAttribute('pattern', '[0-9]*');
+
+            // 2. لو المستخدم لمس الحقل بنفسه عشان يكتب، نفتح كيبورد الأرقام
+            manualInput.addEventListener('click', function () {
+              this.setAttribute('inputmode', 'numeric');
+            });
+
+            // 3. لما يطلع من الحقل، نرجع نمنع الكيبورد تاني عشان المرات الجاية
+            manualInput.addEventListener('blur', function () {
+              this.setAttribute('inputmode', 'none');
+            });
+          }
+
+          renderScannerSavedState();
+
+          lastScannedValue = "";
+          lastScannedAt = 0;
+
+          if (typeof Html5Qrcode === 'undefined') {
+            setLatestScannerMessage(`
+            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+                مكتبة html5-qrcode غير محملة
+            </div>
+        `);
+            setScannerFeedback('error', 'خطأ في المكتبة', 'مكتبة html5-qrcode غير محملة');
+            flashScannerSwipe('error');
+            focusManualScannerInput(150);
+            return;
+          }
+
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            setLatestScannerMessage(`
+            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+                المتصفح لا يدعم الكاميرا
+            </div>
+        `);
+            setScannerFeedback('error', 'الكاميرا غير مدعومة', 'المتصفح لا يدعم تشغيل الكاميرا');
+            flashScannerSwipe('error');
+            focusManualScannerInput(150);
+            return;
+          }
+
+          try {
+            await destroyScannerInstance();
+
+            html5QrScanner = new Html5Qrcode("reader");
+
+            const config = {
+              fps: 30,
+              qrbox: (viewfinderWidth, viewfinderHeight) => {
+                // تكبير مساحة المسح لتشمل أغلب الشاشة كما طلب المستخدم
+                const w = Math.min(viewfinderWidth * 0.95, 600);
+                const h = Math.min(viewfinderHeight * 0.85, 600);
+                return { width: w, height: h };
+              },
+              // إزالة aspectRatio الثابت لتجنب أي تمطيط في الصورة على بعض الأجهزة
+              experimentalFeatures: {
+                useBarCodeDetectorIfSupported: true
+              }
+            };
+
+            if (typeof Html5QrcodeSupportedFormats !== 'undefined') {
+              // إضافة التنسيقات بكل المسميات الممكنة (بشرطة وبدون) لضمان العمل على أي نسخة
+              config.formatsToSupport = [
+                Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.QRCODE,
+                Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE128,
+                Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE39,
+                Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN13,
+                Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.EAN8,
+                Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPCA,
+                Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.UPCE,
+                Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.DATAMATRIX,
+                Html5QrcodeSupportedFormats.ITF
+              ].filter(f => f !== undefined);
+            }
+
+            await html5QrScanner.start(
+              { facingMode: "environment" },
+              config,
+              (decodedText) => {
+                const cleanDecoded = String(decodedText || "").trim();
+                const nowTs = Date.now();
+
+                if (!cleanDecoded) return;
+                if (cleanDecoded === lastScannedValue && nowTs - lastScannedAt < 1200) return;
+
+                lastScannedValue = cleanDecoded;
+                lastScannedAt = nowTs;
+                processScannedCode(cleanDecoded);
+              },
+              () => { }
+            );
+
+            setTimeout(() => {
+              const video = document.querySelector("#reader video");
+              if (video) {
+                video.setAttribute("playsinline", "true");
+                video.setAttribute("autoplay", "true");
+                video.setAttribute("muted", "true");
+                video.muted = true;
+                video.style.width = "100%";
+                video.style.height = "100%";
+                video.style.objectFit = "cover";
+                video.style.background = "#000";
+                video.play().catch(() => { });
+              }
+            }, 400);
+
+            if (!scannedItemsMemory.length) {
+              setLatestScannerMessage(`
+                <div style="color:#22c55e;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+                    الكاميرا شغالة، وجّه الباركود داخل الإطار الواسع
+                </div>
+            `);
+            }
+
+            setScannerFeedback('idle', '📷 الكاميرا شغالة', 'وجّه الباركود داخل الإطار');
+            resetScannerSwipeState();
+
+            focusManualScannerInput(300);
+
+          } catch (err) {
+            console.error("Scanner Error:", err);
+            setLatestScannerMessage(`
+            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
+                فشل تشغيل الكاميرا<br>
+                ${escapeHtml(err?.message || "Unknown error")}
+            </div>
+        `);
+            setScannerFeedback('error', 'فشل تشغيل الكاميرا', err?.message || 'Unknown error');
+            flashScannerSwipe('error');
+            await destroyScannerInstance();
+            focusManualScannerInput(150);
+          }
         }
-      }, 400);
 
-      if (!scannedItemsMemory.length) {
-        setLatestScannerMessage(`
-          <div style="color:#22c55e;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-              الكاميرا شغالة، وجّه الباركود داخل الإطار الواسع
-          </div>
-      `);
-      }
-
-      setScannerFeedback('idle', '📷 الكاميرا شغالة', 'وجّه الباركود داخل الإطار');
-      resetScannerSwipeState();
-
-      focusManualScannerInput(300);
-
-    } catch (err) {
-      console.error("Scanner Error:", err);
-      setLatestScannerMessage(`
-      <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-          فشل تشغيل الكاميرا<br>
-          ${escapeHtml(err?.message || "Unknown error")}
-      </div>
-  `);
-      setScannerFeedback('error', 'فشل تشغيل الكاميرا', err?.message || 'Unknown error');
-      flashScannerSwipe('error');
-      await destroyScannerInstance();
-      focusManualScannerInput(150);
-    }
-}
         // Process Code
         // =====================================================
         async function processScannedCode(code) {
@@ -35439,15 +35411,7 @@ function appendToCustomOffer(text) {
           const finalPrice = hasFinalPrice ? Number(onlineOfferData.finalPrice) : null;
           const originalPrice = hasOriginalPrice ? Number(onlineOfferData.originalPrice) : null;
           const showStrike = originalPrice != null && finalPrice != null && originalPrice > finalPrice;
-// أضف هذا السطر فور إنشاء عنصر الكارت الجديد وتذييله للقائمة
-const listContainer = document.getElementById('scannedItemsList');
-if (listContainer) {
-    // التمرير التلقائي لأقصى اليمين/اليسار أو لآخر كارت مضاف
-    listContainer.scrollTo({
-        left: listContainer.scrollWidth,
-        behavior: 'smooth'
-    });
-}
+
           onlineBox.classList.add('online-offer-badge');
           onlineBox.setAttribute('onclick', `window.open('${productUrl}', '_blank')`);
           onlineBox.style.display = 'flex';
@@ -35673,17 +35637,15 @@ function printScannedFullQR() {
         return;
     }
 
-    // 1. فلترة العناصر الممسوحة لتضمين الأكواد التي لها عرض نشط فقط[cite: 1]
+    // 1. تصفية صارمة: التأكد من وجود عرض حقيقي داخل getOffer وعدم الاعتماد على نصوص افتراضية
     const validItems = scannedItemsMemory.filter(item => {
-        if (typeof getOffer === 'function') {
-            const offer = getOffer(item.cleanCode);
-            return offer !== null && offer !== undefined;
-        }
-        return true;
+        const codeStr = String(item.cleanCode || item.code || '').trim();
+        const offer = (typeof getOffer === 'function') ? getOffer(codeStr) : null;
+        return offer && offer.offerType && offer.offerType.trim() !== "";
     });
 
     if (validItems.length === 0) {
-        alert("جميع الأصناف الممسوحة لا تحتوي على عروض نشطة في الفترة الحالية!");
+        alert("جميع الأصناف الممسوحة ليس عليها عروض حالياً");
         return;
     }
 
@@ -35725,17 +35687,15 @@ function printScannedCustom() {
         return;
     }
 
-    // 1. فلترة الأصناف التي تحتوي على عرض نشط فقط[cite: 1]
+    // 1. تصفية صارمة: استبعاد الأكواد التي ليس لها عرض مثبت ومسجل في قاعدة العروض
     const validItems = scannedItemsMemory.filter(item => {
-        if (typeof getOffer === 'function') {
-            const offer = getOffer(item.cleanCode);
-            return offer !== null && offer !== undefined;
-        }
-        return true;
+        const codeStr = String(item.cleanCode || item.code || '').trim();
+        const offer = (typeof getOffer === 'function') ? getOffer(codeStr) : null;
+        return offer && offer.offerType && offer.offerType.trim() !== "";
     });
 
     if (validItems.length === 0) {
-        alert("جميع الأصناف الممسوحة لا تحتوي على عروض نشطة في الفترة الحالية!");
+        alert("جميع الأصناف الممسوحة ليس عليها عروض حالياً");
         return;
     }
 
@@ -35746,20 +35706,24 @@ function printScannedCustom() {
     
     validItems.forEach(item => {
         let product = null;
+        const codeStr = String(item.cleanCode || item.code || '').trim();
+        const offer = (typeof getOffer === 'function') ? getOffer(codeStr) : null;
+
         if (typeof productsDB !== 'undefined') {
-            product = productsDB.find(p => String(p.Code).trim() === String(item.cleanCode).trim());
+            product = productsDB.find(p => String(p.Code).trim() === codeStr);
         }
+
         for (let i = 0; i < quantity; i++) {
             customCards.push({
-                Code: item.cleanCode,
+                Code: codeStr,
                 Product: product || null,
                 customData: {
                     dateRange: "",
-                    productEN: item.nameEN || "",
+                    productEN: item.nameEN || (product ? product["Item Description"] : ""),
                     productAR: item.nameAR || "",
                     category: "",
-                    offerEN: item.offerLabelEN || "",
-                    offerAR: item.offerLabel || ""
+                    offerEN: (offer ? offer.offerType : item.offerLabelEN) || "",
+                    offerAR: (offer ? (offer.offerTypeAR || offer.offerType) : item.offerLabel) || ""
                 }
             });
         }
