@@ -1590,10 +1590,10 @@ body.day-mode .sadaqa-badge {
         </div>
     </div>
 
-    <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
-        <i class="fas fa-qrcode"></i>
-        <span class="btn-tooltip">Scanner</span>
-    </button>
+   <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
+    <i class="fas fa-qrcode"></i>
+    <span class="btn-tooltip">Scanner</span>
+</button>
 <!-- الصدقة الجارية -->
 <div class="sadaqa-badge">
     <i class="fas fa-hands-praying"></i>
@@ -2310,66 +2310,80 @@ body.day-mode .sadaqa-badge {
             if (overlay) overlay.classList.remove('show');
         }
 
-        function openLink(url) {
-            if (!url || url.trim() === '#') return;
-            closeAllMenus();
+function openLink(url) {
+    if (!url || url.trim() === '#') return;
+    closeAllMenus();
 
-            document.getElementById('modeToggle').style.display = 'none';
-            document.querySelector('.logout-btn').style.display = 'none';
-            document.getElementById('userInfoBadge').style.display = 'none';
+    // 🔴 شرط حاسم: لو اللينك المطلوب يخص الاسكانر، يتم الفتح المباشر لتجاوز حظر الكاميرا داخل الـ iframe
+    if (url.includes('mode=scanner')) {
+        const phNo = localStorage.getItem('pharmacy_number');
+        const token = crypto.randomUUID();
+        sessionStorage.setItem('_tk', token);
 
-            resetIframeLoader();
+        const separator = url.includes('?') ? '&' : '?';
+        const scannerUrl = phNo
+            ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
+            : url + separator + '_tk=' + token;
 
-            const phNo = localStorage.getItem('pharmacy_number');
-            const token = crypto.randomUUID();
-            sessionStorage.setItem('_tk', token);
+        window.location.href = scannerUrl;
+        return;
+    }
 
-            let finalUrl = url;
-            const separator = url.includes('?') ? '&' : '?';
-            finalUrl = phNo
-                ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
-                : url + separator + '_tk=' + token;
+    document.getElementById('modeToggle').style.display = 'none';
+    document.querySelector('.logout-btn').style.display = 'none';
+    document.getElementById('userInfoBadge').style.display = 'none';
 
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
-                    btn.classList.add('active');
-                }
-            });
+    resetIframeLoader();
 
-            const container = document.getElementById('iframeContainer');
-            const iframe = document.getElementById('embeddedFrame');
-            const errorBox = document.getElementById('iframeError');
-            const loader = document.getElementById('loadingOverlay');
+    const phNo = localStorage.getItem('pharmacy_number');
+    const token = crypto.randomUUID();
+    sessionStorage.setItem('_tk', token);
 
-            if (!container || !iframe || !errorBox) return;
-            errorBox.classList.remove('show');
-            if (loader) {
-                loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
-            }
-            container.classList.add('show');
+    let finalUrl = url;
+    const separator = url.includes('?') ? '&' : '?';
+    finalUrl = phNo
+        ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
+        : url + separator + '_tk=' + token;
 
-            iframe.onload = null; iframe.onerror = null;
-
-            setTimeout(() => {
-                let hasLoaded = false;
-                let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
-
-                iframe.onload = function () {
-                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-                    if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
-                };
-
-                iframe.onerror = function () {
-                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-                    errorBox.classList.add('show');
-                };
-
-                iframe.src = finalUrl;
-            }, 50);
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
+            btn.classList.add('active');
         }
+    });
 
+    const container = document.getElementById('iframeContainer');
+    const iframe = document.getElementById('embeddedFrame');
+    const errorBox = document.getElementById('iframeError');
+    const loader = document.getElementById('loadingOverlay');
+
+    if (!container || !iframe || !errorBox) return;
+    errorBox.classList.remove('show');
+    if (loader) {
+        loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
+    }
+    container.classList.add('show');
+
+    iframe.onload = null; iframe.onerror = null;
+
+    setTimeout(() => {
+        let hasLoaded = false;
+        let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
+
+        iframe.onload = function () {
+            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+            if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
+        };
+
+        iframe.onerror = function () {
+            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+            errorBox.classList.add('show');
+        };
+
+        iframe.src = finalUrl;
+    }, 50);
+}
         function resetIframeLoader() {
             const loader = document.getElementById('loadingOverlay');
             if (loader) { loader.style.display = 'none'; loader.classList.add('hidden'); loader.style.opacity = '0'; }
@@ -2478,15 +2492,16 @@ body.day-mode .sadaqa-badge {
         }
 
 function openScannerDirectly() {
-    // الفتح المباشر للصفحة بوضع الاسكانر لضمان طلب إذن الكاميرا وتفادي قيود الـ iframe
-    window.location.href = 'offersgit.html?mode=scanner';
+    // التحويل المباشر لصفحة الأسكانر المستقلة لضمان عمل الكاميرا فوراً
+    if (!window.location.pathname.endsWith('offersgit.html')) {
+        window.location.replace('offersgit.html?mode=scanner');
+    }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-            if (window.location.href.indexOf('mode=scanner') !== -1) {
-                openScannerDirectly();
-            }
-        });
+// تشغيل التحويل المباشر فور فتح الصفحة لو فيها mode=scanner
+if (window.location.search.indexOf('mode=scanner') !== -1 || window.location.hash.indexOf('mode=scanner') !== -1) {
+    openScannerDirectly();
+}
         function showSadaqaPopup() {
     if (!sessionStorage.getItem('sadaqaShown')) {
         const modal = document.getElementById('sadaqaModal');
