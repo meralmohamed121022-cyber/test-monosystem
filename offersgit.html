@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-
+<meta name="referrer" content="same-origin">
   <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';
         script-src 'self' https: 'unsafe-inline' 'unsafe-eval' blob: data:;
@@ -1149,7 +1149,7 @@
       }
 
       .hero-banner {
-        background: linear-gradient(-45deg, rgba(30, 60, 114, 0.85), rgba(42, 82, 152, 0.85), rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6)), url('https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/0e03439768a3f0e6660c88432d83b387.jpg');
+        background: linear-gradient(-45deg, rgba(30, 60, 114, 0.85), rgba(42, 82, 152, 0.85), rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6)), url('https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/Gemini_Generated_Image_34cj4c34cj4c34cj.png');
         background-size: 400% 400%, cover;
         background-blend-mode: overlay;
         animation: gradientBG 15s ease infinite;
@@ -1247,17 +1247,36 @@
         color: #ffd700;
       }
 
-      /* ========== COUNTDOWN (التعديل هنا) ========== */
-      .countdown-container {
-        background: transparent;
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 25px;
-        margin: 25px auto;
-        max-width: 700px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        /* يمكنك إبقاء الحدود أو حذفها */
-      }
+     /* إلغاء الخلفية الخضراء والتوهج الأخضر من الحاوية الكبيرة فقط */
+.countdown-container,
+div:has(> #countdownTitle) {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* إعادة تلوين وإظهار الأرقام والـ Cards الزجاجية بالكامل */
+.countdown-item {
+    background: rgba(30, 41, 59, 0.85) !important;
+    border: 1px solid rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.countdown-item .number {
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: #f59e0b !important;
+    font-weight: 900 !important;
+    text-shadow: 0 0 15px rgba(245, 158, 11, 0.6) !important;
+}
+
+.countdown-item .label {
+    color: #ffd700 !important;
+    font-weight: 700 !important;
+}
 
       .countdown-header {
         margin-bottom: 20px;
@@ -6997,6 +7016,7 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
     background: rgba(30, 58, 138, 0.5) !important;
     border-color: #f59e0b !important;
 }
+
 </style>
         <div id="themeHintPointer" class="theme-hint-pointer">
           <div class="hand-emoji">👈</div>
@@ -28732,40 +28752,33 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
           if (modal) modal.style.display = 'none';
         }
 
-        // --- 🛠️ Offer Builder Helpers ---
-        function appendToCustomOffer(text) {
-          const enInput = document.getElementById('customOfferEN');
-          const arInput = document.getElementById('customOfferAR');
-          if (enInput) enInput.value += text;
+      function appendToCustomOffer(val) {
+  const enInput = document.getElementById('customOfferEN');
+  const arInput = document.getElementById('customOfferAR');
 
-          const arMap = {
-            'Buy ': 'اشتري ',
-            'Get ': 'احصل على ',
-            'Free': 'مجاناً',
-            'Discount ': 'خصم ',
-            'OFF ': 'خصم ',
-            'SAR': 'ريال',
-            'Halala': 'هللة',
-            'Pcs': 'حبة',
-            'sec': 'الحبة الثانية',
-            ' % ': ' % ',
+  if (enInput) enInput.value += val;
 
-            ' + ': ' + ',
-            ' @ ': ' @ '
-          };
+  if (arInput) {
+    // خريطة الترجمة التلقائية
+    const translations = {
+      'Buy ': 'اشتري ',
+      'Get ': 'احصل على ',
+      'Free': 'مجاناً',
+      'Discount ': 'خصم ',
+      'OFF ': 'خصم ',
+      'SAR': 'ريال',
+      'Halala': 'هللة',
+      'Pcs': 'حبة',
+      'sec': 'الثانية',
+      ' @ ': ' بـ '
+    };
 
-
-          if (arInput) {
-            if (arMap[text]) {
-              arInput.value += arMap[text];
-            } else if (/^\d+$/.test(text.trim())) {
-              arInput.value += text;
-            } else if (text === ' @ ' || text === ' + ' || text === ' % ') {
-              arInput.value += text;
-            }
-          }
-          saveCustomModalData();
-        }
+    let arVal = translations[val] !== undefined ? translations[val] : val;
+    
+    // إضافة القيمة للخانة العربية بدون حذف النقطة "."
+    arInput.value += arVal;
+  }
+}
 
         function clearCustomOffer() {
           const enInput = document.getElementById('customOfferEN');
@@ -35631,9 +35644,32 @@ function toggleScannerPrintPanel() {
         }
     }
 }
+function showCustomScannerAlert(title, message) {
+    const overlay = document.getElementById('statusAlertOverlay');
+    if (!overlay) {
+        alert(message);
+        return;
+    }
+    
+    const titleEl = overlay.querySelector('.alert-title');
+    const msgEl = overlay.querySelector('.alert-message');
+    const confirmBtn = document.getElementById('alertConfirmBtn');
+    
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    
+    if (confirmBtn) {
+        confirmBtn.onclick = function() {
+            overlay.style.display = 'none';
+        };
+    }
+    
+    overlay.style.display = 'flex';
+}
+
 function printScannedFullQR() {
     if (typeof scannedItemsMemory === 'undefined' || !scannedItemsMemory || scannedItemsMemory.length === 0) {
-        alert("لا توجد أصناف في الماسح للطباعة");
+        showCustomScannerAlert("تنبيه الطباعة", "لا توجد أصناف في الماسح للطباعة");
         return;
     }
 
@@ -35645,7 +35681,7 @@ function printScannedFullQR() {
     });
 
     if (validItems.length === 0) {
-        alert("جميع الأصناف الممسوحة ليس عليها عروض حالياً");
+        showCustomScannerAlert("تنبيه العروض", "جميع الأصناف الممسوحة ليس عليها عروض حالياً");
         return;
     }
 
@@ -35662,7 +35698,7 @@ function printScannedFullQR() {
     });
 
     if (finalProducts.length === 0) {
-        alert("لم يتم العثور على تفاصيل الأصناف الممسوحة");
+        showCustomScannerAlert("تنبيه البيانات", "لم يتم العثور على تفاصيل الأصناف الممسوحة");
         return;
     }
     
@@ -35683,7 +35719,7 @@ function printScannedFullQR() {
 
 function printScannedCustom() {
     if (typeof scannedItemsMemory === 'undefined' || !scannedItemsMemory || scannedItemsMemory.length === 0) {
-        alert("لا توجد أصناف في الماسح للطباعة");
+        showCustomScannerAlert("تنبيه الطباعة", "لا توجد أصناف في الماسح للطباعة");
         return;
     }
 
@@ -35695,7 +35731,7 @@ function printScannedCustom() {
     });
 
     if (validItems.length === 0) {
-        alert("جميع الأصناف الممسوحة ليس عليها عروض حالياً");
+        showCustomScannerAlert("تنبيه العروض", "جميع الأصناف الممسوحة ليس عليها عروض حالياً");
         return;
     }
 
@@ -35730,7 +35766,7 @@ function printScannedCustom() {
     });
 
     if (customCards.length === 0) {
-        alert("لا يوجد بيانات للطباعة");
+        showCustomScannerAlert("تنبيه البيانات", "لا يوجد بيانات للطباعة");
         return;
     }
 
@@ -35738,7 +35774,7 @@ function printScannedCustom() {
     const loader = document.getElementById('printLoader');
 
     if (!container) {
-        alert('⚠️ خطأ: حاوية الطباعة غير موجودة بالصفحة.');
+        showCustomScannerAlert("خطأ نظام", "⚠️ خطأ: حاوية الطباعة غير موجودة بالصفحة.");
         return;
     }
 
@@ -35772,7 +35808,7 @@ function printScannedCustom() {
 }
 // Startup Popup Logic
 function checkStartupAnnouncement() {
-  const defaultImage = "https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/0e03439768a3f0e6660c88432d83b387.jpg"; // Fallback image if needed
+  const defaultImage = "https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/Gemini_Generated_Image_34cj4c34cj4c34cj.png"; // Fallback image if needed
   
   // أضفنا ?t= لمنع المتصفح من تخزين النتيجة القديمة (Cache-Busting)
   fetch(`https://online.meralmohamed121022.workers.dev/startup-image?t=${new Date().getTime()}`)
@@ -36017,7 +36053,34 @@ document.addEventListener('DOMContentLoaded', initFadeInObserver);
             lightbox.classList.remove('show');
             stage.innerHTML = '';
         }
-        
+        // منع زر الفأرة الأيمن
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// منع اختصارات الفحص (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
+document.onkeydown = function (e) {
+    if (e.keyCode == 123 || 
+        (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || 
+        (e.ctrlKey && e.keyCode == 85)) {
+        return false;
+    }
+};
+// دالة فك التشفير برمجياً قبل الاستدعاء
+const secureFetchUrl = atob("aHR0cHM6Ly9zdGdwcmV2YXBpLmFsLWRhd2FhLmNvbS9tZWRpYXM=");
+(function antiDevTools() {
+    function block() {
+        setInterval(() => {
+            const startTime = performance.now();
+            debugger; // بيتصيد أي حد فاتح الـ DevTools بيوقف الشاشة عنده
+            const endTime = performance.now();
+            if (endTime - startTime > 100) {
+                document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20%'>Access Denied</h1>";
+            }
+        }, 100);
+    }
+    try {
+        block();
+    } catch (err) {}
+})();
 </script>
 
 
@@ -36065,7 +36128,7 @@ body {
    ✨ Hero Section Theme Alignment
    ========================================================= */
 .hero-banner {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95)), url('https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/0e03439768a3f0e6660c88432d83b387.jpg') !important;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95)), url('https://raw.githubusercontent.com/meralmohamed121022-cyber/photos/refs/heads/main/Gemini_Generated_Image_34cj4c34cj4c34cj.png') !important;
     background-size: cover !important;
     background-position: center !important;
     background-blend-mode: overlay !important;
