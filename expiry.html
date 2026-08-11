@@ -10,17 +10,24 @@
     <link rel="icon" type="image/png" href="https://github.com/meralmohamed121022-cyber/photos/blob/main/expiry.png?raw=true">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         :root {
-            --primary: #4F46E5; --primary-light: #EEF2FF;
-            --bg: #F8FAFC; --surface: #FFFFFF;
-            --text-main: #1E293B; --text-light: #64748B;
+            --primary: #f59e0b; --primary-light: rgba(245, 158, 11, 0.2);
+            --bg: #0f172a; --surface: rgba(30, 58, 138, 0.25);
+            --text-main: #ffffff; --text-light: #94a3b8;
             --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Cairo', sans-serif; }
-        body { background: var(--bg); color: var(--text-main); min-height: 100vh; font-size: 14px; padding-bottom: 50px; }
+        body { background: #0f172a; color: var(--text-main); min-height: 100vh; font-size: 14px; padding-bottom: 50px; }
 
         /* --- Components --- */
+        #btnExploreCard, #btnReturnCard { border-color: #CBD5E1 !important; background: #F1F5F9 !important; transition: all 0.3s; }
+        #btnExploreCard *, #btnReturnCard * { color: #64748B !important; transition: all 0.3s; }
+        
+        #btnExploreCard.active, #btnReturnCard.active { border-color: #10B981 !important; background: #ECFDF5 !important; }
+        #btnExploreCard.active *, #btnReturnCard.active * { color: #047857 !important; }
+        
         .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .btn:hover { transform: translateY(-1px); filter: brightness(0.95); }
         .btn-primary { background: var(--primary); color: white; }
@@ -86,23 +93,25 @@
         /* --- App Layout --- */
         .app-container { display: none; max-width: 1440px; margin: 0 auto; padding: 20px; }
         
-        header { background: var(--surface); padding: 15px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        header { background: var(--surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 15px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border: 1.5px solid rgba(245, 158, 11, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .logo-area { display: flex; align-items: center; gap: 12px; }
         
         /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--surface); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
-        .stat-card:hover, .stat-card.active { border-color: var(--primary); background: var(--primary-light); }
+        .stat-card { background: var(--surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; border: 1.5px solid rgba(245, 158, 11, 0.3); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .stat-card:hover, .stat-card.active { border-color: var(--primary); background: linear-gradient(135deg, rgba(245, 158, 11, 0.8) 0%, rgba(234, 88, 12, 0.8) 100%); transform: scale(1.05) translateY(-2px); box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+        .stat-card:hover *, .stat-card.active * { color: #fff !important; }
         .stat-value { font-size: 2.2rem; font-weight: 800; display: block; line-height: 1; margin-bottom: 5px; }
         .stat-label { font-size: 0.85rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
 /* --- Modern Filters Area --- */
 .controls-area {
     background: var(--surface);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     padding: 25px;
     border-radius: 20px;
     margin-bottom: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1.5px solid rgba(245, 158, 11, 0.3);
 }
 .filters-row {
     display: grid;
@@ -128,43 +137,46 @@
 }
 /* Tom Select Custom Styling */
 .ts-control {
-    border: 1.5px solid #E2E8F0 !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
     border-radius: 12px !important;
     padding: 10px 14px !important;
     font-size: 13px !important;
     font-family: 'Inter', 'Cairo', sans-serif !important;
     transition: 0.3s;
     box-shadow: none !important;
-    background-color: #F8FAFC !important;
+    background-color: rgba(30, 58, 138, 0.35) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(12px) !important;
 }
 .ts-control.focus {
-    border-color: var(--primary) !important;
-    background-color: #fff !important;
-    box-shadow: 0 0 0 4px var(--primary-light) !important;
+    border-color: #f59e0b !important;
+    background-color: rgba(30, 58, 138, 0.5) !important;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2) !important;
 }
 .ts-control .item {
-    background: var(--primary-light) !important;
-    color: var(--primary) !important;
+    background: rgba(245, 158, 11, 0.2) !important;
+    color: #f59e0b !important;
     border-radius: 6px !important;
-    border: none !important;
+    border: 1px solid rgba(245, 158, 11, 0.4) !important;
     font-weight: 600;
     padding: 2px 8px !important;
 }
 input.search-main {
     width: 100%;
     padding: 12px 14px;
-    border: 1.5px solid #E2E8F0;
+    border: 1.5px solid rgba(245, 158, 11, 0.4);
     border-radius: 12px;
-    background: #F8FAFC;
+    background: rgba(30, 58, 138, 0.35);
     font-size: 14px;
-    color: var(--text-main);
+    color: #ffffff;
     outline: none;
     transition: 0.3s;
+    backdrop-filter: blur(12px);
 }
 input.search-main:focus {
-    border-color: var(--primary);
-    background: #fff;
-    box-shadow: 0 0 0 4px var(--primary-light);
+    border-color: #f59e0b;
+    background: rgba(30, 58, 138, 0.5);
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
 }
         .action-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F1F5F9; padding-top: 15px; flex-wrap: wrap; gap: 10px; }
         .bulk-actions { display: flex; gap: 10px; }
@@ -177,11 +189,13 @@ input.search-main:focus {
         
         .date-header {
             width: 100%;
-            background: linear-gradient(to right, #ffffff, #F8FAFC);
+            background: var(--surface);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             padding: 12px 20px;
             border-radius: 12px;
+            border: 1.5px solid rgba(245, 158, 11, 0.3);
             border-left: 6px solid var(--primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -197,9 +211,9 @@ input.search-main:focus {
         .date-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
 
         /* Card Styles */
-        .card { background: var(--surface); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; border: 1px solid #F1F5F9; position: relative; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
-        .card-header { height: 180px; background: #F8FAFC; position: relative; display: flex; justify-content: center; align-items: center; }
+        .card { background: var(--surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1.5px solid rgba(245, 158, 11, 0.3); position: relative; }
+        .card:hover { transform: scale(1.03) translateY(-5px); box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 8px 25px rgba(234, 88, 12, 0.5); border-color: #ffd700; }
+        .card-header { height: 180px; background: rgba(0,0,0,0.2); position: relative; display: flex; justify-content: center; align-items: center; }
         .card-img { max-width: 90%; max-height: 90%; object-fit: contain; mix-blend-mode: multiply; opacity: 0; transition: 0.5s; }
         .card-img.loaded { opacity: 1; }
         
@@ -396,10 +410,129 @@ header {
     border-top-color: var(--success); animation: spin 1s linear infinite; margin-bottom: 20px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+    /* Animated Background */
+    .animated-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important; overflow: hidden;
+    }
+    .animated-bg::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 1px, transparent 1px); background-size: 50px 50px; animation: moveGrid 20s linear infinite;
+    }
+    @keyframes moveGrid { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
+    .floating-shapes { position: absolute; width: 100%; height: 100%; overflow: hidden; }
+    .shape { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(245, 158, 11, 0.15), transparent); animation: float 15s infinite ease-in-out; }
+    .shape:nth-child(1) { width: 300px; height: 300px; top: 10%; left: 10%; animation-delay: 0s; }
+    .shape:nth-child(2) { width: 200px; height: 200px; top: 60%; right: 10%; animation-delay: 5s; }
+    .shape:nth-child(3) { width: 250px; height: 250px; bottom: 10%; left: 50%; animation-delay: 10s; }
+    @keyframes float { 0%, 100% { transform: translateY(0) translateX(0); } 33% { transform: translateY(-30px) translateX(30px); } 66% { transform: translateY(30px) translateX(-30px); } }
+    /* Additional Glassmorphism Overrides */
+    .hub-card, .danger-zone, .upload-box, #exploreUsersContainer, .user-selector-grid, .img-modal-box {
+        background: var(--surface) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1.5px solid rgba(245, 158, 11, 0.3) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        color: var(--text-main) !important;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .hub-card:hover, .danger-zone:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), 0 8px 25px rgba(234, 88, 12, 0.3) !important;
+        border-color: #f59e0b !important;
+    }
+    .upload-dropzone {
+        background: rgba(30, 58, 138, 0.15) !important;
+        border: 2px dashed rgba(245, 158, 11, 0.4) !important;
+        color: var(--text-main) !important;
+    }
+    .upload-dropzone:hover {
+        background: rgba(30, 58, 138, 0.3) !important;
+        border-color: #f59e0b !important;
+    }
+    #btnExploreCard, #btnReturnCard {
+        background: transparent !important;
+        border: 1.5px solid rgba(245, 158, 11, 0.3) !important;
+        color: var(--text-main) !important;
+    }
+    #btnExploreCard *, #btnReturnCard * { color: var(--text-main) !important; }
+    #btnExploreCard:hover, #btnReturnCard:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.6) !important;
+        border-color: #f59e0b !important;
+    }
+    #btnExploreCard.active, #btnReturnCard.active {
+        background: rgba(245, 158, 11, 0.2) !important;
+        border-color: #f59e0b !important;
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.4) !important;
+    }
+    #btnExploreCard.active *, #btnReturnCard.active * { color: #f59e0b !important; }
+    .btn-excel {
+        background: linear-gradient(135deg, #10B981, #047857) !important;
+        border: 1px solid rgba(16, 185, 129, 0.5) !important;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+        color: white !important;
+    }
+    .btn-excel:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6) !important;
+    }
+    .danger-card .hub-card-title, .danger-zone-title { color: #f87171 !important; }
+    #lblDangerWarning { color: #fca5a5 !important; }
+    .glass-switcher-container {
+        background: rgba(30, 58, 138, 0.25) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
+        border: 1.5px solid rgba(245, 158, 11, 0.3) !important;
+    }
+    #btnToggleScanner {
+        background: linear-gradient(135deg, #f59e0b, #ea580c) !important;
+        border: 1px solid rgba(245, 158, 11, 0.5) !important;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3) !important;
+    }
+    #btnToggleScanner:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.6) !important;
+    }
+    #btnToggleScanner.active {
+        background: linear-gradient(135deg, #d97706, #b45309) !important;
+        box-shadow: inset 0 4px 10px rgba(0,0,0,0.3) !important;
+    }
+    /* Login & Scanner Overrides */
+    .login-overlay { background: transparent !important; backdrop-filter: blur(5px); }
+    .login-card {
+        background: var(--surface) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1.5px solid rgba(245, 158, 11, 0.3) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+    .login-card h1, .login-card p, #lblScannerTitleInline, #lblScannerTitleFloating { color: var(--text-main) !important; }
+    .login-input, #manualBarcodeInline, #manualBarcodeFloating {
+        background: rgba(30, 58, 138, 0.35) !important;
+        border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+        color: white !important;
+    }
+    .login-input::placeholder, #manualBarcodeInline::placeholder, #manualBarcodeFloating::placeholder { color: #94a3b8 !important; }
+    #scannerContainerInline, #scannerContainerFloating {
+        background: var(--surface) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1.5px solid rgba(245, 158, 11, 0.3) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+    #langBtn, #lblImportTitle, #lblExportTitle { color: var(--primary) !important; }
     </style>
-    
 </head>
 <body>
+<div class="animated-bg">
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+</div>
 <div id="toast-box"></div>
 
 <div class="login-overlay" id="loginScreen">
@@ -474,45 +607,59 @@ header {
 <div class="stats-grid">
     <div class="stat-card" onclick="app.setStatFilter('all', this)">
         <span class="stat-value" style="color:var(--primary)" id="stTotal">0</span>
-        <span class="stat-label">Total Items</span>
+        <span class="stat-label" id="lblTotal">Total Items</span>
     </div>
 
     <div class="stat-card" onclick="app.setStatFilter('found', this)">
         <span class="stat-value" style="color:var(--success)" id="stFound">0</span>
-        <span class="stat-label">Found</span>
+        <span class="stat-label" id="lblFound">Found</span>
     </div>
 
     <div class="stat-card" onclick="app.setStatFilter('not-found', this)">
         <span class="stat-value" style="color:var(--danger)" id="stMissing">0</span>
-        <span class="stat-label">Missing</span>
+        <span class="stat-label" id="lblMissing">Missing</span>
     </div>
 
     <div class="stat-card active" onclick="app.setStatFilter('pending', this)">
         <span class="stat-value" style="color:var(--primary)" id="stPending">0</span>
-        <span class="stat-label">Pending</span>
+        <span class="stat-label" id="lblPending">Pending</span>
     </div>
 
     <div class="stat-card" onclick="app.setStatFilter('expired', this)">
         <span class="stat-value" style="color:var(--danger)" id="stExpired">0</span>
-        <span class="stat-label">Expired</span>
+        <span class="stat-label" id="lblExpired">Expired</span>
     </div>
 
-    <!-- كارت استكشاف الكل المعدل -->
-   
 </div>
 
 <!-- تأكد أن هذا الجزء مخفي تماماً في الكود عندك -->
 <div id="exploreUsersContainer" style="display: none !important;"></div>
 
-        <!-- 👈 كارت الاستكشاف تحته صندوق قائمة الصيدليات (Horizontal Scroll) -->
-       <div style="margin-bottom: 25px;">
-        <div class="stat-card" onclick="app.setStatFilter('explore', this)" style="border: 2px solid #8B5CF6; background: #F5F3FF; display: flex; justify-content: center; align-items: center; gap: 20px; padding: 15px;">
-           <span class="stat-label" style="color:#6D28D9; font-size:1.1rem;">🌍 استكشاف الصيدليات (Explore Pharmacies) ⚕️</span>
-            <span class="stat-value" style="color:#7C3AED; margin:0;" id="stExplore">0</span>
+        <!-- أزرار الأوضاع (استكشاف / صيدليتي) و الماسح -->
+        <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: stretch;">
+            <!-- Mode Switcher -->
+            <div class="glass-switcher-container" style="display: flex; flex: 1; min-width: 300px; border-radius: 16px; padding: 6px;">
+                <div class="stat-card active" id="btnReturnCard" onclick="app.resetFilters()" style="flex: 1; border: none; background: transparent; padding: 12px; border-radius: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; transition: all 0.3s; margin: 0; box-shadow: none;">
+                    <span style="font-size: 1.2rem;">🏠</span>
+                    <span id="btnReturnToPharmacyText" style="font-size: 1rem; font-weight: bold; margin: 0; color: inherit;">العودة لصيدليتي</span>
+                </div>
+                <div class="stat-card" id="btnExploreCard" onclick="app.setStatFilter('explore', this)" style="flex: 1; border: none; background: transparent; padding: 12px; border-radius: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; transition: all 0.3s; margin: 0; box-shadow: none;">
+                    <span style="font-size: 1.2rem;">🌍</span>
+                    <span id="lblExplore" style="font-size: 1rem; font-weight: bold; color: inherit;">استكشاف الصيدليات</span>
+                    <span id="stExplore" style="background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">0</span>
+                </div>
+            </div>
+            
+            <!-- Scanner Button -->
+            <button id="btnToggleScanner" onclick="app.toggleScanner('inline')" style="flex: 0 0 auto; background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; border: none; border-radius: 16px; padding: 0 30px; min-height: 56px; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
+                <span id="btnScannerText">مسح الباركود</span>
+            </button>
         </div>
         
+
+        
         <!-- صندوق قائمة الصيدليات يظهر تحته مباشرة (سلايد يمين وشمال) -->
-        <div id="exploreUsersContainer" style="display: none; margin-top: 15px; padding: 15px; background: #fff; border-radius: 16px; border: 1px dashed #C4B5FD; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; overflow: hidden;">
+        <div id="exploreUsersContainer" style="display: none; padding: 15px; background: #fff; border-radius: 16px; border: 1px dashed #C4B5FD; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; overflow: hidden;">
             
             <!-- السطر العلوي: عنوان البوكس + مربع البحث الجديد -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
@@ -529,7 +676,6 @@ header {
                 </div>
             </div>
             
-            <!-- الكونتينر الخاص بالسكرول الأفقي للأزرار -->
             <div id="usersGrid" style="
                 display: flex; 
                 flex-wrap: nowrap; 
@@ -541,6 +687,55 @@ header {
                 <!-- الأزرار ستُرسم هنا عبر الجافاسكريبت -->
             </div>
         </div>
+        
+        <!-- صندوق الكاميرا والبحث بالباركود - الثابت (Inline) -->
+        <div id="scannerContainerInline" style="display: none; padding: 15px; background: #fff; border-radius: 16px; border: 1px dashed #3B82F6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; margin-top: 15px; margin-bottom: 15px; text-align: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <div style="font-size: 14px; font-weight: bold; color: var(--text-main);" id="lblScannerTitleInline">
+                    📷 امسح الباركود بالكاميرا أو ادخل الكود يدوياً
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-success" onclick="app.startScanner('inline')" id="btnStartScannerInline" style="display:none; background:#10B981; color:white; padding: 4px 12px; font-size: 13px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">تشغيل الكاميرا 📷</button>
+                    <button class="btn btn-ghost" onclick="app.toggleScanner('inline')" style="background:#E2E8F0; color:#475569; padding: 4px 12px; font-size: 13px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">إغلاق الواجهة ✖</button>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center; max-width: 400px; margin: 0 auto 15px auto;">
+                <input type="text" id="manualBarcodeInline" dir="ltr" placeholder="Code or GTIN..." style="flex: 1; padding: 10px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px; outline: none; text-align: left;" onkeydown="if(event.key==='Enter') app.searchBarcode(this.value)">
+                <button class="btn btn-primary" style="background:#3B82F6; color:#fff;" onclick="app.searchBarcode(document.getElementById('manualBarcodeInline').value)" id="btnSearchBarcodeInline">بحث</button>
+            </div>
+            <div id="qr-reader-inline" style="width: 100%; max-width: 400px; margin: 0 auto; border-radius: 10px; overflow: hidden; border: 1px solid #E2E8F0;"></div>
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-danger" onclick="app.stopScanner('inline')" id="btnStopScannerInline" style="display:none;">إغلاق الكاميرا ✖</button>
+            </div>
+        </div>
+        
+        <!-- Floating Pull Button -->
+        <button id="btnToggleScannerFloating" onclick="app.toggleScanner('floating')" style="position: fixed; top: 50%; right: 0; transform: translateY(-50%); background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; border: none; border-radius: 12px 0 0 12px; padding: 10px; font-weight: bold; font-size: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; box-shadow: -4px 0 10px rgba(59, 130, 246, 0.3); width: 45px; height: 120px; transition: right 0.3s ease; z-index: 10000;">
+            <span style="font-size: 1.2rem;">📷</span>
+            <span style="writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); font-size: 0.9rem;">مسح</span>
+        </button>
+
+        <!-- صندوق الكاميرا والبحث بالباركود - العائم (Floating) -->
+        <div id="scannerContainerFloating" style="display: none; padding: 15px; background: #fff; text-align: center; position: fixed; top: 50%; right: -450px; transform: translateY(-50%); width: 400px; max-width: 90vw; box-shadow: -4px 0 20px rgba(0,0,0,0.15); margin: 0; border-radius: 16px 0 0 16px; border-right: none; z-index: 9999; transition: right 0.3s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <div style="font-size: 14px; font-weight: bold; color: var(--text-main);" id="lblScannerTitleFloating">
+                    📷 امسح الباركود بالكاميرا أو ادخل الكود يدوياً
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-success" onclick="app.startScanner('floating')" id="btnStartScannerFloating" style="display:none; background:#10B981; color:white; padding: 4px 12px; font-size: 13px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">تشغيل الكاميرا 📷</button>
+                    <button class="btn btn-ghost" onclick="app.toggleScanner('floating')" style="background:#E2E8F0; color:#475569; padding: 4px 12px; font-size: 13px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">إغلاق الواجهة ✖</button>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center; max-width: 400px; margin: 0 auto 15px auto;">
+                <input type="text" id="manualBarcodeFloating" dir="ltr" placeholder="Code or GTIN..." style="flex: 1; padding: 10px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px; outline: none; text-align: left;" onkeydown="if(event.key==='Enter') app.searchBarcode(this.value)">
+                <button class="btn btn-primary" style="background:#3B82F6; color:#fff;" onclick="app.searchBarcode(document.getElementById('manualBarcodeFloating').value)" id="btnSearchBarcodeFloating">بحث</button>
+            </div>
+            <div id="qr-reader-floating" style="width: 100%; max-width: 400px; margin: 0 auto; border-radius: 10px; overflow: hidden; border: 1px solid #E2E8F0;"></div>
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-danger" onclick="app.stopScanner('floating')" id="btnStopScannerFloating" style="display:none;">إغلاق الكاميرا ✖</button>
+            </div>
+        </div>
+        
     </div>
 
     <!-- إضافة ستايل بسيط لتحسين شكل شريط السحب (Scrollbar) للبوكس ده فقط -->
@@ -553,27 +748,31 @@ header {
         
       <div class="filters-row">
     <div class="filter-box">
-        <span class="filter-label">🔍 Search</span>
-        <input type="text" class="search-main" id="search" placeholder="Code or Name..." oninput="app.render()">
+        <span class="filter-label" id="lblSearch">🔍 Search</span>
+        <input type="text" class="search-main" id="search" dir="ltr" placeholder="Code or Name..." oninput="app.render()" style="text-align: left;">
     </div>
     <div class="filter-box">
-        <span class="filter-label">📂 Category A</span>
-        <select id="catA" multiple onchange="app.handleCatAChange()"></select>
+        <span class="filter-label" id="lblCatA">📂 Category A</span>
+        <select id="catA" multiple onchange="app.handleCascadeChange('catA')"></select>
     </div>
     <div class="filter-box">
-        <span class="filter-label">📁 Category B</span>
-        <select id="catB" multiple onchange="app.render()"></select>
+        <span class="filter-label" id="lblCatB">📁 Category B</span>
+        <select id="catB" multiple onchange="app.handleCascadeChange('catB')"></select>
     </div>
     <div class="filter-box">
-        <span class="filter-label">🏷️ Brand</span>
+        <span class="filter-label" id="lblCatC">📁 Category C</span>
+        <select id="catC" multiple onchange="app.handleCascadeChange('catC')"></select>
+    </div>
+    <div class="filter-box">
+        <span class="filter-label" id="lblBrand">🏷️ Brand</span>
         <select id="brand" multiple onchange="app.render()"></select>
     </div>
     <div class="filter-box">
-        <span class="filter-label">📅 Expiry Month</span>
+        <span class="filter-label" id="lblMonth">📅 Expiry Month</span>
         <select id="month" multiple onchange="app.render()"></select>
     </div>
     <div class="filter-box">
-        <span class="filter-label">⚙️ Status</span>
+        <span class="filter-label" id="lblStatus">⚙️ Status</span>
         <select id="status" multiple onchange="app.render()">
             <option value="found">Found</option>
             <option value="not-found">Missing</option>
@@ -596,13 +795,13 @@ header {
                             <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
                         </svg>
                     </span>
-                    <span class="reset-text">إعادة ضبط الفلاتر</span>
+                    <span class="reset-text" id="btnResetText">إعادة ضبط الفلاتر</span>
                 </button>
             </div>
 
             <!-- قسم: رفع البيانات (IMPORT DATA) -->
             <div class="hub-card">
-                <div class="hub-card-title">
+                <div class="hub-card-title" id="lblImportTitle">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     IMPORT DATA
                 </div>
@@ -613,19 +812,19 @@ header {
                     <div class="dropzone-icon">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="dropzone-text">CLICK TO IMPORT EXCEL</div>
+                    <div class="dropzone-text" id="lblImportDrop">CLICK TO IMPORT EXCEL</div>
                 </div>
             </div>
 
             <!-- قسم: تصدير البيانات (EXPORT DATA) -->
             <div class="hub-card">
-                <div class="hub-card-title">
+                <div class="hub-card-title" id="lblExportTitle">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     EXPORT DATA
                 </div>
                 
                 <div class="export-grid">
-                    <button class="export-btn btn-excel" onclick="app.export()">EXCEL</button>
+                    <button class="export-btn btn-excel" id="btnExport" onclick="app.export()">EXCEL</button>
                     <!-- يمكنك ربط هذين الزرين بدوال أخرى مستقبلاً إذا أردت تصدير JSON أو Text -->
                     
                 </div>
@@ -633,18 +832,24 @@ header {
 
             <!-- قسم: مسح البيانات (DANGER ZONE) -->
             <div class="hub-card danger-card">
-                <div class="hub-card-title" style="color: #DC2626;">
+                <div class="hub-card-title" id="lblDangerTitle" style="color: #DC2626;">
                     <span style="font-size: 16px; margin-right: 5px;">⚠️</span> DANGER ZONE
                 </div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding-top: 5px;">
-                    <div style="color: #991B1B; font-size: 13px; font-weight: 600;">
+                    <div id="lblDangerWarning" style="color: #991B1B; font-size: 13px; font-weight: 600;">
                         احذر، مسح قاعدة البيانات لا يمكن التراجع عنه أبداً.
                     </div>
-                    <button class="danger-btn-art" onclick="app.promptClearAll()">
+                    <button class="danger-btn-art" id="btnDanger" onclick="app.promptClearAll()">
                         💣 Clear All Database
                     </button>
                 </div>
+            </div>
+
+            <!-- رسالة وضع الاستكشاف (تظهر فقط عند تفعيل الاستكشاف) -->
+            <div id="exploreModeNotice" style="display: none; background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%); border: 2px dashed #8B5CF6; padding: 20px; border-radius: 12px; margin-top: 15px; text-align: center; box-shadow: 0 5px 15px rgba(139, 92, 246, 0.1);">
+                <div id="lblExploreNoticeTitle" style="font-size: 16px; font-weight: bold; color: #6D28D9; margin-bottom: 5px;">🌍 استكشاف الصيدليات (Explore Pharmacies) ⚕️</div>
+                <div id="lblExploreNoticeDesc" style="font-size: 14px; color: #7C3AED; font-weight: bold;">جاري عرض جميع أصناف الصيدليات المسجلة (All PH Expiry)</div>
             </div>
 
         </div>
@@ -897,8 +1102,8 @@ header {
         </div>
 
         <div class="upload-actions">
-            <button class="btn-cancel" onclick="app.cancelUpload()">Cancel ❌</button>
-            <button class="btn-confirm" onclick="app.confirmUpload()">Confirm & Save ✅</button>
+            <button class="btn-cancel" onclick="app.cancelUpload()">Cancel</button>
+            <button class="btn-confirm" onclick="app.confirmUpload()">Confirm & Save</button>
         </div>
     </div>
 </div>
@@ -931,38 +1136,50 @@ const ONLINE_WORKER_URL = "https://online.meralmohamed121022.workers.dev";
 
         i18n: {
             ar: {
-
                 total: "إجمالي الأصناف", found: "تم العثور", missing: "مفقودات", pending: "قيد الانتظار",
-
-                expired: "منتهي (+1)", nearExp: "قريب الانتهاء", search: "بحث بالاسم أو الكود...",
-
-                catA: "القسم الرئيسي", catB: "القسم الفرعي", brand: "البراند", month: "شهر الانتهاء",
-
-                status: "الحالة", reset: "إعادة ضبط", upload: "رفع ملف", export: "تصدير",
-
+                expired: "منتهي", nearExp: "قريب الانتهاء", search: "بحث بالاسم أو الكود...",
+                catA: "القسم الرئيسي", catB: "القسم الفرعي", catC: "القسم الفرعي ٢", brand: "البراند", month: "شهر الانتهاء",
+                status: "الحالة", reset: "إعادة ضبط الفلاتر", upload: "رفع ملف", export: "تصدير",
                 sync: "متصل • مزامنة", logout: "خروج", deleteGrp: "حذف المجموعة", noData: "لا توجد بيانات مطابقة",
-
-                langToggleBtn: "English 🌐", explore: "استكشاف المستخدمين", added: "تم النسخ لحسابك",
-
-                selectUsers: "اختر الصيدلية لعرض الاكواد:", empty: "(فارغ)"
-
+                langToggleBtn: "English", explore: "استكشاف الصيدليات", added: "تم النسخ لحسابك",
+                selectUsers: "اختر الصيدلية لعرض الاكواد:", empty: "(فارغ)",
+                returnToPharmacy: "العودة لصيدليتي",
+                importTitle: "رفع البيانات", importDrop: "اضغط لرفع ملف إكسيل",
+                exportTitle: "تصدير البيانات", exportBtn: "إكسيل",
+                dangerTitle: "منطقة الخطر", dangerWarning: "احذر، مسح قاعدة البيانات لا يمكن التراجع عنه أبداً.", dangerBtn: "💣 مسح جميع البيانات",
+                exploreNoticeTitle: "🌍 استكشاف الصيدليات (Explore Pharmacies) ⚕️", exploreNoticeDesc: "جاري عرض جميع أصناف الصيدليات المسجلة (All PH Expiry)",
+                btnScannerText: "📷 مسح الباركود", lblScannerTitle: "📷 امسح الباركود بالكاميرا أو ادخل الكود يدوياً",
+                btnSearchBarcode: "بحث", btnStopScanner: "إغلاق الكاميرا ❌", manualBarcodePlaceholder: "ابحث بالكود أو GTIN..."
             },
             en: {
                 total: "Total Items", found: "Found", missing: "Missing", pending: "Pending",
                 expired: "Expired (+1M)", nearExp: "Near Expiry", search: "Search name or code...",
-                catA: "Category Level A", catB: "Category Level B", brand: "Brand", month: "Expiry Month",
+                catA: "Category A", catB: "Category B", catC: "Category C", brand: "Brand", month: "Expiry Month",
                 status: "Status", reset: "Reset Filters", upload: "Upload Excel", export: "Export",
                 sync: "Online • Synced", logout: "Logout", deleteGrp: "Delete Group", noData: "No matching items found",
-                langToggleBtn: "العربية 🌐", explore: "Explore Users", added: "Copied to your account",
-                selectUsers: "Select Pharmacies to view their data:", empty: "(Empty)"
+                langToggleBtn: "العربية 🌐", explore: "🌍 Explore Pharmacies ⚕️", added: "Copied to your account",
+                selectUsers: "Select Pharmacies to view their data:", empty: "(Empty)",
+                returnToPharmacy: "🏠 Return to my pharmacy",
+                importTitle: "IMPORT DATA", importDrop: "CLICK TO IMPORT EXCEL",
+                exportTitle: "EXPORT DATA", exportBtn: "EXCEL",
+                dangerTitle: "DANGER ZONE", dangerWarning: "Warning, clearing the database cannot be undone.", dangerBtn: "💣 Clear All Database",
+                exploreNoticeTitle: "🌍 Explore Pharmacies ⚕️", exploreNoticeDesc: "Currently showing all registered pharmacies items (All PH Expiry)",
+                btnScannerText: "📷 Scan Barcode", lblScannerTitle: "📷 Scan barcode with camera or enter code manually",
+                btnSearchBarcode: "Search", btnStopScanner: "Close Camera ❌", manualBarcodePlaceholder: "Code or GTIN..."
             }
         },
 
         loadExternalDB: async () => {
             try {
-                const [res1, res2] = await Promise.all([fetch('products1.json'), fetch('products2.json')]);
-                const data1 = await res1.json(); const data2 = await res2.json();
-                LOCAL_DB = [...data1, ...data2];
+                const [res1, res2, res3] = await Promise.all([
+                    fetch(atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL21lcmFsbW9oYW1lZDEyMTAyMi1jeWJlci90ZXN0LW1vbm9zeXN0ZW0vcmVmcy9oZWFkcy9tYWluL21hc3RlcjEuanNvbg==')),
+                    fetch(atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL21lcmFsbW9oYW1lZDEyMTAyMi1jeWJlci90ZXN0LW1vbm9zeXN0ZW0vcmVmcy9oZWFkcy9tYWluL21hc3RlcjIuanNvbg==')),
+                    fetch(atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL21lcmFsbW9oYW1lZDEyMTAyMi1jeWJlci90ZXN0LW1vbm9zeXN0ZW0vcmVmcy9oZWFkcy9tYWluL21hc3RlcjMuanNvbg=='))
+                ]);
+                const data1 = await res1.json(); 
+                const data2 = await res2.json();
+                const data3 = await res3.json();
+                LOCAL_DB = [...data1, ...data2, ...data3];
                 DB_MAP = new Map(LOCAL_DB.map(i => [String(i.Code), i]));
             } catch (e) { console.error("JSON Load Error", e); }
         },
@@ -981,8 +1198,8 @@ init: async () => {
     // 1. تحميل قاعدة البيانات المحلية أولاً
     await app.loadExternalDB();
     
-    // 2. ضبط اتجاه الصفحة (RTL لـ العربية)
-    document.body.classList.toggle('rtl', app.language === 'ar');
+    // 2. ضبط اتجاه الصفحة (RTL لـ العربية) وتحديث النصوص
+    app.applyLanguageUI();
 
     // 3. مراقب التمرير لتحميل المزيد من الأصناف (Lazy Loading)
     window.addEventListener('scroll', () => {
@@ -1102,7 +1319,9 @@ login: async () => {
                         nameAr: local ? local['أسم المنتج'] : '',
                         brand: local ? local.Brand : (p.brand || "OTHER"),
                         catA: local ? local['Category Level A'] : 'Uncategorized',
-                        catB: local ? local['Category Level B'] : 'Uncategorized'
+                        catB: local ? local['Category Level B'] : 'Uncategorized',
+                        catC: local ? local['Category Level C'] : 'Uncategorized',
+                        GTIN: local ? (local.GTIN || local.gtin || local.Gtin || []) : []
                     };
                 });
                 await app.loadAllUsersData(); 
@@ -1133,6 +1352,9 @@ setStatFilter: (type, el) => {
         if (container) {
             container.style.display = 'none';
         }
+        
+        const exploreNotice = document.getElementById('exploreModeNotice');
+        if (exploreNotice) exploreNotice.style.display = 'block';
 
         app.notify("جاري عرض جميع أصناف الصيدليات المسجلة (All PH Expiry)", "success");
         
@@ -1158,6 +1380,9 @@ setStatFilter: (type, el) => {
         if (container) {
             container.style.display = 'none';
         }
+        
+        const exploreNotice = document.getElementById('exploreModeNotice');
+        if (exploreNotice) exploreNotice.style.display = 'none';
     }
     
     // إعادة بناء الصفحة بالبيانات الجديدة
@@ -1172,7 +1397,16 @@ setStatFilter: (type, el) => {
 render: (resetPagination = true) => {
     if (resetPagination) app.currentPage = 1;
     const t = app.i18n[app.language];
-    const search = document.getElementById('search').value.toLowerCase().trim();
+    
+    let search = document.getElementById('search').value.trim();
+    
+    // استخدم الباركود المحلل للبحث بدون تغيير النص في مربع البحث فوراً (عشان الاسكانر اليدوي بيكتب بسرعة)
+    let parsedSearch = search;
+    if (parsedSearch.length >= 15 || parsedSearch.startsWith("]")) {
+        parsedSearch = app.parseBarcode(parsedSearch);
+    } else {
+        parsedSearch = parsedSearch.toLowerCase();
+    }
 
     // 1. فلترة الأصناف الذكية
     let baseData = app.exploreMode ? 
@@ -1193,6 +1427,8 @@ render: (resetPagination = true) => {
                 brand: local ? local.Brand : 'OTHER', 
                 catA: local ? local['Category Level A'] : 'Uncategorized',
                 catB: local ? local['Category Level B'] : 'Uncategorized',
+                catC: local ? local['Category Level C'] : 'Uncategorized',
+                GTIN: local ? (local.GTIN || local.gtin || local.Gtin || []) : [],
                 isExplore: true, 
                 ownerId: it.userId 
             };
@@ -1237,24 +1473,122 @@ render: (resetPagination = true) => {
         const monthFilters  = app.tomSelectInstances['month']?.getValue()  || [];
         const catAFilters   = app.tomSelectInstances['catA']?.getValue()   || [];
         const catBFilters   = app.tomSelectInstances['catB']?.getValue()   || [];
+        const catCFilters   = app.tomSelectInstances['catC']?.getValue()   || [];
         const brandFilters  = app.tomSelectInstances['brand']?.getValue()  || [];
         const statusFilters = app.tomSelectInstances['status']?.getValue() || [];
 
         if (monthFilters.length  > 0 && !monthFilters.includes(item.expiryDate.slice(0, 7))) return false;
         if (catAFilters.length   > 0 && !catAFilters.includes(item.catA))   return false;
         if (catBFilters.length   > 0 && !catBFilters.includes(item.catB))   return false;
+        if (catCFilters.length   > 0 && !catCFilters.includes(item.catC))   return false;
         if (brandFilters.length  > 0 && !brandFilters.includes(item.brand)) return false;
         if (statusFilters.length > 0 && !statusFilters.includes(item.status)) return false;
 
         return true;
     });
 
-    if (search) {
-        app.fullFilteredList = app.fullFilteredList.filter(item => 
-            String(item.nameEn).toLowerCase().includes(search) || 
-            String(item.nameAr).includes(search) ||
-            String(item.code).includes(search)
-        );
+    if (parsedSearch) {
+        app.fullFilteredList = app.fullFilteredList.filter(item => {
+            let match = String(item.nameEn).toLowerCase().includes(parsedSearch) || 
+                        String(item.nameAr).includes(parsedSearch) ||
+                        String(item.code).includes(parsedSearch);
+                        
+            if (!match && item.GTIN) {
+                const gtinArray = Array.isArray(item.GTIN) ? item.GTIN : [item.GTIN];
+                const searchNoZeros = parsedSearch.replace(/^0+/, '');
+                if (searchNoZeros.length >= 3) {
+                    match = gtinArray.some(g => {
+                        const gStr = String(g).trim().replace(/^0+/, '');
+                        return gStr === searchNoZeros; // المطابقة التامة
+                    });
+                }
+            }
+            return match;
+        });
+    }
+
+    // عرض البوب أب للصنف الذي ليس له إكسابيري أو غير موجود بالكامل (فقط عند البحث برقم باركود وليس نص)
+    if (parsedSearch && parsedSearch.length >= 4 && parsedSearch.match(/^\d+$/)) {
+        const searchNoZeros = parsedSearch.replace(/^0+/, '');
+        
+        const existsInUser = baseData.some(item => {
+            if (String(item.code).replace(/^0+/, '') === searchNoZeros) return true;
+            if (item.GTIN) {
+                const gtinArray = Array.isArray(item.GTIN) ? item.GTIN : [item.GTIN];
+                return gtinArray.some(g => String(g).trim().replace(/^0+/, '') === searchNoZeros);
+            }
+            return false;
+        });
+
+        if (!existsInUser) {
+            if (app.lastPopupCode !== parsedSearch) {
+                app.lastPopupCode = parsedSearch;
+                
+                const foundInMaster = LOCAL_DB.filter(localItem => {
+                    if (!localItem.GTIN) return false;
+                    const gtinArray = Array.isArray(localItem.GTIN) ? localItem.GTIN : [localItem.GTIN];
+                    return gtinArray.some(g => String(g).trim().replace(/^0+/, '') === searchNoZeros);
+                });
+                
+                let isMasterFound = foundInMaster.length > 0;
+                let localItem = isMasterFound ? foundInMaster[0] : null;
+                
+                let modal = document.getElementById('noExpiryModal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'noExpiryModal';
+                    modal.innerHTML = `
+                        <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:99999; backdrop-filter:blur(3px);">
+                            <div style="background:#fff; border-radius:20px; padding:30px; max-width:400px; width:90%; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.3); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="neModalContent">
+                                <div style="font-size:60px; margin-bottom:10px;">🚫</div>
+                                <div style="color:#DC2626; font-size:24px; font-weight:900; margin-bottom:5px;" id="neModalTitle"></div>
+                                <div style="color:#6B7280; font-size:14px; margin-bottom:20px; padding:0 20px;" id="neModalDesc"></div>
+                                <div style="background:#F3F4F6; border-radius:12px; padding:15px; margin-bottom:25px; border:1px dashed #D1D5DB;">
+                                    <div style="margin-bottom:10px; height:120px; display:flex; justify-content:center; align-items:center;">
+                                        <img id="neModalImg" style="max-height:100%; max-width:100%; object-fit:contain; border-radius:8px;">
+                                    </div>
+                                    <div style="font-weight:bold; font-size:16px; margin-bottom:8px; color:#111;" id="neModalName"></div>
+                                    <div style="color:#4B5563; font-size:14px; font-family:monospace; background:#fff; display:inline-block; padding:4px 10px; border-radius:6px; border:1px solid #E5E7EB;" id="neModalCode"></div>
+                                </div>
+                                <button onclick="document.getElementById('noExpiryModal').style.opacity='0'; setTimeout(()=>document.getElementById('noExpiryModal').style.display='none', 200);" style="background:#DC2626; color:white; border:none; padding:12px 25px; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; width:100%; transition:background 0.2s;">
+                                    ${app.language === 'ar' ? 'حسناً، إغلاق' : 'Okay, Close'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+                
+                document.getElementById('neModalTitle').innerText = isMasterFound 
+                    ? (app.language === 'ar' ? 'لا يوجد تاريخ انتهاء' : 'No Expiry Date')
+                    : (app.language === 'ar' ? 'الصنف غير مسجل' : 'Item Not Found');
+                    
+                document.getElementById('neModalDesc').innerText = isMasterFound 
+                    ? (app.language === 'ar' ? 'هذا الصنف لم يتم تسجيل تاريخ انتهاء له في جردك' : 'This item has no recorded expiry date in your inventory.')
+                    : (app.language === 'ar' ? 'هذا الباركود غير مسجل في قاعدة البيانات المركزية ولا في جردك.' : 'This barcode is not registered in the database or inventory.');
+                
+                document.getElementById('neModalName').innerText = isMasterFound 
+                    ? (app.language === 'ar' ? (localItem['أسم المنتج'] || localItem['Item Description']) : (localItem['Item Description'] || localItem['أسم المنتج']))
+                    : (app.language === 'ar' ? 'صنف غير معروف (Unknown Item)' : 'Unknown Item');
+                    
+                document.getElementById('neModalCode').innerText = "Code: " + (isMasterFound ? localItem.Code : parsedSearch);
+                
+                const modalImg = document.getElementById('neModalImg');
+                modalImg.src = '';
+                if (isMasterFound) {
+                    modalImg.dataset.code = localItem.Code;
+                    modalImg.classList.remove('loaded');
+                    app.loadImage(modalImg);
+                    modalImg.style.display = 'block';
+                } else {
+                    modalImg.style.display = 'none';
+                }
+
+                modal.style.display = 'block';
+                modal.style.opacity = '1';
+                setTimeout(() => { document.getElementById('neModalContent').style.transform = 'scale(1)'; }, 10);
+            }
+        }
     }
 
     // 4. شريط الشهور العلوي
@@ -1330,8 +1664,10 @@ renderVisiblePart: () => {
     const grouped = {};
     visibleList.forEach(it => {
         const mKey = it.expiryDate.slice(0, 7);
-        if (!grouped[mKey]) grouped[mKey] = [];
-        grouped[mKey].push(it);
+        if (!grouped[mKey]) grouped[mKey] = {};
+        const catC = it.catC || 'Uncategorized';
+        if (!grouped[mKey][catC]) grouped[mKey][catC] = [];
+        grouped[mKey][catC].push(it);
     });
 
     let finalHtml = "";
@@ -1341,11 +1677,14 @@ renderVisiblePart: () => {
 
         finalHtml += `
         <div class="date-section" id="sec-${mKey}">
-            <div class="date-header ${headerClass}">📅 ${mKey}</div>
-            <div class="date-grid">`;
+            <div class="date-header ${headerClass}">📅 ${mKey}</div>`;
 
-        grouped[mKey].forEach(item => {
-            const phColor = item.isExplore ? getPhColor(item.ownerId) : 'var(--primary)';
+        Object.keys(grouped[mKey]).sort().forEach(catC => {
+            finalHtml += `<h3 style="margin: 10px 0; color: var(--primary); font-size: 15px; display: inline-block; padding: 4px 10px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; backdrop-filter: blur(5px);">📁 ${catC}</h3>`;
+            finalHtml += `<div class="date-grid" style="margin-bottom: 20px;">`;
+            
+            grouped[mKey][catC].forEach(item => {
+                const phColor = item.isExplore ? getPhColor(item.ownerId) : 'var(--primary)';
             const cardStyle = item.isExplore 
                 ? `border: 2.5px solid ${phColor}; background: #fdfdfd; box-shadow: 0 4px 15px ${phColor}20;` 
                 : '';
@@ -1386,7 +1725,7 @@ renderVisiblePart: () => {
 
                     <div class="name-en"><b>${item.nameEn}</b></div>
                     <div class="name-ar">${item.nameAr}</div>
-
+                    
                     <div class="status-actions">
                         <button class="st-btn found ${item.status === 'found' ? 'active' : ''}" 
                                 style="${item.status === 'found' ? `background:${phColor} !important; border-color:${phColor} !important; color:white !important;` : ''}"
@@ -1400,8 +1739,10 @@ renderVisiblePart: () => {
                     </div>
                 </div>
             </div>`;
+            });
+            finalHtml += `</div>`;
         });
-        finalHtml += `</div></div>`;
+        finalHtml += `</div>`;
     });
 
     resultContainer.innerHTML = finalHtml;
@@ -1446,7 +1787,8 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                         nameAr: local['أسم المنتج'] || '',
                         brand: local.Brand || 'OTHER',
                         catA: local['Category Level A'] || 'Uncategorized',
-                        catB: local['Category Level B'] || 'Uncategorized'
+                        catB: local['Category Level B'] || 'Uncategorized',
+                        catC: local['Category Level C'] || 'Uncategorized'
                     });
 
                     await fetch(`${WORKER_URL}/api/inventory/upsert`, {
@@ -1567,11 +1909,13 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             
             const brands = [...new Set(app.data.map(i => i.brand))].filter(Boolean).sort();
             const catAs = [...new Set(app.data.map(i => i.catA))].filter(Boolean).sort();
+            const catCs = [...new Set(app.data.map(i => i.catC))].filter(Boolean).sort();
             const months = [...new Set(app.data.map(i => i.expiryDate ? i.expiryDate.slice(0, 7) : null))].filter(Boolean).sort();
             
             // تهيئة الفلاتر المتعددة
             app.fillSelect('brand', brands, t.brand);
             app.fillSelect('catA', catAs, t.catA);
+            app.fillSelect('catC', catCs, 'Category C');
             app.fillSelect('month', months, t.month);
 
             // تهيئة حالة الصنف (Status) كفلتر متعدد
@@ -1584,53 +1928,297 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 });
             }
             
-            app.handleCatAChange();
+            app.handleCascadeChange('catA');
         },
 
         fillSelect: (id, arr, placeholderText) => {
             const el = document.getElementById(id);
             if (!el) return;
 
-            // نعطيه الـ options فقط بدون option "All" لأن Tom Select بيتعامل مع الفراغ على أنه All
-            el.innerHTML = arr.map(v => `<option value="${v}">${v}</option>`).join('');
-
-            // لو كان فيه نسخة شغالة قبل كده ندمرها عشان نحدثها
+            let currentSelected = [];
             if (app.tomSelectInstances[id]) {
+                currentSelected = app.tomSelectInstances[id].getValue();
                 app.tomSelectInstances[id].destroy();
             }
 
-            // تشغيل التحديد المتعدد
+            el.innerHTML = arr.map(v => `<option value="${v}">${v}</option>`).join('');
+
             app.tomSelectInstances[id] = new TomSelect(el, {
                 plugins: ['remove_button'],
                 placeholder: placeholderText,
                 maxOptions: 100,
                 onChange: () => {
-                    if (id === 'catA') app.handleCatAChange();
+                    if (['catA', 'catB', 'catC'].includes(id)) app.handleCascadeChange(id);
                     else app.render(true);
                 }
             });
+
+            const validSelected = (Array.isArray(currentSelected) ? currentSelected : [currentSelected]).filter(val => arr.includes(val));
+            if (validSelected.length > 0) {
+                app.tomSelectInstances[id].setValue(validSelected, true);
+            }
         },
 
-        handleCatAChange: () => {
-            // جلب الأقسام الرئيسية المختارة كمصفوفة
+        handleCascadeChange: (changedId) => {
             const selectedA = app.tomSelectInstances['catA']?.getValue() || [];
+            const selectedB = app.tomSelectInstances['catB']?.getValue() || [];
+            const selectedC = app.tomSelectInstances['catC']?.getValue() || [];
+            const t = app.i18n[app.language];
+
+            let filteredA = app.data;
+            if (selectedA.length > 0) filteredA = filteredA.filter(i => selectedA.includes(i.catA));
             
-            let filtered = app.data;
-            if (selectedA.length > 0) {
-                filtered = app.data.filter(i => selectedA.includes(i.catA));
+            if (changedId === 'catA') {
+                const catBs = [...new Set(filteredA.map(i => i.catB))].filter(Boolean).sort();
+                app.fillSelect('catB', catBs, app.language === 'ar' ? 'القسم الفرعي' : 'Category B');
+                
+                const catCs = [...new Set(filteredA.map(i => i.catC))].filter(Boolean).sort();
+                app.fillSelect('catC', catCs, 'Category C');
+                
+                const brands = [...new Set(filteredA.map(i => i.brand))].filter(Boolean).sort();
+                app.fillSelect('brand', brands, t.brand);
             }
             
-            const catBs = [...new Set(filtered.map(i => i.catB))].filter(Boolean).sort();
-            const placeholder = app.language === 'ar' ? 'القسم الفرعي' : 'Sub-Cats';
-            app.fillSelect('catB', catBs, placeholder);
+            let filteredB = filteredA;
+            if (selectedB.length > 0) filteredB = filteredB.filter(i => selectedB.includes(i.catB));
+            
+            if (changedId === 'catB') {
+                const catCs = [...new Set(filteredB.map(i => i.catC))].filter(Boolean).sort();
+                app.fillSelect('catC', catCs, 'Category C');
+                
+                const brands = [...new Set(filteredB.map(i => i.brand))].filter(Boolean).sort();
+                app.fillSelect('brand', brands, t.brand);
+            }
+
+            let filteredC = filteredB;
+            if (selectedC.length > 0) filteredC = filteredC.filter(i => selectedC.includes(i.catC));
+            
+            if (changedId === 'catC') {
+                const brands = [...new Set(filteredC.map(i => i.brand))].filter(Boolean).sort();
+                app.fillSelect('brand', brands, t.brand);
+            }
             
             app.render(true);
         },
 
+        toggleScanner: (mode) => {
+            const containerInline = document.getElementById('scannerContainerInline');
+            const containerFloating = document.getElementById('scannerContainerFloating');
+            const btnInline = document.getElementById('btnToggleScanner');
+            const btnFloating = document.getElementById('btnToggleScannerFloating');
+            
+            if (mode === 'inline') {
+                const isInlineOpen = containerInline.style.display === 'block';
+                if (isInlineOpen) {
+                    app.stopScanner('inline');
+                    containerInline.style.display = 'none';
+                    if(btnInline) btnInline.classList.remove('active');
+                } else {
+                    if (containerFloating.style.display === 'block') {
+                        app.stopScanner('floating');
+                        containerFloating.style.right = '-450px';
+                        if(btnFloating) btnFloating.style.right = '0px';
+                        setTimeout(() => { containerFloating.style.display = 'none'; }, 300);
+                    }
+                    
+                    containerInline.style.display = 'block';
+                    if(btnInline) btnInline.classList.add('active');
+                    app.startScanner('inline');
+                }
+            } else if (mode === 'floating') {
+                const isFloatingOpen = containerFloating.style.display === 'block' && containerFloating.style.right === '0px';
+                if (isFloatingOpen) {
+                    app.stopScanner('floating');
+                    containerFloating.style.right = '-450px';
+                    if(btnFloating) btnFloating.style.right = '0px';
+                    setTimeout(() => { containerFloating.style.display = 'none'; }, 300);
+                } else {
+                    if (containerInline.style.display === 'block') {
+                        app.stopScanner('inline');
+                        containerInline.style.display = 'none';
+                        if(btnInline) btnInline.classList.remove('active');
+                    }
+                    
+                    containerFloating.style.display = 'block';
+                    void containerFloating.offsetWidth; 
+                    containerFloating.style.right = '0px';
+                    if(btnFloating) {
+                        const panelWidth = Math.min(400, window.innerWidth * 0.9);
+                        btnFloating.style.right = panelWidth + 'px'; 
+                    }
+                    app.startScanner('floating');
+                }
+            }
+        },
+
+        activeScannerMode: null,
+
+        startScanner: (mode) => {
+            if (!mode) mode = 'inline';
+            if (app.scannerObj && app.activeScannerMode === mode) return; 
+            
+            if (app.scannerObj) {
+                app.stopScanner(app.activeScannerMode);
+            }
+            
+            app.activeScannerMode = mode;
+            const suffix = mode === 'inline' ? 'Inline' : 'Floating';
+            
+            const btnStop = document.getElementById(`btnStopScanner${suffix}`);
+            if (btnStop) btnStop.style.display = 'inline-block';
+            const btnStart = document.getElementById(`btnStartScanner${suffix}`);
+            if (btnStart) btnStart.style.display = 'none';
+            
+            app.scannerObj = new Html5Qrcode(`qr-reader-${mode}`);
+            const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+            
+            app.scannerObj.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    document.getElementById(`manualBarcode${suffix}`).value = decodedText;
+                    app.searchBarcode(decodedText);
+                    app.stopScanner(mode);
+                },
+                (errorMessage) => {
+                }
+            ).catch(err => {
+                console.error("Camera start failed:", err);
+                app.notify(app.language === 'ar' ? "فشل تشغيل الكاميرا" : "Failed to start camera", "error");
+                if (btnStop) btnStop.style.display = 'none';
+                if (btnStart) btnStart.style.display = 'inline-block';
+            });
+        },
+        
+        stopScanner: (mode) => {
+            if (!mode) mode = app.activeScannerMode;
+            if (!mode) return;
+            
+            const suffix = mode === 'inline' ? 'Inline' : 'Floating';
+            const btnStop = document.getElementById(`btnStopScanner${suffix}`);
+            const btnStart = document.getElementById(`btnStartScanner${suffix}`);
+            
+            if (app.scannerObj && app.activeScannerMode === mode) {
+                app.scannerObj.stop().then(() => {
+                    app.scannerObj.clear();
+                    app.scannerObj = null;
+                    app.activeScannerMode = null;
+                    if (btnStop) btnStop.style.display = 'none';
+                    if (btnStart) btnStart.style.display = 'inline-block';
+                }).catch(err => console.error(err));
+            } else {
+                if (btnStop) btnStop.style.display = 'none';
+                if (btnStart) btnStart.style.display = 'inline-block';
+            }
+        },
+        parseBarcode: (code) => {
+            if (!code) return "";
+            code = String(code).trim();
+            
+            // تنظيف أي رموز غير مرئية في البداية (مثل GS character وغيرها)
+            code = code.replace(/^[^a-zA-Z0-9\](]+/, "");
+            
+            // إزالة بادئات أجهزة الاسكانر (Symbology Identifiers)
+            if (code.startsWith("]C1") || code.startsWith("]d2") || code.startsWith("]e0")) {
+                code = code.substring(3);
+            }
+            
+            // تنظيف إضافي لأي رموز قبل الأرقام
+            code = code.replace(/^[^0-9]+/, "");
+            
+            // 1. DataMatrix / GS1-128 (يبدأ بـ 01 وأطول من 15 رقم، نأخذ 14 رقم بعد 01)
+            if (code.startsWith("01") && code.length > 15) {
+                let gtin = code.substring(2, 16);
+                // إذا كان الـ GTIN المستخلص يبدأ بصفر، نحذفه ليبحث بـ 13 رقم
+                if (gtin.startsWith("0")) {
+                    gtin = gtin.substring(1);
+                }
+                return gtin;
+            }
+            // 2. باركود 15 رقم يبدأ بـ 0، نحذف الصفر
+            if (code.length === 15 && code.startsWith("0")) {
+                return code.substring(1);
+            }
+            return code.toLowerCase();
+        },
+        searchBarcode: (rawCode) => {
+            if (!rawCode) return;
+            const code = app.parseBarcode(rawCode);
+            
+            app.resetFilters();
+            
+            const searchInput = document.getElementById('search');
+            if (searchInput) searchInput.value = code;
+            
+            app.lastPopupCode = null;
+            
+            app.render(true);
+            
+            setTimeout(() => {
+                const itemsContainer = document.querySelector('.data-hub-panel');
+                if (itemsContainer) itemsContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        },
+
+        applyLanguageUI: () => {
+            document.body.classList.toggle('rtl', app.language === 'ar');
+            const t = app.i18n[app.language];
+            
+            document.getElementById('langBtn').innerText = t.langToggleBtn;
+            
+            const setText = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
+            const setHtml = (id, text) => { const el = document.getElementById(id); if (el) el.innerHTML = text; };
+            
+            setText('btnReturnToPharmacyText', t.returnToPharmacy);
+            setText('lblTotal', t.total);
+            setText('lblFound', t.found);
+            setText('lblMissing', t.missing);
+            setText('lblPending', t.pending);
+            setText('lblExpired', t.expired);
+            setText('lblExplore', t.explore);
+            
+            setText('lblSearch', "🔍 " + (app.language === 'ar' ? "البحث" : "Search"));
+            setText('lblCatA', "📂 " + t.catA);
+            setText('lblCatB', "📁 " + t.catB);
+            setText('lblCatC', "📁 " + (app.language==='ar'?'القسم الفرعي ٢':"Category C"));
+            setText('lblBrand', "🏷️ " + t.brand);
+            setText('lblMonth', "📅 " + t.month);
+            setText('lblStatus', "⚙️ " + t.status);
+            
+            setText('btnResetText', t.reset);
+            
+            setHtml('lblImportTitle', `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> ${t.importTitle}`);
+            setText('lblImportDrop', t.importDrop);
+            
+            setHtml('lblExportTitle', `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> ${t.exportTitle}`);
+            setText('btnExport', t.exportBtn);
+            
+            setHtml('lblDangerTitle', `<span style="font-size: 16px; margin-right: 5px;">⚠️</span> ${t.dangerTitle}`);
+            setText('lblDangerWarning', t.dangerWarning);
+            setText('btnDanger', t.dangerBtn);
+            
+            setText('lblExploreNoticeTitle', t.exploreNoticeTitle);
+            setText('lblExploreNoticeDesc', t.exploreNoticeDesc);
+            
+            const searchInput = document.getElementById('search');
+            if (searchInput) searchInput.placeholder = t.search;
+
+            const searchPharm = document.getElementById('searchPharmacies');
+            if (searchPharm) searchPharm.placeholder = (app.language === 'ar' ? "🔍 ابحث برقم الصيدلية..." : "🔍 Search by pharmacy number...");
+            
+            setText('lblSelectUsers', t.selectUsers);
+            
+            setText('btnScannerText', t.btnScannerText);
+            setText('lblScannerTitle', t.lblScannerTitle);
+            setText('btnSearchBarcode', t.btnSearchBarcode);
+            setText('btnStopScanner', t.btnStopScanner);
+            const manualBarcode = document.getElementById('manualBarcode');
+            if (manualBarcode) manualBarcode.placeholder = t.manualBarcodePlaceholder;
+        },
+
         toggleLanguage: () => {
             app.language = app.language === 'ar' ? 'en' : 'ar';
-            document.body.classList.toggle('rtl', app.language === 'ar');
-            document.getElementById('langBtn').innerText = app.i18n[app.language].langToggleBtn;
+            app.applyLanguageUI();
             
             // إعادة بناء الفلاتر باللغة الجديدة
             app.initFilters();
@@ -1835,24 +2423,39 @@ confirmUpload: async () => {
             if (searchInput) searchInput.value = '';
 
             // 2. تفريغ جميع الفلاتر المتعددة (Tom Select)
-            ['catA', 'catB', 'brand', 'month', 'status'].forEach(id => {
+            ['catA', 'catB', 'catC', 'brand', 'month', 'status'].forEach(id => {
                 if (app.tomSelectInstances[id]) {
                     // clear(true) تقوم بتفريغ القيم بدون إطلاق حدث onChange عشان ميعملش ريندر كتير
                     app.tomSelectInstances[id].clear(true); 
                 }
             });
 
-            // 3. إعادة الفلتر العلوي إلى "الكل" أو "قيد الانتظار" (اختياري، هنا نرجعه للكل)
-            app.statFilter = 'all'; 
+            // 3. إعادة الفلتر العلوي إلى "الكل" أو "قيد الانتظار" (هنا نجعله قيد الانتظار كافتراضي لصيدليتي)
+            app.statFilter = 'pending'; 
+            app.exploreMode = false;
+            app.selectedUsers = new Set();
             document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
-            // نعلم على أول كارت (Total Items) ليكون هو الفعال
-            const firstStatCard = document.querySelector('.stat-card');
-            if (firstStatCard) firstStatCard.classList.add('active');
+            
+            // تحديد كارت العودة لصيدليتي كنشط
+            const btnReturn = document.getElementById('btnReturnCard');
+            if (btnReturn) btnReturn.classList.add('active');
+            
+            // تحديد كارت (Pending) ليكون هو الفعال كإعداد افتراضي
+            const pendingStatCard = document.querySelector('.stat-card[onclick*="\'pending\'"]');
+            if (pendingStatCard) pendingStatCard.classList.add('active');
 
             // 4. إعادة بناء الأقسام الفرعية بناءً على أن القسم الرئيسي فارغ
             const catBs = [...new Set(app.data.map(i => i.catB))].filter(Boolean).sort();
-            const placeholder = app.language === 'ar' ? 'القسم الفرعي' : 'Sub-Cats';
-            app.fillSelect('catB', catBs, placeholder);
+            const catCs = [...new Set(app.data.map(i => i.catC))].filter(Boolean).sort();
+            const brands = [...new Set(app.data.map(i => i.brand))].filter(Boolean).sort();
+            app.fillSelect('catB', catBs, app.language === 'ar' ? 'القسم الفرعي' : 'Category B');
+            app.fillSelect('catC', catCs, 'Category C');
+            app.fillSelect('brand', brands, app.i18n[app.language].brand);
+            
+            const exploreNotice = document.getElementById('exploreModeNotice');
+            if (exploreNotice) exploreNotice.style.display = 'none';
+            const container = document.getElementById('exploreUsersContainer');
+            if (container) container.style.display = 'none';
 
             // 5. عمل ريندر نهائي مرة واحدة بعد تصفير كل شيء
             app.render(true);
