@@ -34452,36 +34452,62 @@ function findProductByCodeOrGTIN(searchCode, rawCode = "") {
 
     const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
 
-    return targetDB.find(product => {
-        // أ) المطابقة برقم الكود السداسي
+    // 1. لو كان الإدخال 6 أرقام بالظبط، نبحث في الكود السداسي (Code) فقط أولاً
+    if (cleanSearch.length === 6) {
+        let codeMatch = targetDB.find(product => {
+            const pCode = String(product.Code || product.code || '').trim().toLowerCase();
+            return pCode === cleanSearch || (searchNoZeros && pCode.replace(/^0+/, '') === searchNoZeros);
+        });
+        if (codeMatch) return codeMatch;
+    }
+
+    // 2. لو مش 6 أرقام (أو لم نجد الصنف في الخطوة السابقة)، نعمل بحث دقيق (Exact Match)
+    let exactMatch = targetDB.find(product => {
+        // المطابقة برقم الكود احتياطياً
         const pCode = String(product.Code || product.code || '').trim().toLowerCase();
         if (pCode === cleanSearch || (searchNoZeros && pCode.replace(/^0+/, '') === searchNoZeros)) {
             return true;
         }
 
-        // ب) المطابقة داخل مصفوفة الـ GTIN الخاصة بالمنتج
+        // المطابقة التامة بـ GTIN
         const gtinData = product.GTIN || product.gtin || product.Gtin;
         if (gtinData) {
             const gtinArray = Array.isArray(gtinData) ? gtinData : [gtinData];
             return gtinArray.some(g => {
                 const gStr = String(g).trim().toLowerCase();
                 const gNoZeros = gStr.replace(/^0+/, '');
-
                 if (!gStr) return false;
-                
-                // 1. مطابقة تامة
-                if (gStr === cleanSearch || gNoZeros === searchNoZeros) return true;
-                
-                // 2. مطابقة بالوجود والتتابع
-                if (rawSearch && rawSearch.includes(gStr)) return true;
-                if (cleanSearch.includes(gStr) || gStr.includes(cleanSearch)) return true;
-
-                return false;
+                return gStr === cleanSearch || gNoZeros === searchNoZeros;
             });
         }
-
         return false;
     });
+
+    if (exactMatch) return exactMatch;
+
+    // 3. بحث تقريبي (Fuzzy Match) في الـ GTIN فقط لو الكود أطول من 6 أرقام 
+    // (لمنع التداخلات العشوائية مع الأكواد القصيرة)
+    if (cleanSearch.length > 6) {
+        return targetDB.find(product => {
+            const gtinData = product.GTIN || product.gtin || product.Gtin;
+            if (gtinData) {
+                const gtinArray = Array.isArray(gtinData) ? gtinData : [gtinData];
+                return gtinArray.some(g => {
+                    const gStr = String(g).trim().toLowerCase();
+                    if (!gStr) return false;
+                    
+                    // منع التطابق العشوائي مع أرقام قصيرة جداً (نحدد الطول بـ 8 على الأقل)
+                    if (rawSearch && rawSearch.includes(gStr) && gStr.length >= 8) return true;
+                    if (cleanSearch.includes(gStr) && gStr.length >= 8) return true;
+                    if (gStr.includes(cleanSearch) && cleanSearch.length >= 8) return true;
+                    return false;
+                });
+            }
+            return false;
+        });
+    }
+
+    return null;
 }
 
 // 4. معالجة الإدخال اليدوي المعدلة
@@ -34538,60 +34564,165 @@ function handleCameraScanSuccess(decodedText) {
 }
 
 // 6. دالة تنفيذ معالجة الكود وإظهار كرت الصنف (processScannedCode)
-function processScannedCode(scannedCode, rawInput = "") {
-    // جلب الصنف باستخدام دالة البحث الذكي بدلاً من البحث العادي
-    const product = findProductByCodeOrGTIN(scannedCode, rawInput);
+async function processScannedCode(scannedCode, rawInput = "") {
+    let cleanCode = String(scannedCode || '').trim();
+    if (!cleanCode) return;
 
-    if (product) {
-        const itemCode = String(product.Code || product.code);
-        const nameEN = product["Item Description"] || product.nameEn || "";
-        const nameAR = product["أسم المنتج"] || product.nameAr || "";
-        const imageUrl = (product.itemurl && product.itemurl !== "No Image") ? product.itemurl : "";
+    ensureScannerUiExtras();
 
-        // جلب العرض إن وجد
-        const offer = (typeof getOffer === 'function') ? getOffer(itemCode) : null;
-        const offerLabel = offer ? (offer.offerTypeAR || offer.offerType) : "لا يوجد عرض نشط حالياً ✕";
-        const offerLabelEN = offer ? (offer.offerType || offer.offerTypeEN) : "No Active Offer";
-        const statusColor = offer ? "#38ef7d" : "#ef4444";
+    // 1. التأكد من تحضير قاعدة البيانات
+    const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
+    if (!Array.isArray(targetDB) || !targetDB.length) {
+        setScannerFeedback('error', 'قاعدة البيانات غير جاهزة', 'استنى التحميل وجرب تاني');
+        return;
+    }
 
-        const scannedItem = {
-            imageUrl,
-            nameEN,
-            nameAR,
-            cleanCode: itemCode, // نستخدم الكود السداسي الحقيقي للصنف عند إضافته
-            offerLabel,
-            offerLabelEN,
-            statusColor
-        };
-
-        // إضافة الصنف للقائمة
-        if (typeof addScannerRowToList === 'function') {
-            addScannerRowToList(scannedItem);
-        }
-
-        // إظهار كرت الصنف في الواجهة الرئيسية
-        setLatestScannerMessage(
-            buildScannerCardHtml({
-                ...scannedItem,
-                compact: false
-            })
-        );
-
-        rememberScannedItem(scannedItem);
-        setScannerFeedback('success', 'تم العثور على الصنف', `${nameEN}`);
-        flashScannerSwipe('success');
-
-    } else {
-        // في حالة عدم وجود الصنف في الداتا بيز
+    // 2. البحث الذكي الجذري بالـ GTIN والتتابع أو الكود السداسي
+    const product = findProductByCodeOrGTIN(cleanCode, rawInput);
+    
+    if (!product) {
         setLatestScannerMessage(`
             <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
                 الصنف غير مسجل في قاعدة البيانات<br>
-                <span style="font-family:monospace;font-size:11px;color:#cbd5e1;">(${scannedCode})</span>
+                <span style="font-family:monospace;font-size:11px;color:#cbd5e1;">(${cleanCode})</span>
             </div>
         `);
-        setScannerFeedback('error', 'صنف غير معروف', 'هذا الباركود غير مسجل لديكم');
+        setScannerFeedback('error', `الكود ${cleanCode} غير موجود`, 'تأكد من الرقم المكتوب');
         flashScannerSwipe('error');
+        return;
     }
+
+    // استخراج الكود السداسي الحقيقي للصنف من الداتا بيز بعد النجاح في مطابقة الـ GTIN
+    const realCode = String(product.Code || product.code || '').trim();
+
+    // 3. المؤثرات الصوتية والاهتزاز (Vibration & Beep)
+    if (navigator.vibrate) {
+        if (!scannedCodesSet.has(realCode)) {
+            navigator.vibrate(100);
+        } else {
+            navigator.vibrate([50, 50, 50]);
+        }
+    }
+
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = 'sine';
+        const freq = scannedCodesSet.has(realCode) ? 440 : 880;
+        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.1);
+    } catch (e) { console.log("Audio blocked"); }
+
+    // 4. --- 🟠 معالجة التكرار (لو الصنف مضاف مسبقاً) ---
+    if (scannedCodesSet.has(realCode)) {
+        setScannerFeedback('duplicate', 'موجود بالفعل', 'جاري الانتقال للكارت...');
+        const shell = document.querySelector('.scanner-shell');
+        if (shell) {
+            const dupToast = document.createElement('div');
+            dupToast.style.cssText = `
+                position:absolute; top:230px; left:50%;
+                transform:translateX(-50%);
+                background:#f59e0b; color:#fff;
+                padding:10px 22px; border-radius:30px;
+                font-size:14px; font-weight:800; z-index:100000;
+                border:2px solid #fff;
+                box-shadow:0 10px 30px rgba(245,158,11,0.5);
+                pointer-events:none;
+                transition:all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);
+                white-space:nowrap;
+            `;
+            dupToast.innerHTML = `⚠️ ${realCode} مضاف بالفعل`;
+            shell.appendChild(dupToast);
+            setTimeout(() => {
+                dupToast.style.opacity = '0';
+                dupToast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => dupToast.remove(), 400);
+            }, 1200);
+        }
+        const card = document.getElementById(`card-row-${realCode}`);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            card.style.boxShadow = "0 0 25px #f59e0b";
+            setTimeout(() => card.style.boxShadow = "none", 1500);
+        }
+        return;
+    }
+
+    // 5. --- 🟢 إضافة صنف جديد متطابق ---
+    const imageUrl = String(
+        product?.image_url ||
+        product?.itemurl ||
+        product?.ItemURL ||
+        ""
+    ).trim();
+
+    // جلب العرض بالدوال الأصلية
+    const offer = (typeof getOfferForScanner === 'function') ? getOfferForScanner(realCode) : ((typeof getOffer === 'function') ? getOffer(realCode) : null);
+    const isOfferActive = (typeof isOfferCurrentlyActive === 'function') ? isOfferCurrentlyActive(offer) : !!offer;
+
+    const itemData = {
+        imageUrl: (imageUrl && imageUrl !== "No Image") ? imageUrl : "",
+        needsWorkerImage: !imageUrl || imageUrl === "No Image",
+        cleanCode: realCode,
+        nameEN: product["Item Description English"] || product["Item Description"] || "Unknown",
+        nameAR: product["أسم المنتج"] || "",
+        offerLabel: isOfferActive ? (offer?.offerTypeAR || offer?.offerType || 'العرض متاح') : '❌ لا يوجد عرض نشط حالياً',
+        offerLabelEN: isOfferActive ? (offer?.offerType || offer?.offerTypeEN || 'Offer Active') : 'No Active Offer',
+        statusColor: isOfferActive ? '#38ef7d' : '#ef4444',
+        onlineOffer: "",
+        onlineOfferData: null
+    };
+
+    // إظهار الكارت وإضافته للقائمة
+    if (typeof addScannerRowToList === 'function') addScannerRowToList(itemData);
+    
+    scannedItemsMemory.unshift(itemData);
+    scannedCodesSet.add(realCode);
+    
+    try { 
+        sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); 
+    } catch (e) { }
+
+    setLatestScannerMessage(
+        buildScannerCardHtml({
+            ...itemData,
+            compact: false
+        })
+    );
+
+    // Toast التقديم بنجاح
+    const shell = document.querySelector('.scanner-shell');
+    if (shell) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position:absolute; top:230px; left:50%;
+            transform:translateX(-50%);
+            background:rgba(15,23,42,0.9); color:#38ef7d;
+            padding:10px 22px; border-radius:30px;
+            font-size:14px; font-weight:800; z-index:100000;
+            border:2px solid #38ef7d;
+            box-shadow:0 10px 30px rgba(0,0,0,0.6);
+            pointer-events:none;
+            transition:all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);
+            white-space:nowrap;
+        `;
+        toast.innerHTML = `✅ Added: ${realCode}`;
+        shell.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(() => toast.remove(), 400);
+        }, 1200);
+    }
+
+    rememberScannedItem(itemData);
+    setScannerFeedback('success', `تمت إضافة ${realCode}`, `${itemData.nameEN}`);
+    flashScannerSwipe('success');
 }
 
 function rememberScannedItem(item) {
