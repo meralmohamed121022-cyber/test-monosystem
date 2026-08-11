@@ -7454,9 +7454,6 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
                margin: 20px auto; 
                width: auto; 
                padding: 12px 35px; 
-               background: rgba(15, 23, 42, 0.9) !important; 
-               color: white !important; 
-               border: 1px solid #d4af37 !important; 
                border-radius: 8px !important; 
                cursor: pointer; 
                font-size: 14px; 
@@ -27607,7 +27604,8 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
           }
 
           if (filters.categoryA && filters.categoryA.length > 0) {
-            if (!filters.categoryA.includes(product["Category Level A"])) return false;
+            const catA = product["Category Level A"] || product["Category A"];
+            if (!filters.categoryA.includes(catA)) return false;
           }
 
           if (filters.itemClass && filters.itemClass.length > 0) {
@@ -27615,15 +27613,18 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
           }
 
           if (filters.categoryB && filters.categoryB.length > 0) {
-            if (!filters.categoryB.includes(product["Category Level B"])) return false;
+            const catB = product["Category Level B"] || product["Category B"];
+            if (!filters.categoryB.includes(catB)) return false;
           }
 
           if (filters.categoryC && filters.categoryC.length > 0) {
-            if (!filters.categoryC.includes(product["Category Level C"])) return false;
+            const catC = product["Category Level C"] || product["Category C"];
+            if (!filters.categoryC.includes(catC)) return false;
           }
 
           if (filters.categoryD && filters.categoryD.length > 0) {
-            if (!filters.categoryD.includes(product["Category Level D"])) return false;
+            const catD = product["Category Level D"] || product["Category D"];
+            if (!filters.categoryD.includes(catD)) return false;
           }
 
           if (filters.searchTerm) {
@@ -28186,9 +28187,9 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
           window.fullProductsCount = filteredProducts.length;
 
           let showLoadAllButton = false;
-          if (isInitialLoad && filteredProducts.length > 30) {
+          if (!filters.loadAll && filteredProducts.length > 50) {
             showLoadAllButton = true;
-            filteredProducts = filteredProducts.slice(0, 30);
+            filteredProducts = filteredProducts.slice(0, 50);
           }
 
           container.innerHTML = "";
@@ -28244,6 +28245,7 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
 
             loadAllBtn.onclick = () => {
               loadAllBtnContainer.remove();
+              filters.loadAll = true;
               renderProducts(filters);
             };
 
@@ -28497,8 +28499,9 @@ button.reset-all-btn:hover, button[onclick="clearAllFilters()"]:hover {
 
           const CHUNK_SIZE = 3;
           let processed = 0;
+          const startTime = performance.now();
 
-          while (processed < CHUNK_SIZE && renderingQueue.length > 0) {
+          while (processed < CHUNK_SIZE && renderingQueue.length > 0 && (performance.now() - startTime < 30)) {
             const item = renderingQueue.shift();
 
             if (item.type === 'HEADER_A') {
