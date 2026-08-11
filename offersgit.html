@@ -34,8 +34,14 @@
   <script>
     window.stagedOffers = [];
     if (window.location.href.indexOf('mode=scanner') !== -1) {
-
       document.documentElement.classList.add('scanner-mode-active');
+      window.addEventListener('DOMContentLoaded', function() {
+        if (typeof openBarcodeScanner === 'function') {
+          openBarcodeScanner();
+        } else {
+          setTimeout(() => { if (typeof openBarcodeScanner === 'function') openBarcodeScanner(); }, 500);
+        }
+      });
     }
   
         function openPromoMedia(type, url) {
