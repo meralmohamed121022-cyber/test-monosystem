@@ -11,6 +11,7 @@
     <link rel="icon" href="app-icon.jpg">
     <link rel="apple-touch-icon" href="app-icon.jpg">
 
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script>
         if (window.location.href.indexOf('mode=scanner') !== -1) {
             document.documentElement.classList.add('scanner-mode-active');
@@ -30,6 +31,47 @@
             opacity: 1 !important;
             visibility: visible !important;
             z-index: 999999 !important;
+        }
+
+        /* PREMIUM ANIMATIONS */
+        .move-top-left {
+            animation: moveTopLeftAnim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+        @keyframes moveTopLeftAnim {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(-45vw, -45vh) scale(0.3); opacity: 0; }
+        }
+        
+        /* Premium Menu Nav Improvements */
+        #bottomNav {
+            background: rgba(13, 33, 55, 0.6) !important;
+            backdrop-filter: blur(25px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-top: 1px solid rgba(255,255,255,0.1) !important;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.2) !important;
+        }
+        .nav-btn {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            padding: 8px 15px;
+        }
+        .nav-btn.active {
+            background: rgba(255, 107, 53, 0.15);
+            box-shadow: inset 0 0 10px rgba(255, 107, 53, 0.05);
+        }
+        .nav-btn:active::after {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100px; height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple 0.4s ease-out;
+        }
+        @keyframes ripple {
+            to { transform: translate(-50%, -50%) scale(2); opacity: 0; }
         }
     </style>
 
@@ -223,7 +265,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-primary);
+            background: transparent;
             z-index: 21000;
             display: none;
             flex-direction: column;
@@ -241,7 +283,7 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            display: flex;
+            display: none !important;
             align-items: center;
             justify-content: center;
             padding: 8px;
@@ -941,6 +983,7 @@
         }
 
         #floatingBackBtn {
+            display: none !important;
             position: fixed;
             top: 60px;
             left: 10px;
@@ -1378,12 +1421,16 @@ body.day-mode .sadaqa-badge {
         preload="auto"></audio>
 
     <div id="loginOverlay" class="custom-modal-overlay">
-        <div class="custom-modal-box">
-            <h2>
-                <i class="fas fa-lock" style="color:var(--accent-orange);"></i>
+        <div class="custom-modal-box" style="overflow: hidden; position: relative;">
+            <div class="premium-glow" style="position: absolute; top: -50px; left: -50px; width: 100px; height: 100px; background: var(--accent-orange); filter: blur(50px); opacity: 0.3; border-radius: 50%;"></div>
+            
+            <lottie-player id="loginLottie" src="https://lottie.host/e3f4e3c4-4b57-4648-bdf3-8e404b901a18/sH1X3V1kX7.json" background="transparent" speed="1" style="width: 120px; height: 120px; margin: -20px auto 10px;" loop autoplay></lottie-player>
+
+            <h2 style="font-weight: 800; letter-spacing: 1px;">
+                <i class="fas fa-lock" style="color:var(--accent-orange); font-size: 0.8em; margin-right: 5px;"></i>
                 Login
             </h2>
-            <p style="font-size: 14px; margin-top: 10px; color: var(--text-secondary);">
+            <p style="font-size: 14px; margin-top: 5px; color: var(--text-secondary);">
                 Enter your pharmacy number
             </p>
             <div id="app-version-info"
@@ -1391,8 +1438,8 @@ body.day-mode .sadaqa-badge {
                 onclick="window.location.reload(true)">
                 Version 1.1.6 (Click to update)
             </div>
-            <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)">
-            <button onclick="doLogin()" style="background: var(--accent-orange);">
+            <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)" style="text-align: center; font-weight: bold; font-size: 18px; letter-spacing: 2px;">
+            <button id="loginBtn" onclick="doLogin()" style="background: linear-gradient(135deg, var(--accent-orange), #ff4b2b); box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3); margin-top: 15px;">
                 Login <i class="fas fa-sign-in-alt"></i>
             </button>
 
@@ -1410,44 +1457,48 @@ body.day-mode .sadaqa-badge {
         </div>
     </div>
 
-    <div id="alarmActionModal" class="custom-modal-overlay" style="display: none;">
-        <div class="custom-modal-box" style="border: 2px solid red;">
-            <h1 style="color: red; font-size: 26px; margin-bottom: 10px;"><i class="fas fa-bell"></i> تنبيه العروض!</h1>
-            <p id="alarmOfferName" style="font-size:18px; margin-bottom:20px; color: white;"></p>
+    <div id="alarmActionModal" class="custom-modal-overlay" style="display: none; z-index: 40000; backdrop-filter: blur(15px);">
+        <div class="custom-modal-box logout-art" style="border: 2px solid var(--accent-orange); box-shadow: 0 10px 40px rgba(255, 107, 53, 0.4); max-width: 380px;">
+            <div class="art-icon" style="background: linear-gradient(135deg, var(--accent-orange), #ff416c); color: white; width: 80px; height: 80px; font-size: 35px; animation: pulse-red 2s infinite;">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h1 style="color: var(--text-primary); font-size: 24px; margin-bottom: 5px; font-weight: 900;">تنبيه العروض القادمة! 🔥</h1>
+            
+            <div id="alarmOfferImageContainer" style="margin: 15px 0; border-radius: 15px; overflow: hidden; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                <img id="alarmOfferImage" src="" alt="Offer Image" style="width: 100%; height: auto; display: block;">
+            </div>
+
+            <p id="alarmOfferName" style="font-size:16px; margin-bottom:20px; color: var(--text-secondary); font-weight: bold;"></p>
 
             <input type="hidden" id="currentReminderId">
 
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                <label style="display:block; margin-bottom:10px; color:var(--accent-orange); font-weight: bold;">تأجيل
-                    التنبيه (غفوة):</label>
-                <select id="snoozeSelect">
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                <label style="display:block; margin-bottom:10px; color:var(--accent-orange-light); font-weight: bold; font-size: 14px;">تأجيل التنبيه (غفوة):</label>
+                <select id="snoozeSelect" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 10px; padding: 10px;">
                     <option value="1">غفوة لمدة ساعة</option>
                     <option value="2">غفوة لمدة ساعتين</option>
                     <option value="custom">تحديد وقت مخصص...</option>
                 </select>
-                <input type="datetime-local" id="customSnoozeTime" style="display:none;">
-                <button onclick="snoozeAlarm()" style="background: #f39c12;"><i class="fas fa-clock"></i> تأجيل
-                    التنبيه</button>
+                <input type="datetime-local" id="customSnoozeTime" style="display:none; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 10px; padding: 10px; margin-top: 10px;">
+                <button onclick="snoozeAlarm()" class="btn-cancel" style="margin-top: 12px;"><i class="fas fa-clock"></i> تأجيل التنبيه</button>
             </div>
 
-            <button onclick="stopAlarm()" style="background: #28a745;"><i class="fas fa-check-circle"></i> إيقاف الصوت
-                والتنبيه</button>
+            <button onclick="stopAlarm()" class="btn-confirm" style="width: 100%; font-size: 16px;"><i class="fas fa-check-circle"></i> حسناً، إيقاف التنبيه</button>
         </div>
     </div>
-
-    <div id="iframeContainer">
-        <button id="floatingBackBtn" onclick="closeIframe()">
-            <div class="back-arrow"></div>
-        </button>
-        <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="autoplay; fullscreen" scrolling="yes"
-            sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
-
-        <div id="iframeError">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>Connection Error</h3>
-            <p>Unable to load the requested content. Please check your internet connection and try again.</p>
-        </div>
+<div id="iframeContainer">
+    <button id="floatingBackBtn" onclick="closeIframe()">
+        <div class="back-arrow"></div>
+    </button>
+    
+    <!-- تم حذف الـ sandbox القاسي وإضافة السماح الصريح للكاميرا والميديا -->
+   <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="camera *; microphone *; autoplay; fullscreen" scrolling="yes"></iframe>
+    <div id="iframeError">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Connection Error</h3>
+        <p>Unable to load the requested content. Please check your internet connection.</p>
     </div>
+</div>
 
     <!-- LIGHTBOX -->
     <div id="lightbox" onclick="closeLightbox(event)">
@@ -1544,10 +1595,10 @@ body.day-mode .sadaqa-badge {
         </div>
     </div>
 
-    <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
-        <i class="fas fa-qrcode"></i>
-        <span class="btn-tooltip">Scanner</span>
-    </button>
+   <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
+    <i class="fas fa-qrcode"></i>
+    <span class="btn-tooltip">Scanner</span>
+</button>
 <!-- الصدقة الجارية -->
 <div class="sadaqa-badge">
     <i class="fas fa-hands-praying"></i>
@@ -1656,7 +1707,12 @@ body.day-mode .sadaqa-badge {
 
         const supabaseUrl = 'https://uzydzvfcrlqmtondugte.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6eWR6dmZjcmxxbXRvbmR1Z3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTA1MzMsImV4cCI6MjA5MjM2NjUzM30.z7-eKWrYjW9cbzTcoyyKprgXbcqCHk_kF6ETHokudzo';
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+            }
+        } catch(e) { console.error('Supabase init failed:', e); }
 
         const WORKER_BANNERS_URL = "https://online.meralmohamed121022.workers.dev/api/banners?lang=ar";
 
@@ -1749,16 +1805,39 @@ body.day-mode .sadaqa-badge {
         async function doLogin() {
             const val = document.getElementById('pharmacyInput').value.trim();
             if (val) {
-                currentPharmacy = val;
-                localStorage.setItem('pharmacy_number', val);
-                requestNotificationPermission();
-                try {
-                    await supabaseClient.from('login_logs').upsert(
-                        { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() },
-                        { onConflict: 'pharmacy_number' }
-                    );
-                } catch (e) { console.error("Failed to log login:", e); }
-                checkAuth();
+                const btn = document.getElementById('loginBtn');
+                if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+
+                // Play success animation (placeholder clapping Lottie URL)
+                const lottie = document.getElementById('loginLottie');
+                if (lottie) {
+                    try {
+                        if (typeof lottie.load === 'function') {
+                            lottie.load('https://lottie.host/80164c92-75d1-4b13-8874-8b6fa2021197/H8wH0P9O7i.json');
+                            lottie.loop = false;
+                        } else {
+                            lottie.setAttribute('src', 'https://lottie.host/80164c92-75d1-4b13-8874-8b6fa2021197/H8wH0P9O7i.json');
+                            lottie.removeAttribute('loop');
+                        }
+                    } catch (e) { console.warn("Lottie error", e); }
+                }
+
+                setTimeout(async () => {
+                    currentPharmacy = val;
+                    localStorage.setItem('pharmacy_number', val);
+                    requestNotificationPermission();
+                    try {
+                        if (supabaseClient) {
+                            await supabaseClient.from('login_logs').upsert(
+                                { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() },
+                                { onConflict: 'pharmacy_number' }
+                            );
+                        }
+
+                    } catch (e) { console.error("Failed to log login:", e); }
+                    checkAuth();
+                    if (btn) btn.innerHTML = 'Login <i class="fas fa-sign-in-alt"></i>';
+                }, 1500); // Give time for clapping animation to show
             } else { alert("يرجى إدخال رقم الصيدلية!"); }
         }
 
@@ -1801,11 +1880,16 @@ body.day-mode .sadaqa-badge {
         renderContent();
 
         if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => { 
-                loader.style.display = 'none'; 
-                setTimeout(showSadaqaPopup, 300);
-            }, 300);
+            const hand = document.querySelector('.🤚');
+            if (hand) hand.classList.add('move-top-left');
+
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => { 
+                    loader.style.display = 'none'; 
+                    setTimeout(showSadaqaPopup, 300);
+                }, 300);
+            }, 1000); // Allow time for hand animation
         } else {
             setTimeout(showSadaqaPopup, 500);
         }
@@ -1814,13 +1898,14 @@ body.day-mode .sadaqa-badge {
         await autoScheduleReminders();
         await fetchReminders();
         startAlarmChecker();
+        triggerStartupOffer();
     } catch (err) {
         console.error('System Critical Error:', err);
         if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.display = 'none'; }, 300); }
     }
 }
         async function autoScheduleReminders() {
-            if (!currentPharmacy) return;
+            if (!currentPharmacy || !supabaseClient) return;
 
             try {
                 // 1. تجميع كل الـ IDs الحالية (30 دقيقة والوقت الفعلي) لعمل تنظيف
@@ -1873,16 +1958,25 @@ body.day-mode .sadaqa-badge {
         }
 
         async function fetchReminders() {
-            if (!currentPharmacy) return;
-            const { data, error } = await supabaseClient.from('reminders').select('*').eq('pharmacy_number', currentPharmacy).in('status', ['pending', 'snoozed']);
-            if (!error && data) {
-                userReminders = data;
+            if (!currentPharmacy || !supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient.from('reminders').select('*').eq('pharmacy_number', currentPharmacy).in('status', ['pending', 'snoozed']);
+                if (!error && data) {
+                    userReminders = data;
 
-                // تجهيز خريطة الصور لإرسالها للـ Service Worker
-                const offerImages = {};
-                START_OFFERS.forEach(off => {
-                    if (off.image) offerImages[off.id] = off.image;
-                });
+                    // تجهيز خريطة الصور لإرسالها للـ Service Worker
+                    const offerImages = {};
+                    const uniqueOfferIds = [...new Set(data.map(r => r.offer_id.replace('_30min', '').replace('_exact', '')))];
+                for (const pid of uniqueOfferIds) {
+                    const dynamic = await fetchDynamicOffer(pid);
+                    if (dynamic && dynamic.image) {
+                        offerImages[pid] = dynamic.image;
+                    } else {
+                        // Fallback
+                        const old = START_OFFERS.find(o => o.id === pid);
+                        if (old && old.image) offerImages[pid] = old.image;
+                    }
+                }
 
                 // إرسال التنبيهات والصور للـ Service Worker ليعمل في الخلفية
                 const msgData = {
@@ -1900,6 +1994,7 @@ body.day-mode .sadaqa-badge {
                     });
                 }
             }
+            } catch(e) { console.error('fetchReminders error:', e); }
         }
 
         async function stopAlarm() {
@@ -2246,66 +2341,80 @@ body.day-mode .sadaqa-badge {
             if (overlay) overlay.classList.remove('show');
         }
 
-        function openLink(url) {
-            if (!url || url.trim() === '#') return;
-            closeAllMenus();
+function openLink(url) {
+    if (!url || url.trim() === '#') return;
+    closeAllMenus();
 
-            document.getElementById('modeToggle').style.display = 'none';
-            document.querySelector('.logout-btn').style.display = 'none';
-            document.getElementById('userInfoBadge').style.display = 'none';
+    // 🔴 شرط حاسم: لو اللينك المطلوب يخص الاسكانر، يتم الفتح المباشر لتجاوز حظر الكاميرا داخل الـ iframe
+    if (url.includes('mode=scanner')) {
+        const phNo = localStorage.getItem('pharmacy_number');
+        const token = crypto.randomUUID();
+        sessionStorage.setItem('_tk', token);
 
-            resetIframeLoader();
+        const separator = url.includes('?') ? '&' : '?';
+        const scannerUrl = phNo
+            ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
+            : url + separator + '_tk=' + token;
 
-            const phNo = localStorage.getItem('pharmacy_number');
-            const token = crypto.randomUUID();
-            sessionStorage.setItem('_tk', token);
+        window.location.href = scannerUrl;
+        return;
+    }
 
-            let finalUrl = url;
-            const separator = url.includes('?') ? '&' : '?';
-            finalUrl = phNo
-                ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
-                : url + separator + '_tk=' + token;
+    document.getElementById('modeToggle').style.display = 'none';
+    document.querySelector('.logout-btn').style.display = 'none';
+    document.getElementById('userInfoBadge').style.display = 'none';
 
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
-                    btn.classList.add('active');
-                }
-            });
+    resetIframeLoader();
 
-            const container = document.getElementById('iframeContainer');
-            const iframe = document.getElementById('embeddedFrame');
-            const errorBox = document.getElementById('iframeError');
-            const loader = document.getElementById('loadingOverlay');
+    const phNo = localStorage.getItem('pharmacy_number');
+    const token = crypto.randomUUID();
+    sessionStorage.setItem('_tk', token);
 
-            if (!container || !iframe || !errorBox) return;
-            errorBox.classList.remove('show');
-            if (loader) {
-                loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
-            }
-            container.classList.add('show');
+    let finalUrl = url;
+    const separator = url.includes('?') ? '&' : '?';
+    finalUrl = phNo
+        ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
+        : url + separator + '_tk=' + token;
 
-            iframe.onload = null; iframe.onerror = null;
-
-            setTimeout(() => {
-                let hasLoaded = false;
-                let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
-
-                iframe.onload = function () {
-                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-                    if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
-                };
-
-                iframe.onerror = function () {
-                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-                    errorBox.classList.add('show');
-                };
-
-                iframe.src = finalUrl;
-            }, 50);
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
+            btn.classList.add('active');
         }
+    });
 
+    const container = document.getElementById('iframeContainer');
+    const iframe = document.getElementById('embeddedFrame');
+    const errorBox = document.getElementById('iframeError');
+    const loader = document.getElementById('loadingOverlay');
+
+    if (!container || !iframe || !errorBox) return;
+    errorBox.classList.remove('show');
+    if (loader) {
+        loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
+    }
+    container.classList.add('show');
+
+    iframe.onload = null; iframe.onerror = null;
+
+    setTimeout(() => {
+        let hasLoaded = false;
+        let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
+
+        iframe.onload = function () {
+            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+            if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
+        };
+
+        iframe.onerror = function () {
+            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+            errorBox.classList.add('show');
+        };
+
+        iframe.src = finalUrl;
+    }, 50);
+}
         function resetIframeLoader() {
             const loader = document.getElementById('loadingOverlay');
             if (loader) { loader.style.display = 'none'; loader.classList.add('hidden'); loader.style.opacity = '0'; }
@@ -2356,30 +2465,40 @@ body.day-mode .sadaqa-badge {
             if (overlay) overlay.classList.add('show');
         }
 
-        function triggerAlarm(reminderObj) {
+        async function triggerAlarm(reminderObj) {
             const audio = document.getElementById('offerAlarmSound');
             if (audio) { audio.currentTime = 0; audio.play().catch(e => console.log("Audio prevented:", e)); }
 
-            let timeString = ""; let isExactlyNow = false;
+            let timeString = ""; let isExactlyNow = false; let offerImageUrl = null;
             const cleanId = reminderObj.offer_id.replace('_30min', '').replace('_exact', '');
-            const originalOffer = START_OFFERS.find(o => o.id === cleanId);
-
-            if (originalOffer) {
-                const offerTime = new Date(originalOffer.start_date);
-                timeString = " الساعة " + offerTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const diff = Math.abs(new Date().getTime() - offerTime.getTime());
-                if (diff < 60000) { isExactlyNow = true; }
+            
+            const randomOffer = await fetchDynamicOffer(cleanId);
+            if (randomOffer && randomOffer.image) offerImageUrl = randomOffer.image;
+            
+            if (!offerImageUrl) {
+                const originalOffer = START_OFFERS.find(o => o.id === cleanId);
+                if (originalOffer && originalOffer.image) { offerImageUrl = originalOffer.image; }
             }
+
+            const offerTime = new Date(reminderObj.trigger_time);
+            timeString = " الساعة " + offerTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const diff = Math.abs(new Date().getTime() - offerTime.getTime());
+            if (diff < 60000) { isExactlyNow = true; }
 
             const message = isExactlyNow
                 ? `${reminderObj.offer_title} بدأ الآن! 🔥`
                 : `${reminderObj.offer_title}${timeString} سيبدأ خلال 30 دقيقة! ⏳`;
 
-            const titleDisplay = document.getElementById('alarmOfferName');
-            if (titleDisplay) titleDisplay.innerText = message;
-
-            const actionModal = document.getElementById('alarmActionModal');
-            if (actionModal) actionModal.style.display = 'flex';
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ 
+                    type: 'SHOW_NOTIFICATION', 
+                    title: isExactlyNow ? "عرض بدأ الآن! 🔥" : "تنبيه بدء عرض! ⏳", 
+                    body: message,
+                    image: offerImageUrl
+                });
+            } else {
+                showBrowserNotification(isExactlyNow ? "عرض بدأ الآن! 🔥" : "تنبيه بدء عرض! ⏳", message);
+            }
 
             const idInput = document.getElementById('currentReminderId');
             if (idInput) idInput.value = reminderObj.id;
@@ -2397,31 +2516,162 @@ body.day-mode .sadaqa-badge {
             }, 20000);
         }
 
+        async function fetchDynamicOffer() {
+            try {
+                const htmlRes = await fetch('offersgit.html');
+                const html = await htmlRes.text();
+                const match = html.match(/const\s+ALL_PERIODS_OFFERS\s*=\s*(\[\s*\{[\s\S]*?\n\s*\])\s*;/);
+                if (!match) return null;
+                let periods;
+                try {
+                    periods = eval("(" + match[1] + ")");
+                } catch(e) { return null; }
+
+                const now = new Date();
+                const currentPeriod = periods.find(p => {
+                    const s = new Date(p.start);
+                    const e = new Date(p.end);
+                    e.setHours(23,59,59,999);
+                    return now >= s && now <= e;
+                }) || periods[0];
+
+                if (!currentPeriod || !currentPeriod.offers) return null;
+                
+                let possibleOffers = [];
+                currentPeriod.offers.forEach(off => {
+                    if (off.codes) {
+                        off.codes.forEach(c => {
+                            possibleOffers.push({ code: c, offerType: off.offerType, offerTypeAR: off.offerTypeAR });
+                        });
+                    }
+                });
+                
+                if (possibleOffers.length === 0) return null;
+                
+                const decodeURL = (str) => atob(str.split('').reverse().join(''));
+                const urls = [
+                    decodeURL("==gbvNnauEjclR3ch12LulWYt9yckFWZo9ycmVmcv0WZ0NXez9mbv1WL0NXZ09iclJWej1iMyATMyEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa"),
+                    decodeURL("==gbvNnauEjclR3ch12LulWYt9yckFWZo9ycmVmcv0WZ0NXez9mbv1WL0NXZ09iclJWej1iMyATMwEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa"),
+                    decodeURL("==gbvNnauEjclR3ch12LulWYt9yckFWZo9ycmVmcv0WZ0NXez9mbv1WL0NXZ09iclJWej1iMyATMvEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa")
+                ];
+                
+                // Shuffle possible offers and find the first one that exists in JSONs
+                possibleOffers = possibleOffers.sort(() => 0.5 - Math.random());
+                
+                for (const randomChoice of possibleOffers) {
+                    for (const u of urls) {
+                        try {
+                            const res = await fetch(u);
+                            const data = await res.json();
+                            const product = data.find(p => p.Code == randomChoice.code);
+                            if (product) {
+                                const img = (product.itemurl && product.itemurl !== 'No Image' && product.itemurl !== '#N/A') ? product.itemurl : null;
+                                if (img) {
+                                    return {
+                                        title: product['Item Description'] || product['أسم المنتج'] || 'منتج مميز',
+                                        image: img,
+                                        offerType: randomChoice.offerTypeAR || randomChoice.offerType || ''
+                                    };
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                }
+                return null;
+            } catch (e) {
+                console.error("fetchDynamicOffer error:", e);
+                return null;
+            }
+        }
+        function triggerStartupOffer() {
+            if (sessionStorage.getItem('startupOfferShown')) return;
+            sessionStorage.setItem('startupOfferShown', 'true');
+            
+            fetchDynamicOffer().then(randomOffer => {
+                if (!randomOffer) return;
+                
+                let offerImageUrl = randomOffer.image || null;
+                const notifTitle = `عروضنا حصرياً: ${randomOffer.offerType}`;
+                const notifBody = "لا تفوت فرصة الاستفادة من: " + randomOffer.title;
+                
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ 
+                        type: 'SHOW_NOTIFICATION', 
+                        title: notifTitle, 
+                        body: notifBody,
+                        image: offerImageUrl
+                    });
+                } else {
+                    showBrowserNotification(notifTitle, notifBody);
+                }
+            });
+        }
+
         function startAlarmChecker() {
             if (alarmCheckInterval) clearInterval(alarmCheckInterval);
             alarmCheckInterval = setInterval(() => {
                 const nowMs = new Date().getTime();
+                
+                // 1. Check existing reminders (30 min / exact)
                 userReminders.forEach((rem) => {
                     const trigTimeMs = new Date(rem.trigger_time).getTime();
-                    const isTooOld = (nowMs - trigTimeMs) > (15 * 60 * 1000); // تقليل المدة لـ 15 دقيقة فقط لتجنب التنبيهات القديمة جداً
+                    const isTooOld = (nowMs - trigTimeMs) > (15 * 60 * 1000); 
                     if ((rem.status === 'pending' || rem.status === 'snoozed') && nowMs >= trigTimeMs && !isTooOld) {
                         console.log(`Triggering alarm: ${rem.offer_title}`);
                         rem.status = 'firing';
                         triggerAlarm(rem);
                     }
                 });
+
+                // 2. Check 2-hour interval for random active offer
+                const lastRandomNotif = localStorage.getItem('lastRandomNotifTime') || 0;
+                const twoHoursMs = 2 * 60 * 60 * 1000;
+                
+                // For testing purposes or immediate firing if it's been a long time
+                if (nowMs - lastRandomNotif >= twoHoursMs) {
+                    fetchDynamicOffer().then(randomOffer => {
+                        if (!randomOffer) {
+                            // Fallback if no dynamic offer found
+                            console.log("No dynamic offer found, skipping 2-hour alert.");
+                            return;
+                        }
+                        
+                        // Update time immediately ONLY when an offer is found to prevent skipping
+                        localStorage.setItem('lastRandomNotifTime', new Date().getTime());
+                        
+                        let offerImageUrl = randomOffer.image || null;
+
+                        console.log(`Triggering 8-hour random offer: ${randomOffer.title}`);
+                        const notifTitle = `عروضنا حصرياً: ${randomOffer.offerType}`;
+                        const notifBody = "لا تفوت فرصة الاستفادة من: " + randomOffer.title;
+                        
+                        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({ 
+                                type: 'SHOW_NOTIFICATION', 
+                                title: notifTitle, 
+                                body: notifBody,
+                                image: offerImageUrl
+                            });
+                        } else {
+                            showBrowserNotification(notifTitle, notifBody);
+                        }
+                    });
+                }
+
             }, 5000);
         }
 
-        function openScannerDirectly() {
-            openLink('offersgit.html?mode=scanner');
-        }
+function openScannerDirectly() {
+    // التحويل المباشر لصفحة الأسكانر المستقلة لضمان عمل الكاميرا فوراً
+    if (!window.location.pathname.endsWith('offersgit.html')) {
+        window.location.replace('offersgit.html?mode=scanner');
+    }
+}
 
-        window.addEventListener("DOMContentLoaded", () => {
-            if (window.location.href.indexOf('mode=scanner') !== -1) {
-                openScannerDirectly();
-            }
-        });
+// تشغيل التحويل المباشر فور فتح الصفحة لو فيها mode=scanner
+if (window.location.search.indexOf('mode=scanner') !== -1 || window.location.hash.indexOf('mode=scanner') !== -1) {
+    openScannerDirectly();
+}
         function showSadaqaPopup() {
     if (!sessionStorage.getItem('sadaqaShown')) {
         const modal = document.getElementById('sadaqaModal');
