@@ -84816,6 +84816,8 @@
             }
 
             const cacheKey = 'stockCache_' + storeCode;
+            const periodId = typeof currentDataInstance !== 'undefined' && currentDataInstance ? currentDataInstance.id : 'unknown';
+            const datasetId = periodId + '_' + codesToCheck.length + '_' + (codesToCheck[0] || 'empty');
             
             // Check cache if we are turning it on
             if (!window.isInStockFilterActive) {
@@ -84823,8 +84825,8 @@
                 if (cachedStr) {
                     try {
                         const cached = JSON.parse(cachedStr);
-                        // Cache valid for 12 hours
-                        if (Date.now() - cached.timestamp < 12 * 60 * 60 * 1000) {
+                        // Cache is valid for this specific offers period (matching datasetId)
+                        if (cached.datasetId === datasetId) {
                             window.inStockCodesFilter = new Set(cached.codes);
                             window.isInStockFilterActive = true;
                             if (btn) {
@@ -84833,6 +84835,9 @@
                             }
                             applyFilters();
                             return; // Use cache instantly
+                        } else {
+                            // Offers period changed, ignore old cache
+                            localStorage.removeItem(cacheKey);
                         }
                     } catch (e) { console.error('Cache error', e); }
                 }
@@ -84900,8 +84905,9 @@
                     }
                 }
                 
-                // Save to cache
+                // Save to cache (tied to specific offers period dataset)
                 localStorage.setItem(cacheKey, JSON.stringify({
+                    datasetId: datasetId,
                     timestamp: Date.now(),
                     codes: Array.from(inStockCodes)
                 }));
