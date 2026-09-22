@@ -84809,28 +84809,59 @@
                 return;
             }
 
-            const codesToCheck = window.currentFilteredProducts ? window.currentFilteredProducts.map(p => String(p.Code).trim()) : [];
+            const codesToCheck = typeof productsDB !== 'undefined' ? productsDB.map(p => String(p.Code).trim()) : [];
             if (codesToCheck.length === 0) {
                 alert('لا توجد منتجات للتحقق منها');
                 return;
             }
+
+            const cacheKey = 'stockCache_' + storeCode;
+            
+            // Check cache if we are turning it on
+            if (!window.isInStockFilterActive) {
+                const cachedStr = localStorage.getItem(cacheKey);
+                if (cachedStr) {
+                    try {
+                        const cached = JSON.parse(cachedStr);
+                        // Cache valid for 12 hours
+                        if (Date.now() - cached.timestamp < 12 * 60 * 60 * 1000) {
+                            window.inStockCodesFilter = new Set(cached.codes);
+                            window.isInStockFilterActive = true;
+                            if (btn) {
+                                btn.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+                                btn.innerHTML = '🏪 إلغاء فلتر المخزون (' + storeCode + ')';
+                            }
+                            applyFilters();
+                            return; // Use cache instantly
+                        }
+                    } catch (e) { console.error('Cache error', e); }
+                }
+            }
+
             if (codesToCheck.length > 2000) {
-                const proceed = confirm(`سيتم التحقق من مخزون ${codesToCheck.length} منتج، قد يستغرق هذا بعض الوقت. هل ترغب في الاستمرار؟ (يفضل تصفية النتائج أولاً)`);
+                const proceed = confirm(`سيتم التحقق من مخزون ${codesToCheck.length} منتج، قد يستغرق هذا بعض الوقت. سيتم عرض شريط تقدم لتتبع الحالة، وهل ترغب في الاستمرار؟`);
                 if (!proceed) return;
             }
 
             const loader = document.getElementById("loadingIndicator");
             if (loader) {
-                loader.innerHTML = '<div class="spinner"></div><div>جاري التحقق من المخزون في الصيدلية ' + storeCode + '... يرجى الانتظار</div>';
+                loader.innerHTML = `
+                    <div style="margin-bottom: 15px; font-weight: bold; color: #10b981; font-size: 16px;">جاري التحقق من المخزون...</div>
+                    <div style="width: 100%; max-width: 400px; background: #334155; border-radius: 99px; height: 22px; overflow: hidden; margin: 0 auto; border: 2px solid #475569;">
+                        <div id="stockProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.3s ease;"></div>
+                    </div>
+                    <div id="stockProgressText" style="margin-top: 10px; font-size: 15px; color: #f8fafc; font-weight: bold;">0 / ${codesToCheck.length}</div>
+                `;
                 loader.style.display = "block";
             }
             if (btn) {
                 btn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-                btn.innerHTML = '⏳ جاري التحقق (' + storeCode + ')...';
+                btn.innerHTML = '⏳ 0% (' + storeCode + ')';
             }
 
             const inStockCodes = new Set();
             const chunkSize = 40; // max subrequests in free worker is 50
+            let checkedCount = 0;
             
             try {
                 for (let i = 0; i < codesToCheck.length; i += chunkSize) {
@@ -84856,8 +84887,25 @@
                     
                     // Small delay to prevent rate limits
                     await new Promise(r => setTimeout(r, 200));
+
+                    checkedCount += chunk.length;
+                    const percent = Math.min(100, Math.round((checkedCount / codesToCheck.length) * 100));
+                    const pBar = document.getElementById('stockProgressBar');
+                    const pText = document.getElementById('stockProgressText');
+                    if (pBar) pBar.style.width = percent + '%';
+                    if (pText) pText.innerHTML = checkedCount + ' / ' + codesToCheck.length;
+                    
+                    if (btn) {
+                        btn.innerHTML = '⏳ ' + percent + '% (' + storeCode + ')';
+                    }
                 }
                 
+                // Save to cache
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    timestamp: Date.now(),
+                    codes: Array.from(inStockCodes)
+                }));
+
                 window.inStockCodesFilter = inStockCodes;
                 window.isInStockFilterActive = true;
                 
