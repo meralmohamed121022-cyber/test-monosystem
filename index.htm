@@ -11,7 +11,6 @@
     <link rel="icon" href="app-icon.jpg">
     <link rel="apple-touch-icon" href="app-icon.jpg">
 
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script>
         if (window.location.href.indexOf('mode=scanner') !== -1) {
             document.documentElement.classList.add('scanner-mode-active');
@@ -31,47 +30,6 @@
             opacity: 1 !important;
             visibility: visible !important;
             z-index: 999999 !important;
-        }
-
-        /* PREMIUM ANIMATIONS */
-        .move-top-left {
-            animation: moveTopLeftAnim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-        }
-        @keyframes moveTopLeftAnim {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(-45vw, -45vh) scale(0.3); opacity: 0; }
-        }
-        
-        /* Premium Menu Nav Improvements */
-        #bottomNav {
-            background: rgba(13, 33, 55, 0.6) !important;
-            backdrop-filter: blur(25px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-top: 1px solid rgba(255,255,255,0.1) !important;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.2) !important;
-        }
-        .nav-btn {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            padding: 8px 15px;
-        }
-        .nav-btn.active {
-            background: rgba(255, 107, 53, 0.15);
-            box-shadow: inset 0 0 10px rgba(255, 107, 53, 0.05);
-        }
-        .nav-btn:active::after {
-            content: "";
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 100px; height: 100px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            animation: ripple 0.4s ease-out;
-        }
-        @keyframes ripple {
-            to { transform: translate(-50%, -50%) scale(2); opacity: 0; }
         }
     </style>
 
@@ -265,7 +223,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
+            background: var(--bg-primary);
             z-index: 21000;
             display: none;
             flex-direction: column;
@@ -283,7 +241,7 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            display: none !important;
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: 8px;
@@ -983,7 +941,6 @@
         }
 
         #floatingBackBtn {
-            display: none !important;
             position: fixed;
             top: 60px;
             left: 10px;
@@ -1421,16 +1378,12 @@ body.day-mode .sadaqa-badge {
         preload="auto"></audio>
 
     <div id="loginOverlay" class="custom-modal-overlay">
-        <div class="custom-modal-box" style="overflow: hidden; position: relative;">
-            <div class="premium-glow" style="position: absolute; top: -50px; left: -50px; width: 100px; height: 100px; background: var(--accent-orange); filter: blur(50px); opacity: 0.3; border-radius: 50%;"></div>
-            
-            <lottie-player id="loginLottie" src="https://lottie.host/e3f4e3c4-4b57-4648-bdf3-8e404b901a18/sH1X3V1kX7.json" background="transparent" speed="1" style="width: 120px; height: 120px; margin: -20px auto 10px;" loop autoplay></lottie-player>
-
-            <h2 style="font-weight: 800; letter-spacing: 1px;">
-                <i class="fas fa-lock" style="color:var(--accent-orange); font-size: 0.8em; margin-right: 5px;"></i>
+        <div class="custom-modal-box">
+            <h2>
+                <i class="fas fa-lock" style="color:var(--accent-orange);"></i>
                 Login
             </h2>
-            <p style="font-size: 14px; margin-top: 5px; color: var(--text-secondary);">
+            <p style="font-size: 14px; margin-top: 10px; color: var(--text-secondary);">
                 Enter your pharmacy number
             </p>
             <div id="app-version-info"
@@ -1438,8 +1391,8 @@ body.day-mode .sadaqa-badge {
                 onclick="window.location.reload(true)">
                 Version 1.1.6 (Click to update)
             </div>
-            <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)" style="text-align: center; font-weight: bold; font-size: 18px; letter-spacing: 2px;">
-            <button id="loginBtn" onclick="doLogin()" style="background: linear-gradient(135deg, var(--accent-orange), #ff4b2b); box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3); margin-top: 15px;">
+            <input type="text" id="pharmacyInput" placeholder="Pharmacy Number (e.g. 1234)">
+            <button onclick="doLogin()" style="background: var(--accent-orange);">
                 Login <i class="fas fa-sign-in-alt"></i>
             </button>
 
@@ -1481,19 +1434,20 @@ body.day-mode .sadaqa-badge {
                 والتنبيه</button>
         </div>
     </div>
-<div id="iframeContainer">
-    <button id="floatingBackBtn" onclick="closeIframe()">
-        <div class="back-arrow"></div>
-    </button>
-    
-    <!-- تم حذف الـ sandbox القاسي وإضافة السماح الصريح للكاميرا والميديا -->
-   <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="camera *; microphone *; autoplay; fullscreen" scrolling="yes"></iframe>
-    <div id="iframeError">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h3>Connection Error</h3>
-        <p>Unable to load the requested content. Please check your internet connection.</p>
+
+    <div id="iframeContainer">
+        <button id="floatingBackBtn" onclick="closeIframe()">
+            <div class="back-arrow"></div>
+        </button>
+        <iframe id="embeddedFrame" src="about:blank" allowfullscreen allow="autoplay; fullscreen" scrolling="yes"
+            sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
+
+        <div id="iframeError">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Connection Error</h3>
+            <p>Unable to load the requested content. Please check your internet connection and try again.</p>
+        </div>
     </div>
-</div>
 
     <!-- LIGHTBOX -->
     <div id="lightbox" onclick="closeLightbox(event)">
@@ -1590,10 +1544,10 @@ body.day-mode .sadaqa-badge {
         </div>
     </div>
 
-   <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
-    <i class="fas fa-qrcode"></i>
-    <span class="btn-tooltip">Scanner</span>
-</button>
+    <button class="scanner-direct-btn" onclick="openScannerDirectly()" title="Scanner">
+        <i class="fas fa-qrcode"></i>
+        <span class="btn-tooltip">Scanner</span>
+    </button>
 <!-- الصدقة الجارية -->
 <div class="sadaqa-badge">
     <i class="fas fa-hands-praying"></i>
@@ -1795,29 +1749,16 @@ body.day-mode .sadaqa-badge {
         async function doLogin() {
             const val = document.getElementById('pharmacyInput').value.trim();
             if (val) {
-                const btn = document.getElementById('loginBtn');
-                if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-
-                // Play success animation (placeholder clapping Lottie URL)
-                const lottie = document.getElementById('loginLottie');
-                if (lottie) {
-                    lottie.load('https://lottie.host/80164c92-75d1-4b13-8874-8b6fa2021197/H8wH0P9O7i.json');
-                    lottie.loop = false;
-                }
-
-                setTimeout(async () => {
-                    currentPharmacy = val;
-                    localStorage.setItem('pharmacy_number', val);
-                    requestNotificationPermission();
-                    try {
-                        await supabaseClient.from('login_logs').upsert(
-                            { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() },
-                            { onConflict: 'pharmacy_number' }
-                        );
-                    } catch (e) { console.error("Failed to log login:", e); }
-                    checkAuth();
-                    if (btn) btn.innerHTML = 'Login <i class="fas fa-sign-in-alt"></i>';
-                }, 1500); // Give time for clapping animation to show
+                currentPharmacy = val;
+                localStorage.setItem('pharmacy_number', val);
+                requestNotificationPermission();
+                try {
+                    await supabaseClient.from('login_logs').upsert(
+                        { pharmacy_number: currentPharmacy, login_time: new Date().toISOString() },
+                        { onConflict: 'pharmacy_number' }
+                    );
+                } catch (e) { console.error("Failed to log login:", e); }
+                checkAuth();
             } else { alert("يرجى إدخال رقم الصيدلية!"); }
         }
 
@@ -1860,16 +1801,11 @@ body.day-mode .sadaqa-badge {
         renderContent();
 
         if (loader) {
-            const hand = document.querySelector('.🤚');
-            if (hand) hand.classList.add('move-top-left');
-
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                setTimeout(() => { 
-                    loader.style.display = 'none'; 
-                    setTimeout(showSadaqaPopup, 300);
-                }, 300);
-            }, 1000); // Allow time for hand animation
+            loader.style.opacity = '0';
+            setTimeout(() => { 
+                loader.style.display = 'none'; 
+                setTimeout(showSadaqaPopup, 300);
+            }, 300);
         } else {
             setTimeout(showSadaqaPopup, 500);
         }
@@ -2310,80 +2246,66 @@ body.day-mode .sadaqa-badge {
             if (overlay) overlay.classList.remove('show');
         }
 
-function openLink(url) {
-    if (!url || url.trim() === '#') return;
-    closeAllMenus();
+        function openLink(url) {
+            if (!url || url.trim() === '#') return;
+            closeAllMenus();
 
-    // 🔴 شرط حاسم: لو اللينك المطلوب يخص الاسكانر، يتم الفتح المباشر لتجاوز حظر الكاميرا داخل الـ iframe
-    if (url.includes('mode=scanner')) {
-        const phNo = localStorage.getItem('pharmacy_number');
-        const token = crypto.randomUUID();
-        sessionStorage.setItem('_tk', token);
+            document.getElementById('modeToggle').style.display = 'none';
+            document.querySelector('.logout-btn').style.display = 'none';
+            document.getElementById('userInfoBadge').style.display = 'none';
 
-        const separator = url.includes('?') ? '&' : '?';
-        const scannerUrl = phNo
-            ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
-            : url + separator + '_tk=' + token;
+            resetIframeLoader();
 
-        window.location.href = scannerUrl;
-        return;
-    }
+            const phNo = localStorage.getItem('pharmacy_number');
+            const token = crypto.randomUUID();
+            sessionStorage.setItem('_tk', token);
 
-    document.getElementById('modeToggle').style.display = 'none';
-    document.querySelector('.logout-btn').style.display = 'none';
-    document.getElementById('userInfoBadge').style.display = 'none';
+            let finalUrl = url;
+            const separator = url.includes('?') ? '&' : '?';
+            finalUrl = phNo
+                ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
+                : url + separator + '_tk=' + token;
 
-    resetIframeLoader();
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
+                    btn.classList.add('active');
+                }
+            });
 
-    const phNo = localStorage.getItem('pharmacy_number');
-    const token = crypto.randomUUID();
-    sessionStorage.setItem('_tk', token);
+            const container = document.getElementById('iframeContainer');
+            const iframe = document.getElementById('embeddedFrame');
+            const errorBox = document.getElementById('iframeError');
+            const loader = document.getElementById('loadingOverlay');
 
-    let finalUrl = url;
-    const separator = url.includes('?') ? '&' : '?';
-    finalUrl = phNo
-        ? url + separator + 'ph=' + encodeURIComponent(phNo) + '&_tk=' + token
-        : url + separator + '_tk=' + token;
+            if (!container || !iframe || !errorBox) return;
+            errorBox.classList.remove('show');
+            if (loader) {
+                loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
+            }
+            container.classList.add('show');
 
-    const navButtons = document.querySelectorAll('.nav-btn');
-    navButtons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(url)) {
-            btn.classList.add('active');
+            iframe.onload = null; iframe.onerror = null;
+
+            setTimeout(() => {
+                let hasLoaded = false;
+                let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
+
+                iframe.onload = function () {
+                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+                    if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
+                };
+
+                iframe.onerror = function () {
+                    hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
+                    errorBox.classList.add('show');
+                };
+
+                iframe.src = finalUrl;
+            }, 50);
         }
-    });
 
-    const container = document.getElementById('iframeContainer');
-    const iframe = document.getElementById('embeddedFrame');
-    const errorBox = document.getElementById('iframeError');
-    const loader = document.getElementById('loadingOverlay');
-
-    if (!container || !iframe || !errorBox) return;
-    errorBox.classList.remove('show');
-    if (loader) {
-        loader.style.display = 'flex'; loader.style.opacity = '1'; loader.classList.remove('hidden');
-    }
-    container.classList.add('show');
-
-    iframe.onload = null; iframe.onerror = null;
-
-    setTimeout(() => {
-        let hasLoaded = false;
-        let safetyTimeout = setTimeout(() => { if (!hasLoaded) { hideLoaderFast(loader); } }, 10000);
-
-        iframe.onload = function () {
-            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-            if (phNo) { setTimeout(() => { iframe.contentWindow.postMessage({ type: 'LOGIN_DATA', ph: phNo }, '*'); }, 500); }
-        };
-
-        iframe.onerror = function () {
-            hasLoaded = true; clearTimeout(safetyTimeout); hideLoaderFast(loader);
-            errorBox.classList.add('show');
-        };
-
-        iframe.src = finalUrl;
-    }, 50);
-}
         function resetIframeLoader() {
             const loader = document.getElementById('loadingOverlay');
             if (loader) { loader.style.display = 'none'; loader.classList.add('hidden'); loader.style.opacity = '0'; }
@@ -2491,17 +2413,15 @@ function openLink(url) {
             }, 5000);
         }
 
-function openScannerDirectly() {
-    // التحويل المباشر لصفحة الأسكانر المستقلة لضمان عمل الكاميرا فوراً
-    if (!window.location.pathname.endsWith('offersgit.html')) {
-        window.location.replace('offersgit.html?mode=scanner');
-    }
-}
+        function openScannerDirectly() {
+            openLink('offersgit.html?mode=scanner');
+        }
 
-// تشغيل التحويل المباشر فور فتح الصفحة لو فيها mode=scanner
-if (window.location.search.indexOf('mode=scanner') !== -1 || window.location.hash.indexOf('mode=scanner') !== -1) {
-    openScannerDirectly();
-}
+        window.addEventListener("DOMContentLoaded", () => {
+            if (window.location.href.indexOf('mode=scanner') !== -1) {
+                openScannerDirectly();
+            }
+        });
         function showSadaqaPopup() {
     if (!sessionStorage.getItem('sadaqaShown')) {
         const modal = document.getElementById('sadaqaModal');
