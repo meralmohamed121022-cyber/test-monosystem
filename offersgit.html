@@ -84837,9 +84837,9 @@
                 return;
             }
 
-            const cacheKey = 'stockCache_' + storeCode;
             const periodId = typeof currentDataInstance !== 'undefined' && currentDataInstance ? currentDataInstance.id : 'unknown';
-            const datasetId = periodId + '_' + codesToCheck.length + '_' + (codesToCheck[0] || 'empty');
+            const cacheKey = 'stockCache_' + storeCode + '_' + periodId;
+            const datasetId = periodId + '_' + codesToCheck.length;
             
             // Check cache if we are turning it on
             if (!window.isInStockFilterActive) {
@@ -84847,7 +84847,7 @@
                 if (cachedStr) {
                     try {
                         const cached = JSON.parse(cachedStr);
-                        // Cache is valid for this specific offers period (matching datasetId)
+                        // Cache is valid if the number of codes in the period hasn't changed
                         if (cached.datasetId === datasetId) {
                             window.inStockCodesFilter = new Set(cached.codes);
                             window.isInStockFilterActive = true;
@@ -84856,9 +84856,11 @@
                                 btn.innerHTML = '🏪 إلغاء فلتر المخزون (' + storeCode + ')';
                             }
                             applyFilters();
+                            // Optional: Alert the user that this was loaded from cache instantly
+                            console.log("تم استرجاع المخزون من الذاكرة بنجاح");
                             return; // Use cache instantly
                         } else {
-                            // Offers period changed, ignore old cache
+                            // Offers period content changed (e.g. new offers added), clear this specific cache
                             localStorage.removeItem(cacheKey);
                         }
                     } catch (e) { console.error('Cache error', e); }
