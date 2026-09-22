@@ -7726,6 +7726,15 @@
                  z-index: 99 !important;">
             🏪 عرض المتوفر في صيدليتي
           </button>
+          <script>
+            (function(){
+              const storeCode = localStorage.getItem('pharmacy_number');
+              if (storeCode && /^\d+$/.test(storeCode)) {
+                const btn = document.getElementById('inStockFilterBtn');
+                if (btn) btn.innerHTML = '🏪 عرض المتوفر في صيدليتي (' + storeCode + ')';
+              }
+            })();
+          </script>
         </div>
       </div>
 
@@ -84768,8 +84777,9 @@
           window.inStockCodesFilter = null;
           const stockBtn = document.getElementById('inStockFilterBtn');
           if (stockBtn) {
+            const storeCode = localStorage.getItem('pharmacy_number');
             stockBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-            stockBtn.innerHTML = '🏪 عرض المتوفر في صيدليتي';
+            stockBtn.innerHTML = '🏪 عرض المتوفر في صيدليتي' + (storeCode ? ' (' + storeCode + ')' : '');
           }
 
           hideSuggestions();
@@ -84793,7 +84803,7 @@
                 window.inStockCodesFilter = null;
                 if (btn) {
                     btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                    btn.innerHTML = '🏪 عرض المتوفر في صيدليتي';
+                    btn.innerHTML = '🏪 عرض المتوفر في صيدليتي (' + storeCode + ')';
                 }
                 applyFilters();
                 return;
@@ -84816,7 +84826,7 @@
             }
             if (btn) {
                 btn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-                btn.innerHTML = '⏳ جاري التحقق...';
+                btn.innerHTML = '⏳ جاري التحقق (' + storeCode + ')...';
             }
 
             const inStockCodes = new Set();
@@ -84827,8 +84837,9 @@
                     const chunk = codesToCheck.slice(i, i + chunkSize);
                     // use the worker deployed URL
                     const url = `https://online.meralmohamed121022.workers.dev/api/stock?codes=${encodeURIComponent(chunk.join(','))}&store=${encodeURIComponent(storeCode)}`;
+                    const _tk = sessionStorage.getItem("_tk") || "";
                     
-                    const response = await fetch(url);
+                    const response = await fetch(url, { headers: { "x-session-token": _tk } });
                     if (!response.ok) {
                         console.error('Fetch chunk failed', response.status);
                         continue;
@@ -84856,14 +84867,50 @@
                 }
                 
                 applyFilters(); // Re-render with the stock filter applied
-                alert(`اكتمل الفحص! تم العثور على ${inStockCodes.size} منتج متوفر في صيدليتك.`);
+                
+                // Show CSS Art Popup
+                const existing = document.getElementById('stock-result-popup');
+                if (existing) existing.remove();
+                const popup = document.createElement('div');
+                popup.id = 'stock-result-popup';
+                popup.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 999999;';
+                const content = document.createElement('div');
+                content.style.cssText = 'background: linear-gradient(145deg, #1e293b, #0f172a); padding: 40px; border-radius: 24px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 30px rgba(16,185,129,0.2); color: white; max-width: 400px; width: 90%; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
+                content.innerHTML = `
+                    <style>
+                        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+                        .stock-circle { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; font-size: 45px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); border: 4px solid rgba(255,255,255,0.1); }
+                        .stock-stats { display: flex; justify-content: space-between; margin: 30px 0; gap: 15px; }
+                        .stat-box { background: rgba(255,255,255,0.03); padding: 20px 10px; border-radius: 16px; flex: 1; border: 1px solid rgba(255,255,255,0.05); }
+                        .stat-num { font-size: 28px; font-weight: 900; }
+                        .stat-label { font-size: 13px; color: #94a3b8; margin-top: 8px; font-weight: bold; }
+                        .close-popup-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 14px 35px; border-radius: 99px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); transition: all 0.3s; width: 100%; }
+                        .close-popup-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.6); }
+                    </style>
+                    <div class="stock-circle">✨</div>
+                    <h2 style="margin: 0 0 12px; font-size: 26px; font-weight: 900; color: #f8fafc; letter-spacing: 0.5px;">اكتمل الفحص!</h2>
+                    <p style="color: #cbd5e1; font-size: 15px; margin: 0; line-height: 1.5;">تم التحقق من مخزون صيدليتك <strong>(${storeCode})</strong> بنجاح وتصفية العروض.</p>
+                    <div class="stock-stats">
+                        <div class="stat-box">
+                            <div class="stat-num" style="color: #94a3b8;">${codesToCheck.length}</div>
+                            <div class="stat-label">إجمالي العروض</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-num" style="color: #10b981;">${inStockCodes.size}</div>
+                            <div class="stat-label">متوفر ومتاح</div>
+                        </div>
+                    </div>
+                    <button class="close-popup-btn" onclick="document.getElementById('stock-result-popup').remove()">حسناً، فهمت</button>
+                `;
+                popup.appendChild(content);
+                document.body.appendChild(popup);
                 
             } catch (err) {
                 console.error('Stock Check Error:', err);
                 alert('حدث خطأ أثناء التحقق من المخزون. يرجى المحاولة مرة أخرى.');
                 if (btn) {
                     btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                    btn.innerHTML = '🏪 عرض المتوفر في صيدليتي';
+                    btn.innerHTML = '🏪 عرض المتوفر في صيدليتي (' + storeCode + ')';
                 }
             } finally {
                 if (loader) {
