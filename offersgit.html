@@ -84898,10 +84898,14 @@
             if (loader) {
                 loader.innerHTML = `
                     <div style="margin-bottom: 15px; font-weight: bold; color: #10b981; font-size: 16px;">جاري التحقق من المخزون...</div>
-                    <div style="width: 100%; max-width: 400px; background: #334155; border-radius: 99px; height: 22px; overflow: hidden; margin: 0 auto; border: 2px solid #475569;">
-                        <div id="stockProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.3s ease;"></div>
+                    <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#334155" stroke-width="10" />
+                            <circle id="stockProgressCircle" cx="60" cy="60" r="54" fill="none" stroke="#10b981" stroke-width="10" stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round" style="transition: stroke-dashoffset 0.3s ease; transform: rotate(-90deg); transform-origin: 50% 50%;" />
+                        </svg>
+                        <div id="stockProgressPercent" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #f8fafc; direction: ltr;">0%</div>
                     </div>
-                    <div id="stockProgressText" style="margin-top: 10px; font-size: 15px; color: #f8fafc; font-weight: bold;">0 / ${codesToCheck.length}</div>
+                    <div id="stockProgressText" style="margin-top: 15px; font-size: 15px; color: #94a3b8; font-weight: bold;">0 / ${codesToCheck.length}</div>
                 `;
                 loader.style.display = "block";
             }
@@ -84915,40 +84919,58 @@
             let checkedCount = 0;
             
             try {
+                const chunks = [];
                 for (let i = 0; i < codesToCheck.length; i += chunkSize) {
-                    const chunk = codesToCheck.slice(i, i + chunkSize);
-                    // use the worker deployed URL
-                    const url = `https://online.meralmohamed121022.workers.dev/api/stock?codes=${encodeURIComponent(chunk.join(','))}&store=${encodeURIComponent(storeCode)}`;
+                    chunks.push(codesToCheck.slice(i, i + chunkSize));
+                }
+
+                const PARALLEL_REQUESTS = 4;
+                
+                async function processChunk(chunk) {
+                    const url = \`https://online.meralmohamed121022.workers.dev/api/stock?codes=\${encodeURIComponent(chunk.join(','))}&store=\${encodeURIComponent(storeCode)}\`;
                     const _tk = sessionStorage.getItem("_tk") || "";
                     
-                    const response = await fetch(url, { headers: { "x-session-token": _tk } });
-                    if (!response.ok) {
-                        console.error('Fetch chunk failed', response.status);
-                        continue;
-                    }
-                    
-                    const data = await response.json();
-                    if (data && data.results) {
-                        data.results.forEach(res => {
-                            if (res.inStock) {
-                                inStockCodes.add(res.code);
+                    try {
+                        const response = await fetch(url, { headers: { "x-session-token": _tk } });
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data && data.results) {
+                                data.results.forEach(res => {
+                                    if (res.inStock) {
+                                        inStockCodes.add(res.code);
+                                    }
+                                });
                             }
-                        });
+                        }
+                    } catch (e) {
+                        console.error('Fetch chunk failed', e);
                     }
-                    
-                    // Small delay to prevent rate limits
-                    await new Promise(r => setTimeout(r, 200));
 
                     checkedCount += chunk.length;
                     const percent = Math.min(100, Math.round((checkedCount / codesToCheck.length) * 100));
-                    const pBar = document.getElementById('stockProgressBar');
+                    
+                    const pCircle = document.getElementById('stockProgressCircle');
                     const pText = document.getElementById('stockProgressText');
-                    if (pBar) pBar.style.width = percent + '%';
+                    const pPercent = document.getElementById('stockProgressPercent');
+                    
+                    if (pCircle) {
+                        const offset = 339.292 - (339.292 * percent) / 100;
+                        pCircle.style.strokeDashoffset = offset;
+                    }
+                    if (pPercent) pPercent.innerHTML = percent + '%';
                     if (pText) pText.innerHTML = checkedCount + ' / ' + codesToCheck.length;
                     
                     if (btn) {
                         btn.innerHTML = '⏳ ' + percent + '% (' + storeCode + ')';
                     }
+                }
+
+                // Process chunks with concurrency limit to speed up fetching
+                for (let i = 0; i < chunks.length; i += PARALLEL_REQUESTS) {
+                    const batch = chunks.slice(i, i + PARALLEL_REQUESTS);
+                    await Promise.all(batch.map(processChunk));
+                    // Small delay between batches to avoid Cloudflare rate limits
+                    await new Promise(r => setTimeout(r, 150));
                 }
                 
                 // Save to cache (tied to specific offers period dataset)
