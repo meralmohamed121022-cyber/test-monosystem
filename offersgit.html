@@ -84927,7 +84927,7 @@
                 const PARALLEL_REQUESTS = 4;
                 
                 async function processChunk(chunk) {
-                    const url = \`https://online.meralmohamed121022.workers.dev/api/stock?codes=\${encodeURIComponent(chunk.join(','))}&store=\${encodeURIComponent(storeCode)}\`;
+                    const url = `https://online.meralmohamed121022.workers.dev/api/stock?codes=${encodeURIComponent(chunk.join(','))}&store=${encodeURIComponent(storeCode)}`;
                     const _tk = sessionStorage.getItem("_tk") || "";
                     
                     try {
