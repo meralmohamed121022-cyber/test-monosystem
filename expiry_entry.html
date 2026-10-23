@@ -1847,9 +1847,20 @@ CREATE POLICY "Allow public insert and select" ON expiry_entries FOR ALL USING (
 
             // Initializer
             init: async () => {
-                // 1. Load saved user or fallback
-                const savedUser = localStorage.getItem('last_user_id') || 'User 66';
+                // 1. Load user from URL, postMessage, or LocalStorage
+                const urlParams = new URLSearchParams(window.location.search);
+                const phFromUrl = urlParams.get('ph') || urlParams.get('userId');
+                const savedUser = phFromUrl ? `User ${phFromUrl}` : (localStorage.getItem('last_user_id') || (localStorage.getItem('inv_uid') ? `User ${localStorage.getItem('inv_uid')}` : (localStorage.getItem('pharmacy_number') ? `User ${localStorage.getItem('pharmacy_number')}` : 'User 66')));
                 document.getElementById('userBadge').innerText = `👤 ${savedUser}`;
+
+                window.addEventListener('message', (e) => {
+                    if (e.data && e.data.type === 'LOGIN_DATA' && e.data.ph) {
+                        const u = `User ${e.data.ph}`;
+                        const b = document.getElementById('userBadge');
+                        if (b) b.innerText = `👤 ${u}`;
+                        app.loadPharmacyData(u);
+                    }
+                });
 
                 // 2. Load Saved Records from LocalStorage
                 app.loadLocalRecords();
