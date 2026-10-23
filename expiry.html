@@ -284,85 +284,77 @@
         .header-actions-bar {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(15,23,42,0.6);
-            padding: 6px 12px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
-            flex-wrap: wrap;
+            gap: 8px;
+            background: transparent;
+            padding: 0;
+            border: none;
+            box-shadow: none;
         }
         .user-badge-box {
-            font-weight: 800;
-            color: #f8fafc;
-            padding: 8px 14px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(59,130,246,0.3);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            letter-spacing: 0.5px;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-        .btn-expiry-entry {
-            background: linear-gradient(135deg, #10B981, #059669);
-            color: white !important;
-            border-radius: 12px;
-            padding: 8px 16px;
             font-weight: 700;
-            font-size: 13px;
-            text-decoration: none;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-            transition: all 0.25s ease;
+            color: #e2e8f0;
+            padding: 5px 12px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            border: none;
+            gap: 5px;
+            letter-spacing: 0.3px;
+        }
+        .header-icon-btn {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #f1f5f9;
+            font-size: 15px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            text-decoration: none;
         }
-        .btn-expiry-entry:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.6);
+        .header-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
         }
-        .btn-header-action {
-            padding: 8px 14px !important;
-            border-radius: 12px !important;
-            font-weight: 700 !important;
-            font-size: 13px !important;
-            transition: all 0.25s ease !important;
-            white-space: nowrap;
+        .header-icon-btn.btn-logout:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #f87171;
         }
         @media (max-width: 768px) {
             header {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 12px !important;
-                padding: 12px 14px !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                gap: 8px !important;
+                padding: 10px 12px !important;
             }
             .header-actions-bar {
-                width: 100% !important;
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px !important;
-                padding: 8px !important;
+                width: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 6px !important;
+                padding: 0 !important;
             }
             .user-badge-box {
-                grid-column: span 2;
-                text-align: center;
-                padding: 7px 10px !important;
-                font-size: 12px !important;
+                padding: 4px 8px !important;
+                font-size: 11px !important;
             }
-            .btn-expiry-entry {
-                grid-column: span 2;
-                justify-content: center;
-                padding: 9px 12px !important;
-                font-size: 13px !important;
-            }
-            .btn-header-action {
-                justify-content: center;
-                padding: 7px 10px !important;
-                font-size: 12px !important;
+            .header-icon-btn {
+                width: 34px !important;
+                height: 34px !important;
+                min-width: 34px !important;
+                font-size: 14px !important;
             }
         }
 
@@ -1973,29 +1965,40 @@ header {
             <button type="button" class="btn btn-ghost" style="padding:4px 8px; border-radius:50%; font-size:14px;" onclick="app.closeModal('modalMasterGtinManager')">✕</button>
         </div>
 
-        <!-- ملخص وإحصائيات -->
+        <!-- ملخص وإحصائيات المزامنة السحابية -->
         <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <div>
-                <div style="font-size:11px; color:#94a3b8;">الباركودات الجديدة المربوطة محلياً:</div>
-                <div style="font-size:20px; font-weight:900; color:#38bdf8; font-family:monospace;" id="managerPendingGtinsCount">0</div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-bottom:2px;">إجمالي الباركودات المربوطة والمحفوظة:</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="font-size:22px; font-weight:900; color:#38bdf8; font-family:monospace;" id="managerPendingGtinsCount">0</div>
+                    <span style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:2px 8px; border-radius:8px; font-weight:700;">☁️ محفوظة سحابياً</span>
+                </div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" onclick="app.openLinkGtinModal('', null)" style="font-size:12px; font-weight:800; padding:6px 12px;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="app.openLinkGtinModal('', null)" style="font-size:12px; font-weight:800; padding:7px 14px; border-radius:10px;">
                 ➕ إضافة باركود جديد
             </button>
         </div>
 
-        <!-- قائمة الباركودات المضافة حديثاً -->
+        <!-- قائمة الباركودات المربوطة بالماستر -->
         <div style="margin-bottom:16px;">
-            <div style="font-size:12.5px; font-weight:700; color:#cbd5e1; margin-bottom:8px; text-align:start;">📋 قائمة الباركودات المعلقة للتحديث:</div>
-            <div id="managerGtinsList" style="max-height:180px; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#0f172a; border-radius:12px; border:1px solid rgba(255,255,255,0.08); padding:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div style="font-size:12.5px; font-weight:700; color:#cbd5e1; text-align:start;">📋 سجل الباركودات المربوطة بالماستر:</div>
+                <div style="font-size:11px; color:#10b981;">● متاحة ومحفوظة على كافة أجهزتك</div>
+            </div>
+            <div id="managerGtinsList" style="max-height:220px; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#0f172a; border-radius:12px; border:1px solid rgba(255,255,255,0.08); padding:8px;">
                 <!-- ديناميكي -->
             </div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:16px;">
+        <div style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.25); border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:11.5px; color:#93c5fd; display:flex; align-items:center; gap:8px;">
+            <span>ℹ️</span>
+            <span>الباركودات أعلاه محفوظة دائماً سحابياً وتعمل تلقائياً على اللاب توب والموبايل وأي متصفح دون فقدانها.</span>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px;">
             <button type="button" class="btn btn-ghost" onclick="app.closeModal('modalMasterGtinManager')" style="padding:11px 18px; font-size:13px; border-radius:12px;">إغلاق ✕</button>
             <button type="button" class="btn btn-primary" onclick="app.syncGtinsToGitHub()" style="flex:1; padding:11px 18px; font-size:13.5px; font-weight:800; background:linear-gradient(135deg, #10b981, #059669); border-radius:12px; box-shadow:0 4px 14px rgba(16,185,129,0.35); display:flex; align-items:center; justify-content:center; gap:8px;">
-                <span>🔄 مزامنة وتحديث الماستر الآن</span>
+                <span>🔄 تأكيد المزامنة مع GitHub الآن</span>
             </button>
         </div>
     </div>
@@ -2004,9 +2007,9 @@ header {
 <div class="app-container" id="mainApp">
     <header>
         <div class="logo-area">
-            <div style="width:40px; height:40px; min-width:40px; background:var(--primary); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; box-shadow:0 4px 10px rgba(245,158,11,0.4);">EC</div>
+            <div style="width:38px; height:38px; min-width:38px; background:linear-gradient(135deg, var(--primary), #ea580c); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:15px; box-shadow:0 4px 10px rgba(245,158,11,0.35);">EC</div>
             <div>
-                <h2 id="appHeaderTitle" style="font-size:18px; margin:0; line-height:1.2;">فحص الإكسباير</h2>
+                <h2 id="appHeaderTitle" style="font-size:17px; margin:0; line-height:1.2;">فحص الإكسباير</h2>
                 <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
                     <div style="font-size:11px; color:var(--text-light)" id="syncStatus">Online • Synced</div>
                     <div id="masterStatusIndicator" title="قاعدة البيانات المركزية (اضغط للتحديث)" style="display:inline-flex; align-items:center; justify-content:center; position:relative; width:14px; height:14px; cursor:pointer;" onclick="app.reloadMasterDB(true)">
@@ -2019,16 +2022,12 @@ header {
 
         <div class="header-actions-bar">
             <div id="userBadge" class="user-badge-box"></div>
-            <button class="btn btn-warning btn-header-action" onclick="app.openMasterGtinManagerModal()" title="إدارة وتحديث باركودات الماستر" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:800; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(245,158,11,0.35);">
-                <span>📦 تحديث الماستر</span>
-                <span class="badge" id="badgePendingGtins" style="background:rgba(0,0,0,0.3); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
+            <button class="header-icon-btn" onclick="app.toggleLanguage()" id="langBtn" title="تغيير اللغة (Change Language)">
+                <span>🌐</span>
             </button>
-            <button class="btn btn-expiry-entry" id="btnExpiryEntry" onclick="app.toggleMainView()" title="Expiry Entry">
-                <span id="btnExpiryEntryIcon">➕</span>
-                <span id="btnExpiryEntryText">إدخال الإكسباير</span>
+            <button class="header-icon-btn btn-logout" onclick="app.logout()" id="btnLogoutBtn" title="تسجيل الخروج (Logout)">
+                <span>🚪</span>
             </button>
-            <button class="btn btn-danger btn-header-action" style="background:linear-gradient(135deg, #ef4444, #dc2626); box-shadow:0 4px 10px rgba(239,68,68,0.3);" onclick="app.logout()" id="btnLogoutText">Logout</button>
-            <button class="btn btn-ghost btn-header-action" style="background:linear-gradient(135deg, #f8fafc, #f1f5f9); color:#0f172a; box-shadow:0 4px 10px rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);" onclick="app.toggleLanguage()" id="langBtn">English 🌐</button>
         </div>
     </header>
 
@@ -2561,13 +2560,19 @@ header {
     <!-- VIEW 2: EXPIRY ENTRY (EMBEDDED) -->
     <div id="viewExpiryEntry" style="display:none;">
         <!-- SUB-TABS -->
-        <div class="entry-subtabs">
-            <button class="entry-subtab-btn active" id="subtabScanBtn" onclick="app.switchEntrySubtab('scan')">
-                <span id="lblSubtabScan">📷 تسجيل صنف جديد</span>
-            </button>
-            <button class="entry-subtab-btn" id="subtabPreviewBtn" onclick="app.switchEntrySubtab('preview')">
-                <span id="lblSubtabPreview">📊 معاينة السجل وتصدير</span>
-                <span class="tab-badge" id="previewRecordsBadge" style="background:rgba(255,255,255,0.2); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
+        <div class="entry-subtabs" style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+            <div style="display:flex; gap:6px; flex:1; min-width:240px;">
+                <button class="entry-subtab-btn active" id="subtabScanBtn" onclick="app.switchEntrySubtab('scan')">
+                    <span id="lblSubtabScan">📷 تسجيل صنف جديد</span>
+                </button>
+                <button class="entry-subtab-btn" id="subtabPreviewBtn" onclick="app.switchEntrySubtab('preview')">
+                    <span id="lblSubtabPreview">📊 معاينة السجل وتصدير</span>
+                    <span class="tab-badge" id="previewRecordsBadge" style="background:rgba(255,255,255,0.2); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
+                </button>
+            </div>
+            <button class="btn btn-warning" onclick="app.openMasterGtinManagerModal()" title="إدارة وتحديث باركودات الماستر" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:800; display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; font-size:12px; box-shadow:0 3px 12px rgba(245,158,11,0.35); white-space:nowrap;">
+                <span>📦 تحديث الماستر</span>
+                <span class="badge" id="badgePendingGtins" style="background:rgba(0,0,0,0.35); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
             </button>
         </div>
 
@@ -6069,10 +6074,11 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 return `
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:rgba(255,255,255,0.04); border-radius:8px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.06);">
                         <div style="overflow:hidden; flex:1; margin-inline-end:10px;">
-                            <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <span style="font-family:monospace; font-weight:800; color:#38bdf8; font-size:13px;">${gtin}</span>
                                 <span style="color:#f59e0b; font-size:12px;">➔</span>
                                 <span style="background:rgba(245,158,11,0.2); color:#fef08a; padding:1px 6px; border-radius:5px; font-weight:800; font-family:monospace; font-size:12px;">#${code}</span>
+                                <span style="font-size:10px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:1px 6px; border-radius:6px; font-weight:700;">☁️ متزامن</span>
                             </div>
                             ${name ? `<div style="font-size:11.5px; color:#cbd5e1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${name}</div>` : ''}
                         </div>
@@ -8420,8 +8426,16 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             // Header elements
             setText('appHeaderTitle', t.appTitle || (app.language === 'ar' ? "فحص الإكسباير" : "Expiry Check"));
             setText('syncStatus', t.sync || (app.language === 'ar' ? "متصل • متزامن" : "Online • Synced"));
-            document.getElementById('langBtn').innerText = t.langToggleBtn;
-            setText('btnLogoutText', t.logout);
+            const langEl = document.getElementById('langBtn');
+            if (langEl) {
+                langEl.title = t.langToggleBtn || (app.language === 'ar' ? 'English 🌐' : 'العربية 🌐');
+                langEl.innerHTML = `<span style="font-size:16px;">🌐</span>`;
+            }
+            const logoutEl = document.getElementById('btnLogoutBtn') || document.getElementById('btnLogoutText');
+            if (logoutEl) {
+                logoutEl.title = t.logout || (app.language === 'ar' ? 'تسجيل الخروج' : 'Logout');
+                logoutEl.innerHTML = `<span style="font-size:16px;">🚪</span>`;
+            }
             if (app.userId) {
                 const userPrefix = app.language === 'ar' ? "👤 المستخدم: " : "👤 User: ";
                 const badgeEl = document.getElementById('userBadge');
