@@ -366,36 +366,87 @@
             }
         }
 
-        /* --- FOLDABLE & DUAL PANE SPLIT VIEW --- */
+        /* --- FOLDABLE & DUAL PANE SPLIT VIEW (قصاد بعض - عمودين متجاورين) --- */
+        #entryDualWrapper,
         .entry-dual-wrapper {
             width: 100%;
+            display: block;
             transition: all 0.3s ease;
         }
-        .dual-pane-active .entry-dual-wrapper,
-        @media (min-width: 650px), (horizontal-viewport-segments: 2), (screen-spanning: single-fold-vertical) {
+
+        /* 1. عندما يتم تفعيل وضع الشاشتين عبر الكلاس */
+        .dual-pane-active #entryDualWrapper,
+        #viewExpiryEntry.dual-pane-active #entryDualWrapper,
+        .dual-pane-active .entry-dual-wrapper {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+            gap: 18px !important;
+            align-items: start !important;
+            width: 100% !important;
+        }
+        .dual-pane-active #entryDualWrapper #entrySectionScan,
+        .dual-pane-active #entryDualWrapper #entrySectionPreview,
+        #viewExpiryEntry.dual-pane-active #entrySectionScan,
+        #viewExpiryEntry.dual-pane-active #entrySectionPreview {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+        .dual-pane-active #entryDualWrapper #entrySectionPreview,
+        #viewExpiryEntry.dual-pane-active #entrySectionPreview {
+            position: sticky;
+            top: 10px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-inline-end: 4px;
+        }
+        .dual-pane-active #entrySectionScan .entry-grid-layout,
+        #viewExpiryEntry.dual-pane-active #entrySectionScan .entry-grid-layout {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 14px !important;
+        }
+
+        /* 2. تفعيل تلقائي للشاشات المزدوجة والأجهزة القابلة للطي (Foldable Unfolded) */
+        @media (min-width: 550px), (min-aspect-ratio: 1/1) and (min-width: 480px), (horizontal-viewport-segments: 2), (screen-spanning: single-fold-vertical) {
+            #entryDualWrapper,
             .entry-dual-wrapper {
                 display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
-                gap: 16px !important;
+                grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+                gap: 18px !important;
                 align-items: start !important;
+                width: 100% !important;
             }
+            #entryDualWrapper #entrySectionScan,
+            #entryDualWrapper #entrySectionPreview,
             .entry-dual-wrapper #entrySectionScan,
             .entry-dual-wrapper #entrySectionPreview {
                 display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                min-width: 0 !important;
             }
+            #entryDualWrapper #entrySectionPreview,
             .entry-dual-wrapper #entrySectionPreview {
                 position: sticky;
                 top: 10px;
-                max-height: 88vh;
+                max-height: calc(100vh - 110px);
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
                 padding-inline-end: 4px;
             }
-            .entry-subtabs .subtab-pill-mode {
-                opacity: 0.8;
-                pointer-events: none;
+            #entryDualWrapper #entrySectionScan .entry-grid-layout,
+            .entry-dual-wrapper #entrySectionScan .entry-grid-layout {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 14px !important;
+            }
+            .scanner-entry-box {
+                height: 220px !important;
+                min-height: 180px !important;
+                max-height: 240px !important;
             }
         }
 
@@ -5237,14 +5288,7 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 app.loadCloudEntryRecords();
                 app.loadCloudBatchesHistory();
                 app.renderEntryTable();
-
-                const isDual = (document.getElementById('viewExpiryEntry')?.classList.contains('dual-pane-active')) || (window.innerWidth >= 650);
-                if (isDual) {
-                    const secScan = document.getElementById('entrySectionScan');
-                    const secPreview = document.getElementById('entrySectionPreview');
-                    if (secScan) secScan.style.display = 'block';
-                    if (secPreview) secPreview.style.display = 'block';
-                }
+                app.checkAndAutoEnableDualPane();
 
                 // 📷 تشغيل ماسح الكاميرا تلقائياً دون الحاجة للنقر
                 setTimeout(() => {
@@ -5265,16 +5309,33 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             app.switchMainView(app.mainView === 'check' ? 'entry' : 'check');
         },
 
-        toggleDualPane: () => {
-            app.isDualPane = !app.isDualPane;
+        isDualScreenDetected: () => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const ratio = w / (h || 1);
+            // أجهزة الفولدابل عند فتحها تصبح مربعة تقريباً أو عريضة (نسبة أبعاد تقارب 1:1 أو عرض أكبر من 500px)
+            const isFoldableRatio = (w >= 480) && (ratio >= 0.75);
+            const hasFoldSegments = window.visualViewport && window.visualViewport.segments && window.visualViewport.segments.length > 1;
+            return (w >= 550) || isFoldableRatio || hasFoldSegments;
+        },
+
+        checkAndAutoEnableDualPane: (notifyUser = false) => {
             const container = document.getElementById('viewExpiryEntry');
+            if (!container) return;
+
+            const isAuto = app.isDualScreenDetected();
+            const shouldBeDual = app.manuallyEnabledDualPane !== undefined ? app.manuallyEnabledDualPane : isAuto;
+            
+            app.isDualPane = shouldBeDual;
             const btn = document.getElementById('btnToggleDualPane');
             const txt = document.getElementById('lblDualPaneText');
             const secScan = document.getElementById('entrySectionScan');
             const secPreview = document.getElementById('entrySectionPreview');
+            const btnScan = document.getElementById('subtabScanBtn');
+            const btnPreview = document.getElementById('subtabPreviewBtn');
 
-            if (app.isDualPane) {
-                if (container) container.classList.add('dual-pane-active');
+            if (shouldBeDual) {
+                container.classList.add('dual-pane-active');
                 if (btn) {
                     btn.style.background = 'rgba(16,185,129,0.25)';
                     btn.style.borderColor = '#10b981';
@@ -5283,10 +5344,14 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 if (txt) txt.innerText = app.language === 'ar' ? "شاشتين (مفعل)" : "Dual Active";
                 if (secScan) secScan.style.display = 'block';
                 if (secPreview) secPreview.style.display = 'block';
+                if (btnScan) btnScan.classList.add('active');
+                if (btnPreview) btnPreview.classList.add('active');
                 app.renderEntryTable();
-                app.notify(app.language === 'ar' ? "تم تفعيل وضع الشاشة المزدوجة للأجهزة القابلة للطي 📱" : "Foldable Dual-Pane View enabled", "info");
+                if (notifyUser) {
+                    app.notify(app.language === 'ar' ? "تم تفعيل وضع الشاشة المزدوجة (عرض عمودين قصاد بعض) 📱" : "Dual-Pane View enabled", "info");
+                }
             } else {
-                if (container) container.classList.remove('dual-pane-active');
+                container.classList.remove('dual-pane-active');
                 if (btn) {
                     btn.style.background = 'rgba(255,255,255,0.06)';
                     btn.style.borderColor = 'rgba(255,255,255,0.18)';
@@ -5294,7 +5359,15 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 }
                 if (txt) txt.innerText = app.language === 'ar' ? "شاشة مزدوجة" : "Dual Screen";
                 app.switchEntrySubtab(app.entrySubtab || 'scan');
+                if (notifyUser) {
+                    app.notify(app.language === 'ar' ? "تم إيقاف وضع الشاشة المزدوجة (شاشة أحادية)" : "Single-Pane View enabled", "info");
+                }
             }
+        },
+
+        toggleDualPane: () => {
+            app.manuallyEnabledDualPane = !app.isDualPane;
+            app.checkAndAutoEnableDualPane(true);
         },
 
         prepareFreshDefaultBatch: () => {
@@ -5339,7 +5412,7 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             const btnScan = document.getElementById('subtabScanBtn');
             const btnPreview = document.getElementById('subtabPreviewBtn');
 
-            const isDual = (document.getElementById('viewExpiryEntry')?.classList.contains('dual-pane-active')) || (window.innerWidth >= 650);
+            const isDual = app.isDualPane || app.isDualScreenDetected() || (document.getElementById('viewExpiryEntry')?.classList.contains('dual-pane-active'));
             if (isDual) {
                 if (secScan) secScan.style.display = 'block';
                 if (secPreview) secPreview.style.display = 'block';
@@ -5443,6 +5516,9 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             app.updateEntryBadgeCounter();
             app.loadCloudEntryRecords();
             app.loadCloudBatchesHistory();
+            window.addEventListener('resize', () => app.checkAndAutoEnableDualPane());
+            window.addEventListener('orientationchange', () => setTimeout(() => app.checkAndAutoEnableDualPane(), 200));
+            app.checkAndAutoEnableDualPane();
         },
 
         buildEntryMonthGrid: () => {
