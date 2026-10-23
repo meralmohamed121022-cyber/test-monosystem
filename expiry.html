@@ -269,57 +269,60 @@
             background: var(--surface); 
             backdrop-filter: blur(12px); 
             -webkit-backdrop-filter: blur(12px); 
-            padding: 14px 22px; 
+            padding: 10px 16px; 
             border-radius: 16px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 25px; 
+            margin-bottom: 16px; 
             border: 1.5px solid rgba(245, 158, 11, 0.3); 
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 10px;
+            flex-wrap: nowrap;
         }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-area { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .header-actions-bar {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: transparent;
             padding: 0;
             border: none;
             box-shadow: none;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
         }
         .user-badge-box {
             font-weight: 700;
             color: #e2e8f0;
-            padding: 5px 12px;
+            padding: 4px 10px;
             background: rgba(59, 130, 246, 0.15);
             border: 1px solid rgba(59, 130, 246, 0.35);
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11.5px;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             letter-spacing: 0.3px;
         }
         .header-icon-btn {
-            width: 36px;
-            height: 36px;
-            min-width: 36px;
-            border-radius: 10px;
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 9px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.14);
             color: #f1f5f9;
-            font-size: 15px;
+            font-size: 14.5px;
             cursor: pointer;
             transition: all 0.2s ease;
             padding: 0;
             text-decoration: none;
+            flex-shrink: 0;
         }
         .header-icon-btn:hover {
             background: rgba(255, 255, 255, 0.15);
@@ -336,25 +339,63 @@
                 flex-direction: row !important;
                 justify-content: space-between !important;
                 align-items: center !important;
-                gap: 8px !important;
-                padding: 10px 12px !important;
+                gap: 6px !important;
+                padding: 8px 10px !important;
+                flex-wrap: nowrap !important;
+                margin-bottom: 12px !important;
             }
             .header-actions-bar {
                 width: auto !important;
                 display: flex !important;
                 align-items: center !important;
-                gap: 6px !important;
+                gap: 5px !important;
                 padding: 0 !important;
+                flex-wrap: nowrap !important;
             }
             .user-badge-box {
-                padding: 4px 8px !important;
-                font-size: 11px !important;
+                padding: 3px 6px !important;
+                font-size: 10.5px !important;
+                width: auto !important;
+                display: inline-flex !important;
             }
             .header-icon-btn {
-                width: 34px !important;
-                height: 34px !important;
-                min-width: 34px !important;
-                font-size: 14px !important;
+                width: 30px !important;
+                height: 30px !important;
+                min-width: 30px !important;
+                font-size: 13px !important;
+            }
+        }
+
+        /* --- FOLDABLE & DUAL PANE SPLIT VIEW --- */
+        .entry-dual-wrapper {
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .dual-pane-active .entry-dual-wrapper,
+        @media (min-width: 650px), (horizontal-viewport-segments: 2), (screen-spanning: single-fold-vertical) {
+            .entry-dual-wrapper {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 16px !important;
+                align-items: start !important;
+            }
+            .entry-dual-wrapper #entrySectionScan,
+            .entry-dual-wrapper #entrySectionPreview {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .entry-dual-wrapper #entrySectionPreview {
+                position: sticky;
+                top: 10px;
+                max-height: 88vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-inline-end: 4px;
+            }
+            .entry-subtabs .subtab-pill-mode {
+                opacity: 0.8;
+                pointer-events: none;
             }
         }
 
@@ -1219,25 +1260,27 @@ header {
         }
         @media (max-width: 768px) {
             header {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                padding: 12px 14px !important;
-                gap: 12px !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 8px 10px !important;
+                gap: 6px !important;
+                flex-wrap: nowrap !important;
+                margin-bottom: 12px !important;
             }
             .header-actions-bar {
-                width: 100% !important;
-                display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
-                gap: 8px !important;
-                padding: 8px !important;
-                box-sizing: border-box !important;
+                width: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 5px !important;
+                padding: 0 !important;
+                flex-wrap: nowrap !important;
             }
             .user-badge-box {
-                grid-column: span 2 !important;
-                text-align: center !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                padding: 10px !important;
+                padding: 3px 6px !important;
+                font-size: 10.5px !important;
+                width: auto !important;
+                display: inline-flex !important;
             }
             .main-system-tabs {
                 gap: 6px !important;
@@ -2570,11 +2613,19 @@ header {
                     <span class="tab-badge" id="previewRecordsBadge" style="background:rgba(255,255,255,0.2); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
                 </button>
             </div>
-            <button class="btn btn-warning" onclick="app.openMasterGtinManagerModal()" title="إدارة وتحديث باركودات الماستر" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:800; display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; font-size:12px; box-shadow:0 3px 12px rgba(245,158,11,0.35); white-space:nowrap;">
-                <span>📦 تحديث الماستر</span>
-                <span class="badge" id="badgePendingGtins" style="background:rgba(0,0,0,0.35); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
-            </button>
+            <div style="display:flex; gap:6px; align-items:center;">
+                <button type="button" class="btn btn-ghost btn-sm" id="btnToggleDualPane" onclick="app.toggleDualPane()" title="وضع الشاشة المزدوجة (Foldable Split View)" style="font-size:11.5px; padding:7px 11px; border-radius:10px; border:1px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.06); cursor:pointer;">
+                    <span>📱</span>
+                    <span id="lblDualPaneText">شاشة مزدوجة</span>
+                </button>
+                <button class="btn btn-warning" onclick="app.openMasterGtinManagerModal()" title="إدارة وتحديث باركودات الماستر" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:800; display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:10px; border:none; cursor:pointer; font-size:12px; box-shadow:0 3px 12px rgba(245,158,11,0.35); white-space:nowrap;">
+                    <span>📦 تحديث الماستر</span>
+                    <span class="badge" id="badgePendingGtins" style="background:rgba(0,0,0,0.35); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
+                </button>
+            </div>
         </div>
+
+        <div id="entryDualWrapper" class="entry-dual-wrapper">
 
         <!-- SUBTAB 1: SCAN & ENTRY -->
         <div id="entrySectionScan">
@@ -2887,6 +2938,7 @@ header {
                 <p style="font-size:12px; margin-top:4px;" id="lblEmptyEntrySub">قم بمسح الباركود من تبويب تسجيل صنف جديد</p>
             </div>
         </div>
+        </div> <!-- END entryDualWrapper -->
     </div> <!-- END VIEW 2: EXPIRY ENTRY -->
 
 </div>
@@ -3617,8 +3669,8 @@ login: async () => {
                 localStorage.setItem('pharmacy_number', id); // خاص بالمنصة الرئيسية (MONO SYSTEM)
 
                 document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('userBadge').innerText = `${app.language === 'ar' ? '👤 المستخدم: ' : '👤 User: '}${json.displayName || id}`;
+                const cleanDisplayId = String(json.displayName || id).replace(/^User\s*/i, '');
+                document.getElementById('userBadge').innerText = `👤 ${cleanDisplayId}`;
                 app.load();
                 app.loadCloudEntryRecords();
                 app.loadCloudBatchesHistory();
@@ -5120,6 +5172,8 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
         currentYearNum: new Date().getFullYear(),
         isEntryInit: false,
 
+        isDualPane: false,
+
         switchMainView: (view) => {
             app.mainView = view;
             const viewCheck = document.getElementById('viewExpiryCheck');
@@ -5137,9 +5191,19 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 if (btnHeader) btnHeader.innerText = app.language === 'ar' ? "فحص الإكسباير" : "Expiry Check";
                 if (iconHeader) iconHeader.innerText = "📋";
                 app.initEntrySystem();
+                app.prepareFreshDefaultBatch();
                 app.loadCloudEntryRecords();
                 app.loadCloudBatchesHistory();
                 app.renderEntryTable();
+
+                const isDual = (document.getElementById('viewExpiryEntry')?.classList.contains('dual-pane-active')) || (window.innerWidth >= 650);
+                if (isDual) {
+                    const secScan = document.getElementById('entrySectionScan');
+                    const secPreview = document.getElementById('entrySectionPreview');
+                    if (secScan) secScan.style.display = 'block';
+                    if (secPreview) secPreview.style.display = 'block';
+                }
+
                 // 📷 تشغيل ماسح الكاميرا تلقائياً دون الحاجة للنقر
                 setTimeout(() => {
                     app.startScanner('entry');
@@ -5159,12 +5223,89 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             app.switchMainView(app.mainView === 'check' ? 'entry' : 'check');
         },
 
+        toggleDualPane: () => {
+            app.isDualPane = !app.isDualPane;
+            const container = document.getElementById('viewExpiryEntry');
+            const btn = document.getElementById('btnToggleDualPane');
+            const txt = document.getElementById('lblDualPaneText');
+            const secScan = document.getElementById('entrySectionScan');
+            const secPreview = document.getElementById('entrySectionPreview');
+
+            if (app.isDualPane) {
+                if (container) container.classList.add('dual-pane-active');
+                if (btn) {
+                    btn.style.background = 'rgba(16,185,129,0.25)';
+                    btn.style.borderColor = '#10b981';
+                    btn.style.color = '#10b981';
+                }
+                if (txt) txt.innerText = app.language === 'ar' ? "شاشتين (مفعل)" : "Dual Active";
+                if (secScan) secScan.style.display = 'block';
+                if (secPreview) secPreview.style.display = 'block';
+                app.renderEntryTable();
+                app.notify(app.language === 'ar' ? "تم تفعيل وضع الشاشة المزدوجة للأجهزة القابلة للطي 📱" : "Foldable Dual-Pane View enabled", "info");
+            } else {
+                if (container) container.classList.remove('dual-pane-active');
+                if (btn) {
+                    btn.style.background = 'rgba(255,255,255,0.06)';
+                    btn.style.borderColor = 'rgba(255,255,255,0.18)';
+                    btn.style.color = '#f1f5f9';
+                }
+                if (txt) txt.innerText = app.language === 'ar' ? "شاشة مزدوجة" : "Dual Screen";
+                app.switchEntrySubtab(app.entrySubtab || 'scan');
+            }
+        },
+
+        prepareFreshDefaultBatch: () => {
+            // إذا كانت الدفعة الحالية بها أصناف مسجلة، نقوم بحفظها ونبدأ دفعة جديدة فارغة بتاريخ ووقت الدخول
+            if (app.entryRecords && app.entryRecords.length > 0) {
+                app.syncActiveBatchToStorage();
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('ar-EG');
+                const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                const newId = Date.now();
+                const newBatch = {
+                    id: newId,
+                    name: `دفعة جديدة (${dateStr} - ${timeStr})`,
+                    date: `${dateStr} ${timeStr}`,
+                    timestamp: newId,
+                    count: 0,
+                    totalUnits: 0,
+                    totalVal: "0.00",
+                    records: []
+                };
+                let history = app.loadBatchesHistory();
+                history.unshift(newBatch);
+                app.saveBatchesHistory(history);
+
+                app.activeBatchId = newId;
+                app.activeBatchName = newBatch.name;
+                app.entryRecords = [];
+                try {
+                    localStorage.setItem('expiry_active_batch_id', newId);
+                    localStorage.setItem('expiry_recorded_items', JSON.stringify([]));
+                } catch(e) {}
+                app.updateActiveBatchBanner();
+                app.updateEntryBadgeCounter();
+                app.renderEntryTable();
+            }
+        },
+
         switchEntrySubtab: (tab) => {
             app.entrySubtab = tab;
             const secScan = document.getElementById('entrySectionScan');
             const secPreview = document.getElementById('entrySectionPreview');
             const btnScan = document.getElementById('subtabScanBtn');
             const btnPreview = document.getElementById('subtabPreviewBtn');
+
+            const isDual = (document.getElementById('viewExpiryEntry')?.classList.contains('dual-pane-active')) || (window.innerWidth >= 650);
+            if (isDual) {
+                if (secScan) secScan.style.display = 'block';
+                if (secPreview) secPreview.style.display = 'block';
+                if (btnScan) btnScan.classList.add('active');
+                if (btnPreview) btnPreview.classList.add('active');
+                app.renderEntryTable();
+                return;
+            }
 
             if (tab === 'preview') {
                 if (secScan) secScan.style.display = 'none';
@@ -7220,23 +7361,21 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             const savedBatchId = parseInt(localStorage.getItem('expiry_active_batch_id') || '0', 10);
             let activeBatch = history.find(b => b.id === savedBatchId);
 
-            if (!activeBatch && history.length > 0) {
-                activeBatch = history[0];
-            }
-
-            if (!activeBatch) {
-                const legacy = (app.entryRecords && app.entryRecords.length > 0) ? app.entryRecords : [];
-                const totalUnits = legacy.reduce((sum, r) => sum + parseInt(r.Quantity || 1, 10), 0);
-                const totalVal = legacy.reduce((sum, r) => sum + parseFloat(r['Total Value'] || 0), 0).toFixed(2);
+            // إذا كانت الدفعة السابقة تحتوي على أصناف، نتركها محفوظة في السجل ونبدأ بدفعة نظيفة فاضية افتراضياً
+            if (!activeBatch || (activeBatch.records && activeBatch.records.length > 0)) {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('ar-EG');
+                const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                const newId = Date.now();
                 activeBatch = {
-                    id: Date.now(),
-                    name: "دفعة عامة (الافتراضية)",
-                    date: `${new Date().toLocaleDateString('ar-EG')} ${new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`,
-                    timestamp: Date.now(),
-                    count: legacy.length,
-                    totalUnits: totalUnits,
-                    totalVal: totalVal,
-                    records: JSON.parse(JSON.stringify(legacy))
+                    id: newId,
+                    name: `دفعة جديدة (${dateStr} - ${timeStr})`,
+                    date: `${dateStr} ${timeStr}`,
+                    timestamp: newId,
+                    count: 0,
+                    totalUnits: 0,
+                    totalVal: "0.00",
+                    records: []
                 };
                 history.unshift(activeBatch);
                 app.saveBatchesHistory(history);
@@ -8437,9 +8576,9 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 logoutEl.innerHTML = `<span style="font-size:16px;">🚪</span>`;
             }
             if (app.userId) {
-                const userPrefix = app.language === 'ar' ? "👤 المستخدم: " : "👤 User: ";
                 const badgeEl = document.getElementById('userBadge');
-                if (badgeEl) badgeEl.innerText = userPrefix + app.userId;
+                const cleanId = String(app.userId).replace(/^User\s*/i, '');
+                if (badgeEl) badgeEl.innerText = `👤 ${cleanId}`;
             }
             
             setText('btnExpiryEntryText', app.mainView === 'entry' ? (t.tabCheck || "Expiry Check") : (t.tabEntry || "Expiry Entry"));
