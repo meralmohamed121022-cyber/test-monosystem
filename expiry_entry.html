@@ -1903,6 +1903,7 @@ CREATE POLICY "Allow public insert and select" ON expiry_entries FOR ALL USING (
                 if (tab === 'entry') {
                     document.getElementById('tabEntryBtn').classList.add('active');
                     document.getElementById('tabEntry').classList.add('active');
+                    if (typeof app.prepareFreshDefaultBatch === 'function') app.prepareFreshDefaultBatch();
                     // الكاميرا تنشط فوراً وتلقائياً عند الدخول لشاشة إدخال الإكسباير
                     setTimeout(() => {
                         app.startScanner();
@@ -1913,6 +1914,39 @@ CREATE POLICY "Allow public insert and select" ON expiry_entries FOR ALL USING (
                     app.renderTable();
                     // إيقاف الكاميرا أثناء معاينة السجل لتوفير الموارد
                     app.stopScanner();
+                }
+            },
+
+            prepareFreshDefaultBatch: () => {
+                if (app.records && app.records.length > 0) {
+                    if (typeof app.syncActiveBatchToStorage === 'function') app.syncActiveBatchToStorage();
+                    const now = new Date();
+                    const dateStr = now.toLocaleDateString('ar-EG');
+                    const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                    const newId = Date.now();
+                    const newBatch = {
+                        id: newId,
+                        name: `دفعة جديدة (${dateStr} - ${timeStr})`,
+                        date: `${dateStr} ${timeStr}`,
+                        timestamp: newId,
+                        count: 0,
+                        totalUnits: 0,
+                        totalVal: "0.00",
+                        records: []
+                    };
+                    let history = app.loadBatchesHistory();
+                    history.unshift(newBatch);
+                    app.saveBatchesHistory(history);
+
+                    app.activeBatchId = newId;
+                    app.activeBatchName = newBatch.name;
+                    app.records = [];
+                    try {
+                        localStorage.setItem('expiry_active_batch_id', newId);
+                        localStorage.setItem('expiry_recorded_items', JSON.stringify([]));
+                    } catch(e) {}
+                    if (typeof app.updateActiveBatchBanner === 'function') app.updateActiveBatchBanner();
+                    app.renderTable();
                 }
             },
 
@@ -4137,23 +4171,21 @@ CREATE POLICY "Allow public insert and select" ON expiry_entries FOR ALL USING (
                 const savedBatchId = parseInt(localStorage.getItem('expiry_active_batch_id') || '0', 10);
                 let activeBatch = history.find(b => b.id === savedBatchId);
 
-                if (!activeBatch && history.length > 0) {
-                    activeBatch = history[0];
-                }
-
-                if (!activeBatch) {
-                    const legacy = (app.records && app.records.length > 0) ? app.records : [];
-                    const totalUnits = legacy.reduce((sum, r) => sum + parseInt(r.Quantity || 1, 10), 0);
-                    const totalVal = legacy.reduce((sum, r) => sum + parseFloat(r['Total Value'] || 0), 0).toFixed(2);
+                // إذا كانت الدفعة السابقة تحتوي على أصناف، نتركها محفوظة في السجل ونبدأ بدفعة نظيفة فاضية افتراضياً
+                if (!activeBatch || (activeBatch.records && activeBatch.records.length > 0)) {
+                    const now = new Date();
+                    const dateStr = now.toLocaleDateString('ar-EG');
+                    const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                    const newId = Date.now();
                     activeBatch = {
-                        id: Date.now(),
-                        name: "دفعة عامة (الافتراضية)",
-                        date: `${new Date().toLocaleDateString('ar-EG')} ${new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`,
-                        timestamp: Date.now(),
-                        count: legacy.length,
-                        totalUnits: totalUnits,
-                        totalVal: totalVal,
-                        records: JSON.parse(JSON.stringify(legacy))
+                        id: newId,
+                        name: `دفعة جديدة (${dateStr} - ${timeStr})`,
+                        date: `${dateStr} ${timeStr}`,
+                        timestamp: newId,
+                        count: 0,
+                        totalUnits: 0,
+                        totalVal: "0.00",
+                        records: []
                     };
                     history.unshift(activeBatch);
                     app.saveBatchesHistory(history);
