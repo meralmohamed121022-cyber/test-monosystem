@@ -3591,19 +3591,37 @@ init: async () => {
         }, { rootMargin: "200px" });
     }
 
-    // 5. محاولة تسجيل الدخول التلقائي إن وجد
-    const localId = localStorage.getItem('inv_uid');
+    // 5. الاستماع لرسائل postMessage عند الفتح داخل iframe من MONO SYSTEM
+    window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'LOGIN_DATA' && e.data.ph) {
+            const ph = String(e.data.ph).trim();
+            const inputField = document.getElementById('userId');
+            if (inputField) inputField.value = ph;
+            if (app.userId !== ph) {
+                app.login();
+            }
+        }
+    });
+
+    // 6. استخراج رقم الصيدلية والمستخدم من رابط الـ URL أو التخزين المحلي
+    const urlParams = new URLSearchParams(window.location.search);
+    const phFromUrl = urlParams.get('ph') || urlParams.get('userId');
+    const inIframe = window.self !== window.top;
+    const localId = phFromUrl || localStorage.getItem('inv_uid') || localStorage.getItem('pharmacy_number') || localStorage.getItem('last_user_id') || (inIframe ? '66' : '');
+
     if (localId && localId !== 'null') {
         const inputField = document.getElementById('userId');
         if (inputField) inputField.value = localId;
-        
-        // انتظار تجهيز قاعدة البيانات ثم الدخول
-        dbPromise.finally(() => {
-            app.login();
-        });
+        // الدخول الفوري دون إبطاء أو حجب الصفحة
+        app.login();
+    } else if (inIframe) {
+        // في حال كان داخل الإطار دون معرّف محدد، افتح فوراً بصيدلية 66
+        const inputField = document.getElementById('userId');
+        if (inputField) inputField.value = '66';
+        app.login();
     }
     
-    console.log("Expiry System Initialized. Waiting for messages...");
+    console.log("Expiry System Initialized.");
 },
 // 🔴 ضع دالة notify الجديدة هنا بين الدوال
 notify: (msg, type = 'success') => {
@@ -3651,31 +3669,55 @@ notify: (msg, type = 'success') => {
 },
 
 login: async () => {
-            const id = String(document.getElementById('userId').value || '').trim();
-            if (!id) return app.notify("Enter user ID", "error");
-            try {
-                const res = await fetch(`${WORKER_URL}/api/login`, { 
-                    method: 'POST', 
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId: id }) 
-                });
-                const json = await res.json();
-                if (!res.ok || !json.success) throw new Error(json.error || "Login failed");
-                
-                app.userId = id;
+    const inputField = document.getElementById('userId');
+    const id = String(inputField ? inputField.value : '').trim();
+    if (!id) return app.notify("Enter user ID", "error");
 
-                // 🔐 التعديل هنا: الحفظ في الـ LocalStorage للمنصتين لضمان التزامن الكامل
-                localStorage.setItem('inv_uid', id);          // خاص بصفحة الـ Expiry
-                localStorage.setItem('pharmacy_number', id); // خاص بالمنصة الرئيسية (MONO SYSTEM)
+    const showAppUI = (displayName) => {
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen) loginScreen.style.display = 'none';
 
-                document.getElementById('loginScreen').style.display = 'none';
-                const cleanDisplayId = String(json.displayName || id).replace(/^User\s*/i, '');
-                document.getElementById('userBadge').innerText = `👤 ${cleanDisplayId}`;
-                app.load();
-                app.loadCloudEntryRecords();
-                app.loadCloudBatchesHistory();
-            } catch (e) { app.notify(e.message || "Login failed", "error"); }
-        },
+        const mainApp = document.getElementById('mainApp');
+        if (mainApp) mainApp.style.display = 'block';
+
+        const cleanDisplayId = String(displayName || id).replace(/^User\s*/i, '');
+        const userBadge = document.getElementById('userBadge');
+        if (userBadge) userBadge.innerText = `👤 ${cleanDisplayId}`;
+    };
+
+    try {
+        const res = await fetch(`${WORKER_URL}/api/login`, { 
+            method: 'POST', 
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: id }) 
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) throw new Error(json.error || "Login failed");
+        
+        app.userId = id;
+
+        // 🔐 الحفظ في الـ LocalStorage للمنصتين لضمان التزامن الكامل
+        localStorage.setItem('inv_uid', id);          // خاص بصفحة الـ Expiry
+        localStorage.setItem('pharmacy_number', id); // خاص بالمنصة الرئيسية (MONO SYSTEM)
+
+        showAppUI(json.displayName || id);
+        app.load();
+        app.loadCloudEntryRecords();
+        app.loadCloudBatchesHistory();
+    } catch (e) {
+        console.warn("Server login notice, falling back to local session:", e);
+        // Fallback: في حال انقطاع النت أو تعذر السيرفر، يتم إظهار الواجهة فوراً
+        app.userId = id;
+        localStorage.setItem('inv_uid', id);
+        localStorage.setItem('pharmacy_number', id);
+
+        showAppUI(id);
+        app.load();
+        app.loadCloudEntryRecords();
+        app.loadCloudBatchesHistory();
+        app.notify(e.message || "يعمل في وضع الكاش / عدم الاتصال", "warning");
+    }
+},
               load: async () => {
             try {
                 const res = await fetch(`${WORKER_URL}/api/inventory/load?userId=${app.userId}`);
