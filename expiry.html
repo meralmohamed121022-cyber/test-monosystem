@@ -366,12 +366,92 @@
             }
         }
 
-        /* --- FOLDABLE & DUAL PANE SPLIT VIEW (قصاد بعض - عمودين متجاورين) --- */
+        /* --- FOLDABLE & DUAL PANE SPLIT VIEW (قصاد بعض - عمودين متجاورين مع أنيميشن الفولد) --- */
         #entryDualWrapper,
         .entry-dual-wrapper {
             width: 100%;
             display: block;
-            transition: all 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* أنيميشن حركة فتح الفولد للشاشتين كأنها صفحة كتاب تنفتح بسلاسة ثلاثية الأبعاد (Tailwind-like 3D Fold Animation) */
+        @keyframes foldUnfoldLeftPane {
+            0% {
+                opacity: 0;
+                transform: perspective(1400px) rotateY(-28deg) translateZ(-25px) scale(0.94);
+                transform-origin: 100% 50%;
+                filter: blur(4px) brightness(0.85);
+                box-shadow: inset -20px 0 30px -10px rgba(0, 0, 0, 0.7);
+            }
+            45% {
+                opacity: 0.9;
+                filter: blur(1px) brightness(0.95);
+                box-shadow: inset -10px 0 20px -5px rgba(0, 0, 0, 0.4);
+            }
+            75% {
+                transform: perspective(1400px) rotateY(3deg) scale(1.008);
+                filter: blur(0) brightness(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: perspective(1400px) rotateY(0deg) translateZ(0) scale(1);
+                transform-origin: 100% 50%;
+                filter: blur(0) brightness(1);
+                box-shadow: none;
+            }
+        }
+
+        @keyframes foldUnfoldRightPane {
+            0% {
+                opacity: 0.8;
+                transform: perspective(1400px) rotateY(12deg) scale(0.97);
+                transform-origin: 0% 50%;
+            }
+            100% {
+                opacity: 1;
+                transform: perspective(1400px) rotateY(0deg) scale(1);
+                transform-origin: 0% 50%;
+            }
+        }
+
+        /* أنيميشن وتوهج التركيز الفوري على الصنف المضاف حديثاً */
+        @keyframes newlyScannedItemPulse {
+            0% {
+                border-color: #10b981 !important;
+                box-shadow: 0 0 25px rgba(16, 185, 129, 0.85), inset 0 0 15px rgba(16, 185, 129, 0.25) !important;
+                transform: scale(1.025);
+            }
+            35% {
+                border-color: #f59e0b !important;
+                box-shadow: 0 0 30px rgba(245, 158, 11, 0.75), inset 0 0 15px rgba(245, 158, 11, 0.2) !important;
+                transform: scale(1.015);
+            }
+            100% {
+                border-color: rgba(245, 158, 11, 0.35) !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+                transform: scale(1);
+            }
+        }
+
+        .record-card-newly-added {
+            animation: newlyScannedItemPulse 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+            border: 2px solid #10b981 !important;
+            position: relative;
+        }
+
+        .record-card-newly-added::before {
+            content: '✨ مضاف حديثاً (الآن)';
+            position: absolute;
+            top: -10px;
+            right: 14px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+            z-index: 10;
         }
 
         /* 1. عندما يتم تفعيل وضع الشاشتين عبر الكلاس */
@@ -380,33 +460,50 @@
         .dual-pane-active .entry-dual-wrapper {
             display: grid !important;
             grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
-            gap: 18px !important;
-            align-items: start !important;
+            gap: 16px !important;
+            align-items: stretch !important;
             width: 100% !important;
+            height: calc(100vh - 110px) !important;
+            max-height: calc(100vh - 110px) !important;
+            overflow: hidden !important;
+            perspective: 1500px;
         }
         .dual-pane-active #entryDualWrapper #entrySectionScan,
-        .dual-pane-active #entryDualWrapper #entrySectionPreview,
-        #viewExpiryEntry.dual-pane-active #entrySectionScan,
-        #viewExpiryEntry.dual-pane-active #entrySectionPreview {
-            display: block !important;
+        #viewExpiryEntry.dual-pane-active #entrySectionScan {
+            display: flex !important;
+            flex-direction: column !important;
             width: 100% !important;
             max-width: 100% !important;
             min-width: 0 !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding-inline-end: 6px;
+            animation: foldUnfoldRightPane 0.4s ease-out forwards !important;
         }
         .dual-pane-active #entryDualWrapper #entrySectionPreview,
         #viewExpiryEntry.dual-pane-active #entrySectionPreview {
-            position: sticky;
-            top: 10px;
-            max-height: calc(100vh - 110px);
-            overflow-y: auto;
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
-            padding-inline-end: 4px;
+            overscroll-behavior: contain;
+            padding-inline-end: 6px;
+            animation: foldUnfoldLeftPane 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+            transform-origin: 100% 50% !important;
         }
         .dual-pane-active #entrySectionScan .entry-grid-layout,
         #viewExpiryEntry.dual-pane-active #entrySectionScan .entry-grid-layout {
             display: flex !important;
             flex-direction: column !important;
-            gap: 14px !important;
+            gap: 12px !important;
         }
 
         /* 2. تفعيل تلقائي للشاشات المزدوجة والأجهزة القابلة للطي (Foldable Unfolded) */
@@ -415,38 +512,105 @@
             .entry-dual-wrapper {
                 display: grid !important;
                 grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
-                gap: 18px !important;
-                align-items: start !important;
+                gap: 16px !important;
+                align-items: stretch !important;
                 width: 100% !important;
+                height: calc(100vh - 110px) !important;
+                max-height: calc(100vh - 110px) !important;
+                overflow: hidden !important;
+                perspective: 1500px;
             }
             #entryDualWrapper #entrySectionScan,
-            #entryDualWrapper #entrySectionPreview,
-            .entry-dual-wrapper #entrySectionScan,
-            .entry-dual-wrapper #entrySectionPreview {
-                display: block !important;
+            .entry-dual-wrapper #entrySectionScan {
+                display: flex !important;
+                flex-direction: column !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 min-width: 0 !important;
+                height: 100% !important;
+                max-height: 100% !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+                padding-inline-end: 6px;
+                animation: foldUnfoldRightPane 0.4s ease-out forwards;
             }
             #entryDualWrapper #entrySectionPreview,
             .entry-dual-wrapper #entrySectionPreview {
-                position: sticky;
-                top: 10px;
-                max-height: calc(100vh - 110px);
-                overflow-y: auto;
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                height: 100% !important;
+                max-height: 100% !important;
+                overflow-y: auto !important;
                 -webkit-overflow-scrolling: touch;
-                padding-inline-end: 4px;
+                overscroll-behavior: contain;
+                padding-inline-end: 6px;
+                animation: foldUnfoldLeftPane 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                transform-origin: 100% 50%;
             }
             #entryDualWrapper #entrySectionScan .entry-grid-layout,
             .entry-dual-wrapper #entrySectionScan .entry-grid-layout {
                 display: flex !important;
                 flex-direction: column !important;
-                gap: 14px !important;
+                gap: 12px !important;
             }
             .scanner-entry-box {
-                height: 220px !important;
-                min-height: 180px !important;
-                max-height: 240px !important;
+                height: 200px !important;
+                min-height: 160px !important;
+                max-height: 220px !important;
+            }
+            /* تنسيق مضغوط وذكي للوحة العرض اليسرى في وضع الفولد لتبدأ الأصناف من أعلى الشاشة فوراً */
+            .dual-pane-active #entrySectionPreview .active-batch-banner,
+            #entryDualWrapper #entrySectionPreview .active-batch-banner {
+                display: none !important; /* إخفاء البانر المكرر لتوفير المساحة الرأسية وظهور الأصناف فوراً */
+            }
+            .dual-pane-active #entrySectionPreview .preview-kpis-grid,
+            #entryDualWrapper #entrySectionPreview .preview-kpis-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            .dual-pane-active #entrySectionPreview .preview-kpi-card,
+            #entryDualWrapper #entrySectionPreview .preview-kpi-card {
+                padding: 6px 10px !important;
+                flex: 1 !important;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                border-radius: 10px !important;
+            }
+            .dual-pane-active #entrySectionPreview .preview-kpi-card .stat-value,
+            #entryDualWrapper #entrySectionPreview .preview-kpi-card .stat-value {
+                font-size: 1.15rem !important;
+                line-height: 1 !important;
+                margin: 0 !important;
+            }
+            .dual-pane-active #entrySectionPreview .preview-kpi-card .stat-label,
+            #entryDualWrapper #entrySectionPreview .preview-kpi-card .stat-label {
+                font-size: 10px !important;
+                margin: 0 !important;
+                color: #94a3b8 !important;
+            }
+            .dual-pane-active #entrySectionPreview .preview-action-buttons,
+            #entryDualWrapper #entrySectionPreview .preview-action-buttons {
+                display: flex !important;
+                gap: 6px !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                padding-bottom: 4px !important;
+                margin-bottom: 8px !important;
+            }
+            .dual-pane-active #entrySectionPreview .preview-action-buttons .btn,
+            #entryDualWrapper #entrySectionPreview .preview-action-buttons .btn {
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+                min-width: unset !important;
+                white-space: nowrap !important;
             }
         }
 
@@ -2907,17 +3071,17 @@ header {
             </div>
 
             <!-- KPIS -->
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom:20px;">
-                <div class="stat-card" style="padding:16px;">
-                    <span class="stat-value" style="color:var(--primary); font-size:1.8rem;" id="kpiEntryItems">0</span>
+            <div class="preview-kpis-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:14px;">
+                <div class="stat-card preview-kpi-card" style="padding:14px;">
+                    <span class="stat-value" style="color:var(--primary); font-size:1.6rem;" id="kpiEntryItems">0</span>
                     <span class="stat-label" id="lblKpiItems">عدد الأصناف المسجلة</span>
                 </div>
-                <div class="stat-card" style="padding:16px;">
-                    <span class="stat-value" style="color:var(--success); font-size:1.8rem;" id="kpiEntryQty">0</span>
+                <div class="stat-card preview-kpi-card" style="padding:14px;">
+                    <span class="stat-value" style="color:var(--success); font-size:1.6rem;" id="kpiEntryQty">0</span>
                     <span class="stat-label" id="lblKpiQty">إجمالي القطع</span>
                 </div>
-                <div class="stat-card" style="padding:16px;">
-                    <span class="stat-value" style="color:#60a5fa; font-size:1.8rem;" id="kpiEntryVal">0.00</span>
+                <div class="stat-card preview-kpi-card" style="padding:14px;">
+                    <span class="stat-value" style="color:#60a5fa; font-size:1.6rem;" id="kpiEntryVal">0.00</span>
                     <span class="stat-label" id="lblKpiVal">إجمالي القيمة</span>
                 </div>
             </div>
@@ -2937,7 +3101,7 @@ header {
                         <span id="lblToggleEntryMode">📱 كروت</span>
                     </button>
                 </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%; margin-top:4px;">
+                <div class="preview-action-buttons" style="display:flex; gap:8px; flex-wrap:wrap; width:100%; margin-top:4px;">
                     <button class="btn" onclick="app.startNewBatch()" style="flex:1.2; min-width:180px; background:linear-gradient(135deg, #8b5cf6, #6366f1); color:#fff; font-weight:800; box-shadow:0 4px 14px rgba(139,92,246,0.4); border-radius:12px; padding:10px 14px;" title="إنشاء دفعة جرد جديدة وتسميتها">
                         <span>✨ جرد دفعة جديدة (New Start)</span>
                     </button>
@@ -5284,8 +5448,10 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 if (btnHeader) btnHeader.innerText = app.language === 'ar' ? "فحص الإكسباير" : "Expiry Check";
                 if (iconHeader) iconHeader.innerText = "📋";
                 app.initEntrySystem();
-                app.prepareFreshDefaultBatch();
-                app.loadCloudEntryRecords();
+                if (!app.activeBatchId) {
+                    app.initActiveBatch();
+                }
+                app.updateActiveBatchBanner();
                 app.loadCloudBatchesHistory();
                 app.renderEntryTable();
                 app.checkAndAutoEnableDualPane();
@@ -5335,7 +5501,13 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             const btnPreview = document.getElementById('subtabPreviewBtn');
 
             if (shouldBeDual) {
+                const wasNotDual = !container.classList.contains('dual-pane-active');
                 container.classList.add('dual-pane-active');
+                if (wasNotDual && secPreview) {
+                    secPreview.style.animation = 'none';
+                    void secPreview.offsetWidth; // trigger reflow
+                    secPreview.style.animation = '';
+                }
                 if (btn) {
                     btn.style.background = 'rgba(16,185,129,0.25)';
                     btn.style.borderColor = '#10b981';
@@ -6917,6 +7089,8 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
 
             const newRec = {
                 id: Date.now(),
+                batchId: app.activeBatchId || (app.activeBatch ? app.activeBatch.id : null),
+                batchName: app.activeBatchName || 'دفعة عامة',
                 Code: code,
                 Description: description,
                 'Item Class': itemClass,
@@ -6939,6 +7113,10 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             }
 
             app.updateEntryBadgeCounter();
+
+            // 🚀 إعادة رسم الجدول والكروت فوراً والتركيز على الصنف المضاف حديثاً
+            app.renderEntryTable(newRec.id);
+
             const msg = app.language === 'ar' ? `تم حفظ الصنف (${code}) بنجاح!` : `Item (${code}) saved successfully!`;
             app.notify(msg, "success");
 
@@ -6986,14 +7164,20 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             // إعادة تفعيل الماسح بعد الانتهاء أو الإلغاء بمهلة هادئة
             app.resumeScanning(800);
 
-            // إجبار الشاشة للرجوع للأعلى مباشرة لمواجهة الكاميرا والماسح
+            // إجبار شاشة الإدخال للرجوع للأعلى بهدوء دون التأثير على قائمة الأصناف في وضع الشاشتين
             setTimeout(() => {
                 try {
-                    const scannerEl = document.getElementById('scannerEntryBox') || document.querySelector('.scanner-card-parent');
-                    if (scannerEl) {
-                        scannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const isDual = app.isDualPane || app.isDualScreenDetected() || (document.getElementById('viewExpiryEntry')?.classList.contains('dual-pane-active'));
+                    if (isDual) {
+                        const secScan = document.getElementById('entrySectionScan');
+                        if (secScan) secScan.scrollTop = 0;
                     } else {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        const scannerEl = document.getElementById('scannerEntryBox') || document.querySelector('.scanner-card-parent');
+                        if (scannerEl) {
+                            scannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        } else {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
                     }
                 } catch(e) {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -7020,7 +7204,7 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             }
         },
 
-        renderEntryTable: () => {
+        renderEntryTable: (highlightId = null) => {
             const tbody = document.getElementById('tbodyEntryRecords');
             const emptyState = document.getElementById('emptyEntryState');
             if (!tbody) return;
@@ -7078,9 +7262,15 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 }
 
                 const isUnreg = !masterItem && !mapEntry && (String(rec.Description || '').startsWith('صنف #') || String(rec.Description || '').startsWith('Item #') || (!dbMap || !dbMap.has(resolvedCode)));
+                const isNew = highlightId && String(rec.id) === String(highlightId);
 
                 const tr = document.createElement('tr');
+                tr.id = `entry-tr-${rec.id}`;
                 tr.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                if (isNew) {
+                    tr.classList.add('record-card-newly-added');
+                }
+
                 let imgUrl = `https://placehold.co/80x80/1e293b/f59e0b?text=${rec.Code}`;
                 if (rec.image_url && String(rec.image_url).startsWith('http')) {
                     imgUrl = `${WORKER_URL}/img?src=${encodeURIComponent(rec.image_url.trim())}`;
@@ -7148,9 +7338,15 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                     }
 
                     const isUnreg = !masterItem && !mapEntry && (String(rec.Description || '').startsWith('صنف #') || String(rec.Description || '').startsWith('Item #') || (!dbMap || !dbMap.has(resolvedCode)));
+                    const isNew = highlightId && String(rec.id) === String(highlightId);
 
                     return `
-                        <div style="background:rgba(30,41,59,0.75); border:1.5px solid rgba(245,158,11,0.35); border-radius:16px; padding:14px; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+                        <div id="entry-card-${rec.id}" class="record-item-card ${isNew ? 'record-card-newly-added' : ''}" style="background:rgba(30,41,59,0.75); border:1.5px solid ${isNew ? '#10b981' : 'rgba(245,158,11,0.35)'}; border-radius:16px; padding:14px; box-shadow:0 4px 15px rgba(0,0,0,0.3); transition:all 0.3s ease; position:relative;">
+                            ${isNew ? `
+                                <div style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-size:11px; font-weight:800; padding:3px 10px; border-radius:8px; margin-bottom:10px; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(16,185,129,0.4);">
+                                    <span>✨ مضاف حديثاً (الآن)</span>
+                                </div>
+                            ` : ''}
                             <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px;">
                                 <div class="product-thumb-zoom" style="width:52px; height:52px; min-width:52px; margin:0;" onclick="app.openEntryZoomModal('${imgUrl}', '${rec.Code}', '${rec.Description.replace(/'/g, "\\'")}')">
                                     <img src="${imgUrl}" alt="Thumb" style="width:100%; height:100%; object-fit:contain;">
@@ -7224,6 +7420,16 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             if (kpiQty) kpiQty.innerText = totalUnits;
             const kpiVal = document.getElementById('kpiEntryVal');
             if (kpiVal) kpiVal.innerText = totalSAR.toFixed(2);
+
+            // 🎯 فوكس وتمرير سلس فوري للصنف المضاف حديثاً على اللوحة اليسرى
+            if (highlightId) {
+                setTimeout(() => {
+                    const targetEl = document.getElementById(`entry-card-${highlightId}`) || document.getElementById(`entry-tr-${highlightId}`);
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 60);
+            }
         },
 
 
@@ -7479,24 +7685,28 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             const savedBatchId = parseInt(localStorage.getItem('expiry_active_batch_id') || '0', 10);
             let activeBatch = history.find(b => b.id === savedBatchId);
 
-            // إذا كانت الدفعة السابقة تحتوي على أصناف، نتركها محفوظة في السجل ونبدأ بدفعة نظيفة فاضية افتراضياً
-            if (!activeBatch || (activeBatch.records && activeBatch.records.length > 0)) {
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('ar-EG');
-                const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                const newId = Date.now();
-                activeBatch = {
-                    id: newId,
-                    name: `دفعة جديدة (${dateStr} - ${timeStr})`,
-                    date: `${dateStr} ${timeStr}`,
-                    timestamp: newId,
-                    count: 0,
-                    totalUnits: 0,
-                    totalVal: "0.00",
-                    records: []
-                };
-                history.unshift(activeBatch);
-                app.saveBatchesHistory(history);
+            // إذا لم نجد دفعة بالمعرف المحفوظ، نأخذ أول دفعة من السجل أو ننشئ الدفعة العامة الابتدائية
+            if (!activeBatch) {
+                if (history.length > 0) {
+                    activeBatch = history[0];
+                } else {
+                    const now = new Date();
+                    const dateStr = now.toLocaleDateString('ar-EG');
+                    const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                    const newId = Date.now();
+                    activeBatch = {
+                        id: newId,
+                        name: `دفعة عامة`,
+                        date: `${dateStr} ${timeStr}`,
+                        timestamp: newId,
+                        count: 0,
+                        totalUnits: 0,
+                        totalVal: "0.00",
+                        records: []
+                    };
+                    history.unshift(activeBatch);
+                    app.saveBatchesHistory(history);
+                }
             }
 
             app.activeBatchId = activeBatch.id;
@@ -7673,7 +7883,6 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 try {
                     localStorage.setItem('expiry_recorded_items', JSON.stringify([]));
                 } catch(e) {}
-                app.clearAllEntryFromCloud();
 
                 app.updateActiveBatchBanner();
                 app.updateEntryBadgeCounter();
@@ -8521,11 +8730,22 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                                     return;
                                 }
 
+                                // 🔒 عزْل تام ودقيق للدفعات (Strict Batch Isolation):
+                                // إذا كان الصنف تابعاً لدفعة أخرى غير الدفعة النشطة المفتوحة حالياً، نمنع دمجه نهائياً
+                                if (app.activeBatchId && e.batchId && String(e.batchId) !== String(app.activeBatchId)) {
+                                    return;
+                                }
+                                // إذا لم يكن لدى الصنف معرف دفعة (سجل قديم) والدفعة النشطة الحالية ليست الدفعة العامة
+                                if (!e.batchId && app.activeBatchName !== 'دفعة عامة' && app.activeBatchId) {
+                                    return; // منع تلويث الدفعة الجديدة مثل "حسن" بأصناف سابقة
+                                }
+
                                 validCloudKeys.add(key);
                                 if (idKey) validCloudKeys.add(idKey);
 
                                 if (!existingKeys.has(key)) {
                                     e.synced = true;
+                                    e.batchId = e.batchId || app.activeBatchId;
                                     app.entryRecords.push(e);
                                     existingKeys.add(key);
                                     hasChanges = true;
@@ -8573,6 +8793,11 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
             const cleanId = rawId.replace(/^User\s*/i, '');
             const targetIds = Array.from(new Set([cleanId, `User ${cleanId}`, rawId, '66', 'User 66'])).filter(Boolean);
 
+            if (!rec.batchId && app.activeBatchId) {
+                rec.batchId = app.activeBatchId;
+                rec.batchName = app.activeBatchName || 'دفعة عامة';
+            }
+
             try {
                 await Promise.all(targetIds.map(uid =>
                     fetch(`${WORKER_URL}/api/expiry-entries/sync`, {
@@ -8599,6 +8824,13 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 app.notify(app.language === 'ar' ? "جميع الأصناف متزامنة بالفعل ✓" : "All records are already synced ✓", "success");
                 return;
             }
+
+            pending.forEach(r => {
+                if (!r.batchId && app.activeBatchId) {
+                    r.batchId = app.activeBatchId;
+                    r.batchName = app.activeBatchName || 'دفعة عامة';
+                }
+            });
 
             try {
                 await Promise.all(targetIds.map(uid =>
