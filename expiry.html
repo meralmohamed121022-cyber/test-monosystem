@@ -1992,49 +1992,11 @@ header {
             </div>
         </div>
 
-        <!-- خيارات الحفظ والتحديث (GitHub أو محلي) -->
-        <div style="background:linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)); border:1.5px solid rgba(245,158,11,0.4); border-radius:16px; padding:14px; margin-bottom:16px; text-align:start;">
-            <div style="font-size:13.5px; font-weight:800; color:#fef08a; margin-bottom:8px;">🚀 خيارات تطبيق التحديث على الماستر:</div>
-            
-            <!-- خيار 1: GitHub Direct Sync -->
-            <div style="margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:700; color:#fff;">1. تحديث مباشر على مستودع GitHub (Automatic API Sync):</span>
-                    <span style="font-size:11px; color:#10b981; font-weight:700;">سحابي ☁️</span>
-                </div>
-                <div style="display:flex; gap:8px; margin-bottom:6px;">
-                    <input type="password" id="inputGithubPat" class="search-main" style="flex:1; padding:7px 10px; font-size:12px; font-family:monospace; background:#0f172a; border:1px solid rgba(255,255,255,0.2); border-radius:8px;" placeholder="أدخل GitHub Personal Access Token (PAT)...">
-                    <button type="button" class="btn btn-primary btn-sm" onclick="app.syncGtinsToGitHub()" style="padding:6px 14px; font-weight:800; font-size:12px; white-space:nowrap; background:linear-gradient(135deg, #8b5cf6, #6366f1);">
-                        🚀 رفع وتحديث GitHub
-                    </button>
-                </div>
-                <div style="font-size:10.5px; color:#94a3b8;">
-                    يقوم بتحديث ملفات الماستر في المستودع: <b>meralmohamed121022-cyber/updatedmaster</b> مباشرة.
-                </div>
-            </div>
-
-            <!-- خيار 2: التحديث المحلي للجهاز -->
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:700; color:#fff;">2. تطبيق على ملفات الماستر المحلية بجهازك (Local PC):</span>
-                    <span style="font-size:11px; color:#38bdf8; font-weight:700;">محلي 💻</span>
-                </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
-                    <button type="button" class="btn btn-ghost btn-sm" onclick="app.downloadCustomMappingsJson()" style="font-size:11.5px; padding:6px 12px; border:1px solid rgba(255,255,255,0.2);">
-                        📥 تنزيل ملف التعيينات JSON
-                    </button>
-                    <button type="button" class="btn btn-ghost btn-sm" onclick="app.copyLocalUpdateCommand()" style="font-size:11.5px; padding:6px 12px; border:1px solid rgba(255,255,255,0.2);">
-                        📋 نسخ أمر التشغيل المحلي (Python)
-                    </button>
-                </div>
-                <div style="font-size:10.5px; color:#94a3b8; margin-top:5px;">
-                    يمكنك أيضاً تشغيل الملف <b>update_master_local.bat</b> في المجلد ليحدث ملفات الماستر المحلية فوراً.
-                </div>
-            </div>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end;">
-            <button type="button" class="btn btn-ghost" onclick="app.closeModal('modalMasterGtinManager')" style="padding:8px 16px; font-size:12.5px;">إغلاق ✕</button>
+        <div style="display:flex; gap:10px; margin-top:16px;">
+            <button type="button" class="btn btn-ghost" onclick="app.closeModal('modalMasterGtinManager')" style="padding:11px 18px; font-size:13px; border-radius:12px;">إغلاق ✕</button>
+            <button type="button" class="btn btn-primary" onclick="app.syncGtinsToGitHub()" style="flex:1; padding:11px 18px; font-size:13.5px; font-weight:800; background:linear-gradient(135deg, #10b981, #059669); border-radius:12px; box-shadow:0 4px 14px rgba(16,185,129,0.35); display:flex; align-items:center; justify-content:center; gap:8px;">
+                <span>🔄 مزامنة وتحديث الماستر الآن</span>
+            </button>
         </div>
     </div>
 </div>
@@ -6081,10 +6043,6 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
 
         openMasterGtinManagerModal: () => {
             app.renderMasterGtinsList();
-            const patInp = document.getElementById('inputGithubPat');
-            if (patInp && !patInp.value) {
-                patInp.value = app.getGitHubToken();
-            }
             app.openModal('modalMasterGtinManager');
         },
 
@@ -6163,15 +6121,11 @@ update: async (code, date, actionStatus, isExplore = false, ownerId = null) => {
                 return;
             }
 
-            const patInp = document.getElementById('inputGithubPat');
-            let token = patInp ? patInp.value.trim() : '';
-            if (!token) token = app.getGitHubToken();
+            const token = app.getGitHubToken();
             if (!token) {
-                app.notify("⚠️ يرجى إدخال GitHub Personal Access Token (PAT) للمتابعة", "warning");
+                app.notify("⚠️ جاري الحفظ المحلي فقط", "warning");
                 return;
             }
-
-            localStorage.setItem('github_gtin_pat', token);
 
             const owner = 'meralmohamed121022-cyber';
             const reposToSync = ['updatedmaster', 'kaph'];
