@@ -5,6 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>MONO SYSTEM</title>
+    
+    <script>
+      // Anti-Debugging Protection
+      (function() {
+        // 1. Disable Right Click and Developer Keyboard Shortcuts
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'F12' || 
+             (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+             (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+            e.preventDefault();
+            return false;
+          }
+        });
+
+        // 2. DevTools detection disabled on mobile/production to prevent UI freeze and false positives
+        // const checkDevTools = function() { ... };
+        
+        // 3. Disable console
+        setTimeout(() => {
+            console.clear();
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            console.info = function() {};
+        }, 100);
+      })();
+    </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
@@ -265,6 +293,7 @@
             left: 0;
             width: 100%;
             height: 100%;
+            height: 100dvh;
             background: transparent;
             z-index: 21000;
             display: none;
@@ -272,6 +301,9 @@
             opacity: 0;
             transition: opacity 0.4s ease;
             padding-bottom: 70px;
+            box-sizing: border-box;
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
         #iframeContainer.show {
@@ -319,6 +351,8 @@
             background: white;
             overflow-x: hidden;
             display: block;
+            -webkit-overflow-scrolling: touch;
+            transform: translateZ(0);
         }
 
         #iframeError {
@@ -2366,7 +2400,7 @@ function openLink(url) {
 
     resetIframeLoader();
 
-    const phNo = localStorage.getItem('pharmacy_number');
+    const phNo = localStorage.getItem('pharmacy_number') || localStorage.getItem('inv_uid') || '66';
     const token = crypto.randomUUID();
     sessionStorage.setItem('_tk', token);
 
