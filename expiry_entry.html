@@ -140,25 +140,49 @@
         .header-actions-bar {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(15, 23, 42, 0.65);
-            padding: 6px 12px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-            flex-wrap: wrap;
+            gap: 8px;
+            background: transparent;
+            padding: 0;
+            border: none;
+            box-shadow: none;
         }
 
         .user-badge-box {
-            font-weight: 800;
-            color: #f8fafc;
-            padding: 8px 14px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            font-size: 12.5px;
+            font-weight: 700;
+            color: #e2e8f0;
+            padding: 5px 12px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: 20px;
+            font-size: 12px;
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.3px;
+        }
+
+        .header-icon-btn {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #f1f5f9;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            text-decoration: none;
+        }
+        .header-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
         }
 
         /* --- Buttons --- */
@@ -950,22 +974,22 @@
         /* --- Mobile Header Fix --- */
         @media (max-width: 768px) {
             header {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 12px !important;
-                padding: 12px 14px !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                gap: 8px !important;
+                padding: 10px 12px !important;
             }
             .header-actions-bar {
-                width: 100% !important;
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px !important;
-                padding: 8px !important;
+                width: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 6px !important;
+                padding: 0 !important;
             }
             .user-badge-box {
-                grid-column: span 2;
-                text-align: center;
-                padding: 7px 10px !important;
+                padding: 4px 8px !important;
+                font-size: 11px !important;
             }
             .grid-selector {
                 grid-template-columns: repeat(3, 1fr);
@@ -984,7 +1008,7 @@
             <div class="logo-area">
                 <a href="expiry.html" class="ec-badge" title="العودة لنظام فحص الإكسباير">EC</a>
                 <div class="header-title-box">
-                    <h1>إدخال الإكسباير • Expiry Entry</h1>
+                    <h1 style="font-size:16px;">إدخال الإكسباير • Expiry Entry</h1>
                     <div class="header-status-line">
                         <span id="syncStatus">Online • Ready</span>
                         <div style="display:inline-flex; align-items:center; position:relative; width:14px; height:14px;">
@@ -997,16 +1021,12 @@
             </div>
 
             <div class="header-actions-bar">
-                <button class="btn btn-warning" onclick="app.openMasterGtinManagerModal()" title="إدارة وتحديث باركودات الماستر" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:800; display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:12px; border:none; box-shadow:0 4px 12px rgba(245,158,11,0.35); cursor:pointer;">
+                <button class="btn btn-warning" onclick="app.openMasterGtinManagerModal()" title="إدارة وتحديث باركودات الماستر" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:800; display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:10px; font-size:12px; border:none; box-shadow:0 3px 10px rgba(245,158,11,0.3); cursor:pointer;">
                     <span>📦 تحديث الماستر</span>
                     <span class="badge" id="badgePendingGtins" style="background:rgba(0,0,0,0.3); padding:2px 7px; border-radius:10px; font-size:11px;">0</span>
                 </button>
-                <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; color:#10b981;">
-                    <span class="status-pulse-dot" style="background:#10b981;"></span>
-                    <span>مزامنة تلقائية ⚡</span>
-                </div>
-                <a href="expiry.html" class="btn btn-ghost" title="العودة لفحص الإكسباير">
-                    <span>↩ فحص الإكسباير</span>
+                <a href="expiry.html" class="header-icon-btn" title="العودة لفحص الإكسباير">
+                    <span>↩</span>
                 </a>
             </div>
         </header>
@@ -1407,34 +1427,45 @@
         <div class="modal-box" style="background:#1e293b; border:1.5px solid #8b5cf6; border-radius:24px; padding:22px; max-width:620px; width:95%; max-height:92vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.75); box-sizing:border-box;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
                 <h3 style="font-size:16px; font-weight:800; color:#fff; margin:0; display:flex; align-items:center; gap:8px;">
-                    <span>📦 إدارة وتحديث باركودات الماستر (Master GTINs)</span>
+                    <span>📦 باركودات الماستر المربوطة سحابياً (Master GTINs)</span>
                 </h3>
                 <button type="button" class="btn btn-ghost" style="padding:4px 8px; border-radius:50%; font-size:14px;" onclick="app.closeModal('modalMasterGtinManager')">✕</button>
             </div>
 
-            <!-- ملخص وإحصائيات -->
+            <!-- ملخص وإحصائيات المزامنة السحابية -->
             <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <div style="font-size:11px; color:#94a3b8;">الباركودات الجديدة المربوطة محلياً:</div>
-                    <div style="font-size:20px; font-weight:900; color:#38bdf8; font-family:monospace;" id="managerPendingGtinsCount">0</div>
+                    <div style="font-size:11.5px; color:#94a3b8; margin-bottom:2px;">إجمالي الباركودات المربوطة والمحفوظة:</div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="font-size:22px; font-weight:900; color:#38bdf8; font-family:monospace;" id="managerPendingGtinsCount">0</div>
+                        <span style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:2px 8px; border-radius:8px; font-weight:700;">☁️ محفوظة سحابياً</span>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm" onclick="app.openLinkGtinModal('', null)" style="font-size:12px; font-weight:800; padding:6px 12px;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="app.openLinkGtinModal('', null)" style="font-size:12px; font-weight:800; padding:7px 14px; border-radius:10px;">
                     ➕ إضافة باركود جديد
                 </button>
             </div>
 
-            <!-- قائمة الباركودات المضافة حديثاً -->
+            <!-- قائمة الباركودات المربوطة بالماستر -->
             <div style="margin-bottom:16px;">
-                <div style="font-size:12.5px; font-weight:700; color:#cbd5e1; margin-bottom:8px; text-align:start;">📋 قائمة الباركودات المعلقة للتحديث:</div>
-                <div id="managerGtinsList" style="max-height:180px; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#0f172a; border-radius:12px; border:1px solid rgba(255,255,255,0.08); padding:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="font-size:12.5px; font-weight:700; color:#cbd5e1; text-align:start;">📋 سجل الباركودات المربوطة بالماستر:</div>
+                    <div style="font-size:11px; color:#10b981;">● متاحة ومحفوظة على كافة أجهزتك</div>
+                </div>
+                <div id="managerGtinsList" style="max-height:220px; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#0f172a; border-radius:12px; border:1px solid rgba(255,255,255,0.08); padding:8px;">
                     <!-- ديناميكي -->
                 </div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-top:16px;">
+            <div style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.25); border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:11.5px; color:#93c5fd; display:flex; align-items:center; gap:8px;">
+                <span>ℹ️</span>
+                <span>الباركودات أعلاه محفوظة دائماً سحابياً وتعمل تلقائياً على اللاب توب والموبايل وأي متصفح دون فقدانها.</span>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:10px;">
                 <button type="button" class="btn btn-ghost" onclick="app.closeModal('modalMasterGtinManager')" style="padding:11px 18px; font-size:13px; border-radius:12px;">إغلاق ✕</button>
                 <button type="button" class="btn btn-primary" onclick="app.syncGtinsToGitHub()" style="flex:1; padding:11px 18px; font-size:13.5px; font-weight:800; background:linear-gradient(135deg, #10b981, #059669); border-radius:12px; box-shadow:0 4px 14px rgba(16,185,129,0.35); display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <span>🔄 مزامنة وتحديث الماستر الآن</span>
+                    <span>🔄 تأكيد المزامنة مع GitHub الآن</span>
                 </button>
             </div>
         </div>
@@ -3049,10 +3080,11 @@ CREATE POLICY "Allow public insert and select" ON expiry_entries FOR ALL USING (
                     return `
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:rgba(255,255,255,0.04); border-radius:8px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.06);">
                             <div style="overflow:hidden; flex:1; margin-inline-end:10px;">
-                                <div style="display:flex; align-items:center; gap:8px;">
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                     <span style="font-family:monospace; font-weight:800; color:#38bdf8; font-size:13px;">${gtin}</span>
                                     <span style="color:#f59e0b; font-size:12px;">➔</span>
                                     <span style="background:rgba(245,158,11,0.2); color:#fef08a; padding:1px 6px; border-radius:5px; font-weight:800; font-family:monospace; font-size:12px;">#${code}</span>
+                                    <span style="font-size:10px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:1px 6px; border-radius:6px; font-weight:700;">☁️ متزامن</span>
                                 </div>
                                 ${name ? `<div style="font-size:11.5px; color:#cbd5e1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${name}</div>` : ''}
                             </div>
