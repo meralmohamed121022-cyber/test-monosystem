@@ -7296,78 +7296,172 @@
             border-color: #f59e0b !important;
           }
 
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
-            display: grid !important;
-            grid-template-columns: minmax(280px, 380px) 1fr !important;
-            grid-template-rows: auto auto 1fr !important;
-            max-width: 1200px !important;
-            width: 96% !important;
-            height: 94vh !important;
-          }
-
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal > h2 {
-            grid-column: 1 / 3 !important;
-            grid-row: 1 / 2 !important;
-            padding: 10px 0 !important;
-            margin: 0 !important;
-          }
-
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
-            grid-column: 1 / 2 !important;
-            grid-row: 2 / 3 !important;
-            border-right: 2px solid #334155 !important;
-            border-bottom: none !important;
-            min-height: 200px !important;
+          /* الشريط العلوي الموحد لمنع تداخل الأزرار */
+          .scanner-header-bar {
             width: 100% !important;
             display: flex !important;
-            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 10px 14px !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-sizing: border-box !important;
+            flex-shrink: 0 !important;
+          }
+
+          .scanner-title-box {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+          }
+
+          .scanner-brand-title {
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            font-size: 16px !important;
+            letter-spacing: 1px !important;
+          }
+
+          .scanner-badge-v9 {
+            font-size: 11px !important;
+            background: #fbbf24 !important;
+            color: #111827 !important;
+            padding: 2px 7px !important;
+            border-radius: 6px !important;
+            font-weight: 900 !important;
+          }
+
+          .scanner-actions-box {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+          }
+
+          .scanner-action-btn {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            color: #ffffff !important;
+            cursor: pointer !important;
+            font-weight: bold !important;
+            font-size: 15px !important;
+            display: inline-flex !important;
+            align-items: center !important;
             justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
+            transition: transform 0.15s ease, filter 0.15s ease !important;
+            flex-shrink: 0 !important;
+            outline: none !important;
+          }
+          .scanner-action-btn:hover {
+            filter: brightness(1.15) !important;
+          }
+          .scanner-action-btn:active {
+            transform: scale(0.92) !important;
+          }
+          .scanner-action-btn.scanner-btn-layout {
+            background: #3b82f6 !important;
+          }
+          .scanner-action-btn.scanner-btn-home {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          }
+          .scanner-action-btn.scanner-btn-close {
+            background: #ef4444 !important;
           }
 
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
-            grid-column: 1 / 2 !important;
-            grid-row: 3 / 4 !important;
-            border-right: 2px solid #334155 !important;
-            border-top: 1px solid #334155 !important;
+          /* زر CSS Art الذكي لإعادة تنشيط الكاميرا بدون زحمة كلام */
+          .scanner-camera-reset-bar {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 8px 0 6px !important;
+            background: #111827 !important;
           }
 
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-cards-wrap {
-            grid-column: 2 / 3 !important;
-            grid-row: 2 / 4 !important;
-            padding-top: 10px !important;
-            border-top: none !important;
-            height: 100% !important;
+          .scanner-art-reset-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+            border: 1px solid rgba(56, 189, 248, 0.35) !important;
+            border-radius: 999px !important;
+            padding: 6px 18px 6px 14px !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.12) !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            outline: none !important;
+            user-select: none !important;
           }
 
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
-            flex-direction: column !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            scroll-snap-type: y mandatory !important;
-            height: 100% !important;
-            padding-bottom: 90px !important;
+          .scanner-art-reset-btn:hover {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.45), inset 0 0 14px rgba(56, 189, 248, 0.25) !important;
+            transform: translateY(-1px) scale(1.03) !important;
           }
 
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList>* {
-            flex: 0 0 auto !important;
-            height: auto !important;
-            min-height: 140px !important;
-            margin-bottom: 12px !important;
-          }
-
-          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .new-scanned-item-flash {
-            width: 100% !important;
-            flex: 0 0 auto !important;
-            margin-bottom: 10px !important;
-          }
-
-          #scannerResetCameraBtn:hover {
-            background: rgba(255,255,255,0.18) !important;
-            color: #fff !important;
-            border-color: #60a5fa !important;
-          }
-          #scannerResetCameraBtn:active {
+          .scanner-art-reset-btn:active {
             transform: scale(0.96) !important;
+          }
+
+          .css-lens-art {
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50% !important;
+            background: radial-gradient(circle at 35% 35%, #0284c7 0%, #0369a1 40%, #0f172a 85%) !important;
+            border: 2px solid #38bdf8 !important;
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+            flex-shrink: 0 !important;
+          }
+
+          .css-lens-iris {
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 50% !important;
+            background: #38bdf8 !important;
+            box-shadow: 0 0 8px #38bdf8 !important;
+            animation: irisPulse 2.2s infinite ease-in-out !important;
+          }
+
+          .css-lens-glare {
+            position: absolute !important;
+            top: 3px !important;
+            left: 4px !important;
+            width: 4px !important;
+            height: 4px !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            filter: blur(0.5px) !important;
+          }
+
+          @keyframes irisPulse {
+            0%, 100% {
+              transform: scale(1);
+              opacity: 0.85;
+              background: #38bdf8;
+            }
+            50% {
+              transform: scale(1.35);
+              opacity: 1;
+              background: #67e8f9;
+              box-shadow: 0 0 12px #67e8f9;
+            }
+          }
+
+          .css-lens-text {
+            color: #e2e8f0 !important;
+            font-size: 12px !important;
+            font-weight: 800 !important;
+            white-space: nowrap !important;
+          }
+
+          .scanner-art-reset-btn:hover .css-lens-text {
+            color: #ffffff !important;
           }
 
           .scanner-price-box {
@@ -7377,34 +7471,97 @@
             filter: brightness(1.1);
           }
 
-          /* تحويل الوضع للرأسي للموبايل الصغير في وضع البورتريه فقط */
-          @media (max-width: 480px) and (orientation: portrait) {
-            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
+          /* وضع الفولد والشاشات العريضة التلقائي بالـ CSS */
+          @media screen and (min-width: 540px), screen and (orientation: landscape) and (min-width: 460px) {
+            #scannerModalOverlay .scanner-shell:not(.force-vertical) {
+              display: grid !important;
+              grid-template-columns: minmax(280px, 380px) 1fr !important;
+              grid-template-rows: auto 1fr !important;
+              max-width: 1200px !important;
+              width: 96% !important;
+              height: 94vh !important;
+            }
+
+            #scannerModalOverlay .scanner-shell:not(.force-vertical) .scanner-header-bar {
+              grid-column: 1 / 3 !important;
+              grid-row: 1 / 2 !important;
+            }
+
+            #scannerModalOverlay .scanner-shell:not(.force-vertical) .scanner-left-column {
+              grid-column: 1 / 2 !important;
+              grid-row: 2 / 3 !important;
+              border-right: 2px solid #334155 !important;
+              border-bottom: none !important;
               display: flex !important;
               flex-direction: column !important;
-            }
-
-            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
-              border-right: none !important;
-              border-bottom: 2px solid #334155 !important;
-            }
-
-            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
-              border-right: none !important;
-            }
-
-            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
-              flex-direction: row !important;
-              overflow-x: auto !important;
-              overflow-y: hidden !important;
-              scroll-snap-type: x mandatory !important;
-            }
-
-            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList>* {
-              flex: 0 0 100% !important;
+              overflow-y: auto !important;
               height: 100% !important;
-              margin-bottom: 0 !important;
             }
+
+            #scannerModalOverlay .scanner-shell:not(.force-vertical) .scanner-cards-wrap {
+              grid-column: 2 / 3 !important;
+              grid-row: 2 / 3 !important;
+              border-top: none !important;
+              height: 100% !important;
+              padding-top: 10px !important;
+            }
+
+            #scannerModalOverlay .scanner-shell:not(.force-vertical) #scannedItemsList {
+              flex-direction: column !important;
+              overflow-y: auto !important;
+              overflow-x: hidden !important;
+              height: 100% !important;
+              padding-bottom: 90px !important;
+            }
+
+            #scannerModalOverlay .scanner-shell:not(.force-vertical) #scannedItemsList>* {
+              flex: 0 0 auto !important;
+              width: 100% !important;
+              margin-bottom: 12px !important;
+            }
+          }
+
+          /* تفعيل الوضع الأفقي يدوياً بالزر في أي وقت */
+          #scannerModalOverlay .scanner-shell.force-horizontal {
+            display: grid !important;
+            grid-template-columns: minmax(280px, 380px) 1fr !important;
+            grid-template-rows: auto 1fr !important;
+            max-width: 1200px !important;
+            width: 96% !important;
+            height: 94vh !important;
+          }
+          #scannerModalOverlay .scanner-shell.force-horizontal .scanner-header-bar {
+            grid-column: 1 / 3 !important;
+            grid-row: 1 / 2 !important;
+          }
+          #scannerModalOverlay .scanner-shell.force-horizontal .scanner-left-column {
+            grid-column: 1 / 2 !important;
+            grid-row: 2 / 3 !important;
+            border-right: 2px solid #334155 !important;
+            border-bottom: none !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-y: auto !important;
+            height: 100% !important;
+          }
+          #scannerModalOverlay .scanner-shell.force-horizontal .scanner-cards-wrap {
+            grid-column: 2 / 3 !important;
+            grid-row: 2 / 3 !important;
+            border-top: none !important;
+            height: 100% !important;
+            padding-top: 10px !important;
+          }
+          #scannerModalOverlay .scanner-shell.force-horizontal #scannedItemsList {
+            flex-direction: column !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            height: 100% !important;
+            padding-bottom: 90px !important;
+          }
+          #scannerModalOverlay .scanner-shell.force-horizontal #scannedItemsList>* {
+            flex: 0 0 auto !important;
+            width: 100% !important;
+            margin-bottom: 12px !important;
           }
 
           .filter-group:has(.custom-select.open),
@@ -7593,53 +7750,62 @@
         <div id="scannerModalOverlay"
           style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:100000; flex-direction:column; align-items:center; justify-content:center; padding:8px;">
           <div class="scanner-shell">
-            <h2 style="color:white; text-align:center; padding-top:15px; margin:0; display: flex; align-items: center; justify-content: center; gap: 8px;">SCANNER <span style="font-size: 14px; background: #fbbf24; color: #111; padding: 2px 8px; border-radius: 6px; font-weight: 900; letter-spacing: 1px;">V9</span></h2>
-
-            <div class="scanner-top-actions" style="position:absolute; right:12px; top:12px; z-index:1001; display:flex; align-items:center; gap:8px;">
-              <button onclick="toggleScannerLayout()" title="تغيير العرض (أفقي/رأسي)"
-                style="background:#3b82f6; color:white; border:none; border-radius:50%; width:38px; height:38px; cursor:pointer; font-weight:bold; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25); transition:transform 0.2s;">⇄</button>
-              <button onclick="goHomeUrl()" title="الصفحة الرئيسية (Home)"
-                style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:50%; width:38px; height:38px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(16,185,129,0.35); transition:transform 0.2s;">
-                <i class="fas fa-home"></i>
-              </button>
-              <button onclick="closeBarcodeScanner()" title="إغلاق (Close)"
-                style="background:#ef4444; color:white; border:none; border-radius:50%; width:38px; height:38px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(239,68,68,0.35); transition:transform 0.2s;">✕</button>
+            <!-- الشريط العلوي الموحد بدون أي تداخل -->
+            <div class="scanner-header-bar">
+              <div class="scanner-title-box">
+                <span class="scanner-brand-title">SCANNER</span>
+                <span class="scanner-badge-v9">V9</span>
+              </div>
+              <div class="scanner-actions-box">
+                <button type="button" onclick="toggleScannerLayout()" title="تغيير العرض (أفقي/رأسي)" class="scanner-action-btn scanner-btn-layout">⇄</button>
+                <a href="https://monosystem.vercel.app/" onclick="goHomeUrl(event)" title="الصفحة الرئيسية (Home)" class="scanner-action-btn scanner-btn-home">
+                  <i class="fas fa-home"></i>
+                </a>
+                <button type="button" onclick="closeBarcodeScanner()" title="إغلاق (Close)" class="scanner-action-btn scanner-btn-close">✕</button>
+              </div>
             </div>
 
-            <div class="scanner-camera-wrap">
-              <div class="scanner-camera-box">
-                <div id="reader" style="width:100%; max-width:480px; min-height:260px; margin:0 auto; background:#000; border:2px solid #667eea; border-radius:18px; overflow:hidden; position:relative;">
+            <!-- العمود الأيسر: الكاميرا مع زر CSS Art + الإدخال اليدوي -->
+            <div class="scanner-left-column">
+              <div class="scanner-camera-wrap">
+                <div class="scanner-camera-box">
+                  <div id="reader" style="width:100%; max-width:480px; min-height:260px; margin:0 auto; background:#000; border:2px solid #667eea; border-radius:18px; overflow:hidden; position:relative;">
+                  </div>
+                  <div class="scanner-frame"></div>
                 </div>
-                <div class="scanner-frame"></div>
+
+                <!-- زر إعادة ضبط الكاميرا CSS Art بدون كلام كثير -->
+                <div class="scanner-camera-reset-bar">
+                  <button id="scannerResetCameraBtn" type="button" onclick="restartCameraStream(event)" class="scanner-art-reset-btn" title="تنشيط الكاميرا">
+                    <div class="css-lens-art">
+                      <div class="css-lens-iris"></div>
+                      <div class="css-lens-glare"></div>
+                    </div>
+                    <span class="css-lens-text">تنشيط الكاميرا</span>
+                  </button>
+                </div>
               </div>
-              <div class="scanner-camera-reset-bar" style="display:flex; justify-content:center; padding: 6px 0 4px;">
-                <button id="scannerResetCameraBtn" onclick="restartCameraStream(event)" title="إعادة تشغيل الكاميرا عند التهنيج"
-                  style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.22); color:#cbd5e1; border-radius:20px; padding:5px 14px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s ease; box-shadow:0 2px 6px rgba(0,0,0,0.3);">
-                  <span style="font-size:13px;">🔄</span>
-                  <span>إعادة تشغيل الكاميرا (Reset Camera)</span>
-                </button>
-              </div>
-            </div>
 
-            <div class="scanner-manual-wrap"
-              style="padding: 10px; background: #0f172a; border-bottom: 1px solid #334155;">
-              <div class="scanner-manual-row"
-                style="display:flex; gap:6px; align-items:center; justify-content: space-between;">
+              <div class="scanner-manual-wrap"
+                style="padding: 10px; background: #0f172a; border-bottom: 1px solid #334155;">
+                <div class="scanner-manual-row"
+                  style="display:flex; gap:6px; align-items:center; justify-content: space-between;">
 
-                <button onclick="clearAllScannerData()" title="مسح الكل"
-                  style="height:42px; width:42px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
-                  🗑️
-                </button>
+                  <button onclick="clearAllScannerData()" title="مسح الكل"
+                    style="height:42px; width:42px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
+                    🗑️
+                  </button>
 
-                <input id="scannerManualCode" type="text" inputmode="numeric" maxlength="20"
-                  placeholder="كود سداسي أو باركود" oninput="this.value=this.value.replace(/\D/g,'').slice(0,20)"
-                  onkeydown="handleScannerManualInputKey(event)"
-                  style="flex: 1; min-width: 80px; height:42px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:14px; outline:none;" />
+                  <input id="scannerManualCode" type="text" inputmode="numeric" maxlength="20"
+                    placeholder="كود سداسي أو باركود" oninput="this.value=this.value.replace(/\D/g,'').slice(0,20)"
+                    onkeydown="handleScannerManualInputKey(event)"
+                    style="flex: 1; min-width: 80px; height:42px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:14px; outline:none;" />
 
-                <button onclick="processManualScannerCode()"
-                  style="height:42px; padding:0 12px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;">
-                  إضافة
-                </button>
+                  <button onclick="processManualScannerCode()"
+                    style="height:42px; padding:0 12px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;">
+                    إضافة
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -36100,9 +36266,6 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const manualInput = document.getElementById('scannerManualCode');
 
           if (overlay) {
-            if (overlay.parentElement !== document.body) {
-              document.body.appendChild(overlay);
-            }
             overlay.style.display = 'flex';
           }
 
@@ -36150,143 +36313,122 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
           setScannerFeedback('idle', 'جاري تهيئة الكاميرا...', 'يرجى توجيه الكاميرا نحو الكود');
 
-          // Launch camera using index.html's high-speed and accurate 1:1 square logic
-          const launchCamera = () => {
+          // Launch camera with robust multi-camera and Samsung Fold fallback logic
+          const launchCamera = async () => {
             try {
+              if (html5QrScanner) {
+                try {
+                  if (html5QrScanner.isScanning) await html5QrScanner.stop();
+                } catch (e) {}
+                try { await html5QrScanner.clear(); } catch (e) {}
+                html5QrScanner = null;
+              }
+
               if (readerEl) readerEl.innerHTML = '';
               html5QrScanner = new Html5Qrcode("reader");
-            } catch (e) {
-              console.warn("Html5Qrcode instance creation warning:", e);
-            }
 
-            const config = {
-              fps: 20,
-              qrbox: (viewfinderWidth, viewfinderHeight) => {
-                const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.78);
-                return { width: edge, height: edge };
-              },
-              aspectRatio: 1.0,
-              formatsToSupport: [
-                Html5QrcodeSupportedFormats.DATA_MATRIX,
-                Html5QrcodeSupportedFormats.QR_CODE,
-                Html5QrcodeSupportedFormats.EAN_13,
-                Html5QrcodeSupportedFormats.EAN_8,
-                Html5QrcodeSupportedFormats.CODE_128,
-                Html5QrcodeSupportedFormats.CODE_39
-              ]
-            };
+              const config = {
+                fps: 20,
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+                  const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.78);
+                  return { width: edge, height: edge };
+                },
+                aspectRatio: 1.0,
+                formatsToSupport: [
+                  Html5QrcodeSupportedFormats.DATA_MATRIX,
+                  Html5QrcodeSupportedFormats.QR_CODE,
+                  Html5QrcodeSupportedFormats.EAN_13,
+                  Html5QrcodeSupportedFormats.EAN_8,
+                  Html5QrcodeSupportedFormats.CODE_128,
+                  Html5QrcodeSupportedFormats.CODE_39
+                ]
+              };
 
-            const onScanSuccess = (decodedText) => {
-              const cleanDecoded = String(decodedText || "").trim();
-              const now = Date.now();
-              if (!cleanDecoded) return;
-              if (cleanDecoded === lastScannedValue && (now - lastScannedAt) < 1800) {
-                return;
-              }
-              lastScannedValue = cleanDecoded;
-              lastScannedAt = now;
+              const onScanSuccess = (decodedText) => {
+                const cleanDecoded = String(decodedText || "").trim();
+                const now = Date.now();
+                if (!cleanDecoded) return;
+                if (cleanDecoded === lastScannedValue && (now - lastScannedAt) < 1800) {
+                  return;
+                }
+                lastScannedValue = cleanDecoded;
+                lastScannedAt = now;
+                processScannedCode(cleanDecoded, cleanDecoded);
+              };
 
-              // تمرير النص المقروء بالكامل للمطابقة الفورية بالـ GTIN والكود السداسي
-              processScannedCode(cleanDecoded, cleanDecoded);
-            };
-
-            html5QrScanner.start(
-              { facingMode: "environment" },
-              config,
-              onScanSuccess,
-              () => {}
-            ).then(() => {
-              setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
-              resetScannerSwipeState();
-            }).catch(err => {
-              console.error("Camera start error with environment:", err);
-              // Fallback without environment constraint if camera fails
-              html5QrScanner.start(
-                {},
-                config,
-                onScanSuccess,
-                () => {}
-              ).then(() => {
+              // 1. Try back camera by facingMode
+              try {
+                await html5QrScanner.start({ facingMode: "environment" }, config, onScanSuccess, () => {});
                 setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
                 resetScannerSwipeState();
-              }).catch(e => {
-                console.error("Camera fallback start error:", e);
-                setScannerFeedback('error', 'تعذر تشغيل الكاميرا', 'يرجى التحقق من أذونات الكاميرا في المتصفح');
-                flashScannerSwipe('error');
-              });
-            });
+                return;
+              } catch (backErr) {
+                console.warn("Back camera facingMode constraint failed:", backErr);
+              }
+
+              // 2. Try camera devices lookup
+              try {
+                const devices = await Html5Qrcode.getCameras();
+                if (devices && devices.length > 0) {
+                  const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
+                  await html5QrScanner.start(backCam.id, config, onScanSuccess, () => {});
+                  setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
+                  resetScannerSwipeState();
+                  return;
+                }
+              } catch (camErr) {
+                console.warn("Camera list lookup fallback failed:", camErr);
+              }
+
+              // 3. Fallback without facingMode constraint
+              await html5QrScanner.start({}, config, onScanSuccess, () => {});
+              setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
+              resetScannerSwipeState();
+            } catch (err) {
+              console.error("Camera startup error:", err);
+              setScannerFeedback('error', 'تعذر تشغيل الكاميرا', 'يرجى التحقق من أذونات الكاميرا ثم الضغط على زر التنشيط');
+              flashScannerSwipe('error');
+            }
           };
 
           window.launchScannerCamera = launchCamera;
-
-          if (html5QrScanner) {
-            html5QrScanner.stop().then(() => {
-              try { html5QrScanner.clear(); } catch(e){}
-              html5QrScanner = null;
-              launchCamera();
-            }).catch(() => {
-              html5QrScanner = null;
-              launchCamera();
-            });
-          } else {
-            launchCamera();
-          }
+          await launchCamera();
         }
 
+        let _isCameraRestarting = false;
         async function restartCameraStream(event) {
           if (event) {
-            try { event.stopPropagation(); event.preventDefault(); } catch(e) {}
+            try { event.stopPropagation(); event.preventDefault(); } catch (e) {}
           }
+          if (_isCameraRestarting) return;
+          _isCameraRestarting = true;
+
           const btn = document.getElementById('scannerResetCameraBtn');
           if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = `<span style="font-size:13px; animation:spin 1s linear infinite;">🔄</span><span>جاري تشغيل الكاميرا...</span>`;
+            btn.style.opacity = '0.5';
+            btn.style.pointerEvents = 'none';
           }
-          setScannerFeedback('idle', 'جاري إعادة تشغيل الكاميرا...', 'يتم الآن إعادة الاتصال بمستشعر الكاميرا');
+          setScannerFeedback('idle', 'جاري تنشيط الكاميرا...', 'يتم الآن إعادة الاتصال بمستشعر الكاميرا');
 
           try {
-            await destroyScannerInstance();
-
-            const readerEl = document.getElementById('reader');
-            if (readerEl) readerEl.innerHTML = '';
-
-            await new Promise(r => setTimeout(r, 250));
-
             if (typeof window.launchScannerCamera === 'function') {
-              window.launchScannerCamera();
-            } else if (typeof openBarcodeScanner === 'function') {
-              await openBarcodeScanner();
+              await window.launchScannerCamera();
             }
           } catch (err) {
             console.error("Camera restart error:", err);
-            setScannerFeedback('error', 'تعذر إعادة تشغيل الكاميرا', 'يرجى مراجعة إذن الكاميرا أو تحديث الصفحة');
           } finally {
             setTimeout(() => {
-              const resetBtn = document.getElementById('scannerResetCameraBtn');
-              if (resetBtn) {
-                resetBtn.disabled = false;
-                resetBtn.innerHTML = `<span style="font-size:13px;">🔄</span><span>إعادة تشغيل الكاميرا (Reset Camera)</span>`;
+              _isCameraRestarting = false;
+              if (btn) {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
               }
-            }, 1000);
+            }, 800);
           }
         }
         window.restartCameraStream = restartCameraStream;
 
-        // Auto recovery on mobile tab visibility change
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'visible') {
-            const overlay = document.getElementById('scannerModalOverlay');
-            if (overlay && overlay.style.display !== 'none') {
-              const video = document.querySelector('#reader video');
-              if (!video || video.paused || video.ended || video.readyState < 2) {
-                console.log("Auto-recovering camera stream on visibility change...");
-                restartCameraStream();
-              }
-            }
-          }
-        });
-
-        // Process Code
+// Process Code
         // =====================================================
         function updateCardWithOnlineOffer(code, onlineOfferText, onlineOfferData = null) {
           const cleanCode = String(code || '').trim();
@@ -36443,9 +36585,25 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
         }
         window.closeBarcodeScanner = closeBarcodeScanner;
 
-        function goHomeUrl() {
-          destroyScannerInstance();
-          window.location.href = 'https://monosystem.vercel.app/';
+        function goHomeUrl(event) {
+          if (event) {
+            try { event.preventDefault(); event.stopPropagation(); } catch(e) {}
+          }
+          try {
+            if (html5QrScanner && typeof html5QrScanner.stop === 'function') {
+              html5QrScanner.stop().catch(()=>{});
+            }
+          } catch(e) {}
+
+          const targetUrl = 'https://monosystem.vercel.app/';
+          try {
+            if (window.top && window.top !== window) {
+              window.top.location.href = targetUrl;
+              return;
+            }
+          } catch(e) {}
+
+          window.location.href = targetUrl;
         }
         window.goHomeUrl = goHomeUrl;
 
@@ -36475,43 +36633,33 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
         function toggleScannerLayout() {
           const shell = document.querySelector('.scanner-shell');
-          if (shell) {
-            shell.classList.toggle('scanner-shell-horizontal');
-            window._scannerManualLayoutUserToggled = true;
+          if (!shell) return;
+          const isWide = (window.innerWidth >= 540) || (window.innerWidth > window.innerHeight);
+          if (isWide) {
+            shell.classList.toggle('force-vertical');
+            shell.classList.remove('force-horizontal');
+          } else {
+            shell.classList.toggle('force-horizontal');
+            shell.classList.remove('force-vertical');
           }
         }
         window.toggleScannerLayout = toggleScannerLayout;
 
-        function autoDetectScannerFoldLayout(force = false) {
-          const shell = document.querySelector('.scanner-shell');
-          if (!shell) return;
-          if (window._scannerManualLayoutUserToggled && !force) return;
-
-          // Samsung Galaxy Z Fold unfolded portrait is ~674px - 720px
-          // Tablet or landscape is also wide:
-          const isFoldOrWide = (window.innerWidth >= 580) || (window.innerWidth > window.innerHeight);
-
-          if (isFoldOrWide) {
-            shell.classList.add('scanner-shell-horizontal');
-          } else {
-            shell.classList.remove('scanner-shell-horizontal');
-          }
-        }
-        window.autoDetectScannerFoldLayout = autoDetectScannerFoldLayout;
-
+        // تنظيف التبديل اليدوي عند تغيير وضع الجهاز ليطبق الفولد تلقائياً فوراً
         window.addEventListener('resize', () => {
-          autoDetectScannerFoldLayout();
+          const shell = document.querySelector('.scanner-shell');
+          if (shell) {
+            shell.classList.remove('force-vertical');
+            shell.classList.remove('force-horizontal');
+          }
         });
         window.addEventListener('orientationchange', () => {
-          window._scannerManualLayoutUserToggled = false;
-          setTimeout(() => autoDetectScannerFoldLayout(true), 150);
+          const shell = document.querySelector('.scanner-shell');
+          if (shell) {
+            shell.classList.remove('force-vertical');
+            shell.classList.remove('force-horizontal');
+          }
         });
-        if (window.screen && window.screen.orientation) {
-          window.screen.orientation.addEventListener('change', () => {
-            window._scannerManualLayoutUserToggled = false;
-            setTimeout(() => autoDetectScannerFoldLayout(true), 150);
-          });
-        }
 
         function toggleScannerPrintPanel() {
           const panel = document.getElementById('scannerPrintPanel');
