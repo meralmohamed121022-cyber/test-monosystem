@@ -7296,272 +7296,83 @@
             border-color: #f59e0b !important;
           }
 
-          /* الشريط العلوي الموحد لمنع تداخل الأزرار */
-          .scanner-header-bar {
-            width: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            padding: 10px 14px !important;
-            background: rgba(15, 23, 42, 0.95) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-            box-sizing: border-box !important;
-            flex-shrink: 0 !important;
-          }
-
-          .scanner-title-box {
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-          }
-
-          .scanner-brand-title {
-            color: #ffffff !important;
-            font-weight: 900 !important;
-            font-size: 16px !important;
-            letter-spacing: 1px !important;
-          }
-
-          .scanner-badge-v9 {
-            font-size: 11px !important;
-            background: #fbbf24 !important;
-            color: #111827 !important;
-            padding: 2px 7px !important;
-            border-radius: 6px !important;
-            font-weight: 900 !important;
-          }
-
-          .scanner-actions-box {
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-          }
-
-          .scanner-action-btn {
-            width: 36px !important;
-            height: 36px !important;
-            border-radius: 50% !important;
-            border: none !important;
-            color: #ffffff !important;
-            cursor: pointer !important;
-            font-weight: bold !important;
-            font-size: 15px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            text-decoration: none !important;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
-            transition: transform 0.15s ease, filter 0.15s ease !important;
-            flex-shrink: 0 !important;
-            outline: none !important;
-          }
-          .scanner-action-btn:hover {
-            filter: brightness(1.15) !important;
-          }
-          .scanner-action-btn:active {
-            transform: scale(0.92) !important;
-          }
-          .scanner-action-btn.scanner-btn-layout {
-            background: #3b82f6 !important;
-          }
-          .scanner-action-btn.scanner-btn-home {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-          }
-          .scanner-action-btn.scanner-btn-close {
-            background: #ef4444 !important;
-          }
-
-          /* زر CSS Art الذكي لإعادة تنشيط الكاميرا بدون زحمة كلام */
-          .scanner-camera-reset-bar {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            padding: 8px 0 6px !important;
-            background: #111827 !important;
-          }
-
-          .scanner-art-reset-btn {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 10px !important;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-            border: 1px solid rgba(56, 189, 248, 0.35) !important;
-            border-radius: 999px !important;
-            padding: 6px 18px 6px 14px !important;
-            cursor: pointer !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.12) !important;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            outline: none !important;
-            user-select: none !important;
-          }
-
-          .scanner-art-reset-btn:hover {
-            border-color: #38bdf8 !important;
-            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.45), inset 0 0 14px rgba(56, 189, 248, 0.25) !important;
-            transform: translateY(-1px) scale(1.03) !important;
-          }
-
-          .scanner-art-reset-btn:active {
-            transform: scale(0.96) !important;
-          }
-
-          .css-lens-art {
-            width: 20px !important;
-            height: 20px !important;
-            border-radius: 50% !important;
-            background: radial-gradient(circle at 35% 35%, #0284c7 0%, #0369a1 40%, #0f172a 85%) !important;
-            border: 2px solid #38bdf8 !important;
-            position: relative !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
-            flex-shrink: 0 !important;
-          }
-
-          .css-lens-iris {
-            width: 8px !important;
-            height: 8px !important;
-            border-radius: 50% !important;
-            background: #38bdf8 !important;
-            box-shadow: 0 0 8px #38bdf8 !important;
-            animation: irisPulse 2.2s infinite ease-in-out !important;
-          }
-
-          .css-lens-glare {
-            position: absolute !important;
-            top: 3px !important;
-            left: 4px !important;
-            width: 4px !important;
-            height: 4px !important;
-            border-radius: 50% !important;
-            background: rgba(255, 255, 255, 0.9) !important;
-            filter: blur(0.5px) !important;
-          }
-
-          @keyframes irisPulse {
-            0%, 100% {
-              transform: scale(1);
-              opacity: 0.85;
-              background: #38bdf8;
-            }
-            50% {
-              transform: scale(1.35);
-              opacity: 1;
-              background: #67e8f9;
-              box-shadow: 0 0 12px #67e8f9;
-            }
-          }
-
-          .css-lens-text {
-            color: #e2e8f0 !important;
-            font-size: 12px !important;
-            font-weight: 800 !important;
-            white-space: nowrap !important;
-          }
-
-          .scanner-art-reset-btn:hover .css-lens-text {
-            color: #ffffff !important;
-          }
-
-          .scanner-price-box {
-            transition: all 0.2s ease;
-          }
-          .scanner-price-box:hover {
-            filter: brightness(1.1);
-          }
-
-          /* وضع الفولد والشاشات العريضة التلقائي بالـ CSS */
-          @media screen and (min-width: 540px), screen and (orientation: landscape) and (min-width: 460px) {
-            #scannerModalOverlay .scanner-shell:not(.force-vertical) {
-              display: grid !important;
-              grid-template-columns: minmax(280px, 380px) 1fr !important;
-              grid-template-rows: auto 1fr !important;
-              max-width: 1200px !important;
-              width: 96% !important;
-              height: 94vh !important;
-            }
-
-            #scannerModalOverlay .scanner-shell:not(.force-vertical) .scanner-header-bar {
-              grid-column: 1 / 3 !important;
-              grid-row: 1 / 2 !important;
-            }
-
-            #scannerModalOverlay .scanner-shell:not(.force-vertical) .scanner-left-column {
-              grid-column: 1 / 2 !important;
-              grid-row: 2 / 3 !important;
-              border-right: 2px solid #334155 !important;
-              border-bottom: none !important;
-              display: flex !important;
-              flex-direction: column !important;
-              overflow-y: auto !important;
-              height: 100% !important;
-            }
-
-            #scannerModalOverlay .scanner-shell:not(.force-vertical) .scanner-cards-wrap {
-              grid-column: 2 / 3 !important;
-              grid-row: 2 / 3 !important;
-              border-top: none !important;
-              height: 100% !important;
-              padding-top: 10px !important;
-            }
-
-            #scannerModalOverlay .scanner-shell:not(.force-vertical) #scannedItemsList {
-              flex-direction: column !important;
-              overflow-y: auto !important;
-              overflow-x: hidden !important;
-              height: 100% !important;
-              padding-bottom: 90px !important;
-            }
-
-            #scannerModalOverlay .scanner-shell:not(.force-vertical) #scannedItemsList>* {
-              flex: 0 0 auto !important;
-              width: 100% !important;
-              margin-bottom: 12px !important;
-            }
-          }
-
-          /* تفعيل الوضع الأفقي يدوياً بالزر في أي وقت */
-          #scannerModalOverlay .scanner-shell.force-horizontal {
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
             display: grid !important;
-            grid-template-columns: minmax(280px, 380px) 1fr !important;
+            grid-template-columns: 380px 1fr !important;
             grid-template-rows: auto 1fr !important;
             max-width: 1200px !important;
-            width: 96% !important;
-            height: 94vh !important;
+            width: 95% !important;
+            height: 90vh !important;
           }
-          #scannerModalOverlay .scanner-shell.force-horizontal .scanner-header-bar {
-            grid-column: 1 / 3 !important;
+
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
+            grid-column: 1 / 2 !important;
             grid-row: 1 / 2 !important;
+            border-right: 2px solid #334155 !important;
+            border-bottom: none !important;
+            min-height: 220px !important;
+            width: 100% !important;
           }
-          #scannerModalOverlay .scanner-shell.force-horizontal .scanner-left-column {
+
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
             grid-column: 1 / 2 !important;
             grid-row: 2 / 3 !important;
             border-right: 2px solid #334155 !important;
-            border-bottom: none !important;
-            display: flex !important;
-            flex-direction: column !important;
-            overflow-y: auto !important;
-            height: 100% !important;
           }
-          #scannerModalOverlay .scanner-shell.force-horizontal .scanner-cards-wrap {
+
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-cards-wrap {
             grid-column: 2 / 3 !important;
-            grid-row: 2 / 3 !important;
-            border-top: none !important;
-            height: 100% !important;
-            padding-top: 10px !important;
+            grid-row: 1 / 3 !important; padding-top: 65px !important;
           }
-          #scannerModalOverlay .scanner-shell.force-horizontal #scannedItemsList {
+
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
             flex-direction: column !important;
             overflow-y: auto !important;
             overflow-x: hidden !important;
-            height: 100% !important;
-            padding-bottom: 90px !important;
+            scroll-snap-type: y mandatory !important;
           }
-          #scannerModalOverlay .scanner-shell.force-horizontal #scannedItemsList>* {
+
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList>* {
             flex: 0 0 auto !important;
-            width: 100% !important;
+            height: auto !important;
+            min-height: 140px !important;
             margin-bottom: 12px !important;
+          }
+
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .new-scanned-item-flash {
+            width: 100% !important;
+            flex: 0 0 auto !important;
+            margin-bottom: 10px !important;
+          }
+
+          /* 🟢 تحويل الوضع للرأسي للموبايل الصغير فقط لتجنب كسر الهيكل الأفقي داخل الـ Iframe */
+          @media (max-width: 480px) {
+            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
+              display: flex !important;
+              flex-direction: column !important;
+            }
+
+            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
+              border-right: none !important;
+              border-bottom: 2px solid #334155 !important;
+            }
+
+            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
+              border-right: none !important;
+            }
+
+            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
+              flex-direction: row !important;
+              overflow-x: auto !important;
+              overflow-y: hidden !important;
+              scroll-snap-type: x mandatory !important;
+            }
+
+            #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList>* {
+              flex: 0 0 100% !important;
+              height: 100% !important;
+              margin-bottom: 0 !important;
+            }
           }
 
           .filter-group:has(.custom-select.open),
@@ -7750,80 +7561,69 @@
         <div id="scannerModalOverlay"
           style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:100000; flex-direction:column; align-items:center; justify-content:center; padding:8px;">
           <div class="scanner-shell">
-            <!-- الشريط العلوي الموحد بدون أي تداخل -->
             <div class="scanner-header-bar">
-              <div class="scanner-title-box">
-                <span class="scanner-brand-title">SCANNER</span>
-                <span class="scanner-badge-v9">V9</span>
-              </div>
+              <h2 class="scanner-header-title">
+                SCANNER <span style="font-size: 13px; background: #fbbf24; color: #111; padding: 2px 7px; border-radius: 6px; font-weight: 900; letter-spacing: 0.5px;">V9</span>
+              </h2>
+
               <div class="scanner-actions-box">
+                <!-- زر تنشيط الكاميرا CSS Art جذاب في الهيدر العلوي -->
+                <button id="scannerResetCameraBtn" type="button" onclick="restartCameraStream(event)" class="scanner-header-reset-btn" title="تنشيط الكاميرا">
+                  <div class="css-lens-art">
+                    <div class="css-lens-iris"></div>
+                    <div class="css-lens-glare"></div>
+                  </div>
+                  <span class="css-lens-text">تنشيط</span>
+                </button>
+
                 <button type="button" onclick="toggleScannerLayout()" title="تغيير العرض (أفقي/رأسي)" class="scanner-action-btn scanner-btn-layout">⇄</button>
+
                 <a href="https://monosystem.vercel.app/" onclick="goHomeUrl(event)" title="الصفحة الرئيسية (Home)" class="scanner-action-btn scanner-btn-home">
                   <i class="fas fa-home"></i>
                 </a>
+
                 <button type="button" onclick="closeBarcodeScanner()" title="إغلاق (Close)" class="scanner-action-btn scanner-btn-close">✕</button>
               </div>
             </div>
 
-            <!-- العمود الأيسر: الكاميرا مع زر CSS Art + الإدخال اليدوي -->
-            <div class="scanner-left-column">
+            <!-- العمود الأيسر: الكاميرا + الإدخال اليدوي -->
+            <div class="scanner-left-column" style="display:flex; flex-direction:column;">
               <div class="scanner-camera-wrap">
                 <div class="scanner-camera-box">
-                  <div id="reader" style="width:100%; max-width:480px; min-height:260px; margin:0 auto; background:#000; border:2px solid #667eea; border-radius:18px; overflow:hidden; position:relative;">
+                  <div id="reader" style="width:100%; max-width:480px; min-height:200px; height:230px; margin:0 auto; background:#000; border:2px solid #667eea; border-radius:18px; overflow:hidden; position:relative;">
                   </div>
                   <div class="scanner-frame"></div>
-                </div>
-
-                <!-- زر إعادة ضبط الكاميرا CSS Art بدون كلام كثير -->
-                <div class="scanner-camera-reset-bar">
-                  <button id="scannerResetCameraBtn" type="button" onclick="restartCameraStream(event)" class="scanner-art-reset-btn" title="تنشيط الكاميرا">
-                    <div class="css-lens-art">
-                      <div class="css-lens-iris"></div>
-                      <div class="css-lens-glare"></div>
-                    </div>
-                    <span class="css-lens-text">تنشيط الكاميرا</span>
-                  </button>
                 </div>
               </div>
 
               <div class="scanner-manual-wrap"
-                style="padding: 10px; background: #0f172a; border-bottom: 1px solid #334155;">
+                style="padding: 8px 10px; background: #0f172a; border-bottom: 1px solid #334155;">
                 <div class="scanner-manual-row"
                   style="display:flex; gap:6px; align-items:center; justify-content: space-between;">
 
                   <button onclick="clearAllScannerData()" title="مسح الكل"
-                    style="height:42px; width:42px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
+                    style="height:40px; width:40px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:17px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
                     🗑️
                   </button>
 
                   <input id="scannerManualCode" type="text" inputmode="numeric" maxlength="20"
                     placeholder="كود سداسي أو باركود" oninput="this.value=this.value.replace(/\D/g,'').slice(0,20)"
                     onkeydown="handleScannerManualInputKey(event)"
-                    style="flex: 1; min-width: 80px; height:42px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:14px; outline:none;" />
+                    style="flex: 1; min-width: 80px; height:40px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:14px; outline:none;" />
 
                   <button onclick="processManualScannerCode()"
-                    style="height:42px; padding:0 12px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;">
+                    style="height:40px; padding:0 14px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;">
                     إضافة
                   </button>
                 </div>
               </div>
             </div>
 
+            <!-- منطقة الكروت: متصلة مباشرة أسفل شريط البحث وبدون أي فراغ -->
             <div class="scanner-cards-wrap"
-              style="flex:1; display:flex; flex-direction:column; overflow:hidden; background:#1e293b; padding:10px 12px 20px; border-top:1px solid #334155; position: relative;">
+              style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; background:#1e293b; padding:4px 10px 80px; border-top:1px solid #334155; position: relative;">
               <div id="scannedItemsList"
-                style="display:flex; flex-direction:row; gap:12px; overflow-x:auto; overflow-y:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding-bottom:10px;">
-              </div>
-
-              <div class="modern-nav-indicator"
-                style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; padding: 5px; background: rgba(102, 126, 234, 0.1); border-radius: 20px; width: fit-content; align-self: center; pointer-events: none;">
-                <span
-                  style="color: #667eea; font-size: 18px; font-weight: bold; animation: arrowBlink 1s infinite alternate;">❮</span>
-                <div
-                  style="font-size: 10px; font-weight: 800; color: #667eea; text-transform: uppercase; letter-spacing: 1px;">
-                  اسحب للتنقل</div>
-                <span
-                  style="color: #667eea; font-size: 18px; font-weight: bold; animation: arrowBlink 1s infinite alternate-reverse;">❯</span>
+                style="display:flex; flex-direction:row; gap:10px; overflow-x:auto; overflow-y:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; margin-top:4px; padding-bottom:10px;">
               </div>
             </div>
 
@@ -35337,10 +35137,6 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const offer = (typeof getOfferForScanner === 'function') ? getOfferForScanner(realCode) : ((typeof getOffer === 'function') ? getOffer(realCode) : null);
           const isOfferActive = (typeof isOfferCurrentlyActive === 'function') ? isOfferCurrentlyActive(offer) : !!offer;
 
-          const prodPrice = (product && (product["Unit Price"] ?? product.unit_price ?? product.unitprice ?? product.price)) ? parseFloat(product["Unit Price"] ?? product.unit_price ?? product.unitprice ?? product.price) : null;
-
-          const existingItem = (typeof scannedItemsMemory !== 'undefined') ? scannedItemsMemory.find(i => String(i.cleanCode).trim() === realCode) : null;
-
           const itemData = {
             imageUrl: (imageUrl && imageUrl !== "No Image") ? imageUrl : "",
             needsWorkerImage: !imageUrl || imageUrl === "No Image",
@@ -35350,10 +35146,8 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             offerLabel: isOfferActive ? (offer?.offerTypeAR || offer?.offerType || 'العرض متاح') : '❌ لا يوجد عرض نشط حالياً',
             offerLabelEN: isOfferActive ? (offer?.offerType || offer?.offerTypeEN || 'Offer Active') : 'No Active Offer',
             statusColor: isOfferActive ? '#38ef7d' : '#ef4444',
-            onlineOffer: existingItem ? (existingItem.onlineOffer || "") : "",
-            onlineOfferData: existingItem ? (existingItem.onlineOfferData || null) : null,
-            originalPrice: prodPrice,
-            revealedPrice: existingItem ? (existingItem.revealedPrice || null) : null
+            onlineOffer: "",
+            onlineOfferData: null
           };
 
           // إظهار الكارت وإضافته للقائمة
@@ -35363,8 +35157,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           scannedCodesSet.add(realCode);
 
           try {
-            localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
-            sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+            localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
           } catch (e) { }
 
           setLatestScannerMessage(
@@ -35424,7 +35217,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const listEl = document.getElementById('scannedItemsList');
           if (listEl) listEl.innerHTML = '';
 
-          const saved = localStorage.getItem('scanned_items_session') || sessionStorage.getItem('scanned_items_session');
+          const saved = (localStorage.getItem('scanned_items_session') || sessionStorage.getItem('scanned_items_session'));
           if (saved) {
             try {
               scannedItemsMemory = JSON.parse(saved);
@@ -35445,10 +35238,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               offerLabel: item.offerLabel,
               offerLabelEN: item.offerLabelEN,
               statusColor: item.statusColor,
-              onlineOffer: item.onlineOffer || '',
-              onlineOfferData: item.onlineOfferData || null,
-              revealedPrice: item.revealedPrice || null,
-              originalPrice: item.originalPrice || null
+              onlineOffer: item.onlineOffer || ''
             });
           });
 
@@ -35465,9 +35255,6 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                 offerLabelEN: lastItem.offerLabelEN,
                 statusColor: lastItem.statusColor,
                 onlineOffer: lastItem.onlineOffer || '',
-                onlineOfferData: lastItem.onlineOfferData || null,
-                revealedPrice: lastItem.revealedPrice || null,
-                originalPrice: lastItem.originalPrice || null,
                 compact: false
               })
             );
@@ -35519,16 +35306,6 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
         }
 
         async function destroyScannerInstance() {
-          const videos = document.querySelectorAll('#reader video');
-          videos.forEach(v => {
-            if (v.srcObject && typeof v.srcObject.getTracks === 'function') {
-              v.srcObject.getTracks().forEach(track => {
-                try { track.stop(); } catch(e) {}
-              });
-              v.srcObject = null;
-            }
-          });
-
           if (!html5QrScanner) return;
 
           try {
@@ -35679,32 +35456,40 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                 };
 
                 document.querySelectorAll(`[id="online-offer-${cleanCode}"]`).forEach(box => {
-                  const isCompact = box.closest('#scannedItemsList') !== null;
                   box.style.background = "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)";
                   box.style.border = "none";
-                  box.style.flexDirection = hasPriceOffer ? "column" : "row";
-                  box.style.gap = hasPriceOffer ? "6px" : "0";
+                  box.style.flexDirection = "column";
                   box.style.cursor = "pointer";
-                  box.style.boxShadow = "0 6px 16px rgba(124,58,237,0.35)";
-                  box.onclick = () => window.open(productUrl, '_blank');
-                  box.innerHTML = buildOfferBoxHTML(isCompact);
+                  box.style.boxShadow = "0 4px 12px rgba(124,58,237,0.35)";
+                  box.onclick = () => openOnlineOfferPopup(cleanCode);
+                  box.innerHTML = `
+                    <span style="color:#ffffff; font-weight:800; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">
+                      🌐 ${escapeHtml(badgeText || 'عرض أونلاين ✨')}
+                    </span>
+                    ${hasPriceOffer ? `
+                    <div style="display:flex; align-items:baseline; justify-content:center; gap:4px; margin-top:1px;">
+                      ${showStrikethrough ? `<span style="color:rgba(255,255,255,0.65); font-size:9px; text-decoration:line-through;">${originalPrice.toFixed(2)}</span>` : ''}
+                      <span style="color:#fff; font-size:12px; font-weight:900;">${finalPrice.toFixed(2)} SAR</span>
+                    </div>` : ''}
+                  `;
                 });
+                openOnlineOfferPopup(cleanCode);
 
               } else {
                 itemInMem.onlineOffer = "No online offer";
                 itemInMem.onlineOfferData = null;
 
                 document.querySelectorAll(`[id="online-offer-${cleanCode}"]`).forEach(box => {
-                  box.style.background = "rgba(239,68,68,0.12)";
-                  box.style.border = "1px solid rgba(239,68,68,0.45)";
+                  box.style.background = "rgba(255,255,255,0.06)";
+                  box.style.border = "1px solid rgba(255,255,255,0.12)";
                   box.style.flexDirection = "row";
                   box.style.cursor = "pointer";
                   box.onclick = () => window.open(productUrl, '_blank');
-                  box.innerHTML = `<span style="color:#fecaca;font-weight:800;font-size:12px;">🌐 No online offer</span>`;
+                  box.innerHTML = `<span style="color:#94a3b8;font-weight:800;font-size:11px;white-space:nowrap;">🌐 لا يوجد عرض</span>`;
                 });
               }
 
-              try { sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); } catch (e) { }
+              try { localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); } catch (e) { }
             })
             .catch((e) => {
               console.error(`[Worker Debug] Fetch error for ${cleanCode}:`, e);
@@ -35717,104 +35502,6 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               });
             });
         }
-
-        function manualShowProductPrice(cleanCode, event) {
-          if (event) {
-            try { event.stopPropagation(); event.preventDefault(); } catch(e) {}
-          }
-          const clean = String(cleanCode || '').trim();
-          if (!clean) return;
-
-          const allPriceBoxes = document.querySelectorAll(`[id="price-box-${clean}"]`);
-          allPriceBoxes.forEach(box => {
-            box.removeAttribute('onclick');
-            box.style.background = "rgba(16,185,129,0.12)";
-            box.style.border = "1px dashed rgba(52,211,153,0.45)";
-            box.style.boxShadow = "none";
-            box.innerHTML = `<div class="scanner-mini-loader"></div><span style="font-size:11px;color:#34d399;font-weight:700;">جاري استخراج السعر الأصلي...</span>`;
-          });
-
-          const renderFoundPrice = (priceVal) => {
-            const numPrice = Number(priceVal);
-            if (typeof scannedItemsMemory !== 'undefined') {
-              const itemInMem = scannedItemsMemory.find(i => String(i.cleanCode).trim() === clean);
-              if (itemInMem) {
-                itemInMem.revealedPrice = numPrice;
-                try {
-                  localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
-                  sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
-                } catch(e) {}
-              }
-            }
-
-            allPriceBoxes.forEach(box => {
-              box.style.background = "linear-gradient(135deg, #065f46 0%, #047857 100%)";
-              box.style.border = "1px solid #34d399";
-              box.style.boxShadow = "0 4px 10px rgba(16,185,129,0.3)";
-              box.style.cursor = "default";
-              box.onclick = null;
-              box.innerHTML = `
-                <span style="font-size:12px; color:#ffffff; font-weight:800;">
-                  💵 السعر الأصلي: <span style="color:#a7f3d0; font-size:13px; font-weight:900;">${numPrice.toFixed(2)} SAR</span>
-                </span>
-              `;
-            });
-          };
-
-          const renderNotFoundPrice = () => {
-            allPriceBoxes.forEach(box => {
-              box.style.background = "rgba(239,68,68,0.12)";
-              box.style.border = "1px solid rgba(239,68,68,0.4)";
-              box.style.cursor = "default";
-              box.onclick = null;
-              box.innerHTML = `<span style="color:#fecaca;font-weight:800;font-size:11px;">💵 السعر الأصلي: غير متوفر</span>`;
-            });
-          };
-
-          // 1. Check productsDB first
-          const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
-          const prod = targetDB.find(p => String(p.Code).trim() === clean || parseInt(p.Code) === parseInt(clean, 10));
-
-          let foundPrice = null;
-          if (prod) {
-            const rawPrice = prod["Unit Price"] ?? prod.unit_price ?? prod.unitprice ?? prod["Price"] ?? prod.price;
-            if (rawPrice != null && !isNaN(parseFloat(rawPrice)) && parseFloat(rawPrice) > 0) {
-              foundPrice = parseFloat(rawPrice);
-            }
-          }
-
-          // 2. Check in memory
-          if (!foundPrice && typeof scannedItemsMemory !== 'undefined') {
-            const memItem = scannedItemsMemory.find(i => String(i.cleanCode).trim() === clean);
-            if (memItem && memItem.originalPrice != null && parseFloat(memItem.originalPrice) > 0) {
-              foundPrice = parseFloat(memItem.originalPrice);
-            }
-          }
-
-          if (foundPrice != null) {
-            renderFoundPrice(foundPrice);
-            return;
-          }
-
-          // 3. Fallback: Fetch from worker API
-          const _tk = sessionStorage.getItem("_tk") || "";
-          fetch(`https://online.meralmohamed121022.workers.dev/api/product?code=${encodeURIComponent(clean)}&t=${Date.now()}`, {
-            headers: { "x-session-token": _tk }
-          })
-            .then(res => res.json())
-            .then(data => {
-              const p = data?.originalPrice ?? data?.unitPrice ?? data?.price ?? data?.finalPrice;
-              if (p != null && !isNaN(parseFloat(p)) && parseFloat(p) > 0) {
-                renderFoundPrice(parseFloat(p));
-              } else {
-                renderNotFoundPrice();
-              }
-            })
-            .catch(() => {
-              renderNotFoundPrice();
-            });
-        }
-        window.manualShowProductPrice = manualShowProductPrice;
 
         function buildNoImageBox(text) {
           return `
@@ -35885,9 +35572,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           statusColor = '#38ef7d',
           compact = false,
           onlineOffer = '',
-          onlineOfferData = null,
-          revealedPrice = null,
-          originalPrice = null
+          onlineOfferData = null
         }) {
           const imageW = compact ? 148 : 180;
           const imageH = compact ? 105 : 125;
@@ -35991,29 +35676,6 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                 <span style="font-size:11px; color:#ffffff; font-weight:800;">🌐 Show Online Offer / عرض العرض أونلاين</span>
             </div>`;
 
-          const hasRevealedPrice = (revealedPrice != null && !isNaN(revealedPrice) && Number(revealedPrice) > 0);
-          const priceHTML = hasRevealedPrice
-            ? `
-            <div id="price-box-${cleanCode}" class="scanner-price-box"
-                 style="margin-top:2px; padding:6px 12px; border-radius:10px;
-                        background:linear-gradient(135deg, #065f46 0%, #047857 100%);
-                        border:1px solid #34d399; display:flex; align-items:center; justify-content:center; gap:8px; min-height:28px;
-                        box-shadow: 0 4px 10px rgba(16,185,129,0.25);">
-                <span style="font-size:12px; color:#ffffff; font-weight:800;">
-                    💵 السعر الأصلي: <span style="color:#a7f3d0; font-size:13px; font-weight:900;">${Number(revealedPrice).toFixed(2)} SAR</span>
-                </span>
-            </div>`
-            : `
-            <div id="price-box-${cleanCode}" class="scanner-price-box"
-                 onclick="manualShowProductPrice('${cleanCode}', event)"
-                 style="margin-top:2px; padding:6px 12px; border-radius:10px;
-                        background:linear-gradient(135deg, #059669 0%, #10b981 100%);
-                        border:none; display:flex; align-items:center; justify-content:center; gap:8px; min-height:28px; cursor:pointer;
-                        box-shadow: 0 4px 10px rgba(16,185,129,0.25);
-                        transition: all 0.2s ease;">
-                <span style="font-size:11px; color:#ffffff; font-weight:800;">💵 عرض السعر الأصلي (Show Price)</span>
-            </div>`;
-
           return `
         <!-- الكارت الأساسي -->
         <div style="
@@ -36107,11 +35769,8 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                     </div>
                 </div>
                 
-                <!-- 💡 عرض الأونلاين وعرض السعر الأصلي المستقل -->
-                <div style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
-                  ${onlineOfferHTML}
-                  ${priceHTML}
-                </div>
+                <!-- 💡 عرض الأونلاين (يأخذ العرض بالكامل تحت الصورة والنص) -->
+                ${onlineOfferHTML}
 
             </div>
         </div>
@@ -36126,10 +35785,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           offerLabel = '',
           offerLabelEN = '',
           statusColor = '#38ef7d',
-          onlineOffer = '',
-          onlineOfferData = null,
-          revealedPrice = null,
-          originalPrice = null
+          onlineOffer = ''
         }) {
           const listEl = document.getElementById('scannedItemsList');
           const shell = document.querySelector('.scanner-shell');
@@ -36172,10 +35828,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             offerLabelEN,
             statusColor,
             compact: true,
-            onlineOffer,
-            onlineOfferData,
-            revealedPrice,
-            originalPrice
+            onlineOffer
           });
 
           // =====================================================
@@ -36219,10 +35872,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               row.remove();
               if (typeof scannedCodesSet !== 'undefined') scannedCodesSet.delete(cleanCode);
               scannedItemsMemory = scannedItemsMemory.filter(i => i.cleanCode !== cleanCode);
-              try {
-                localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
-                sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
-              } catch(e) {}
+              localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory)); sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
               if (typeof updateScannerDots === 'function') updateScannerDots();
               if (typeof updateSelectedCount === 'function') updateSelectedCount();
             }, 200);
@@ -36259,6 +35909,237 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
         // =====================================================
         // Open Scanner
         // =====================================================
+
+        // =====================================================
+        // Home URL and Camera Restart & Online Offer Popup
+        // =====================================================
+        function goHomeUrl(event) {
+          if (event) {
+            try { event.preventDefault(); event.stopPropagation(); } catch(e) {}
+          }
+          window.location.href = "https://monosystem.vercel.app/";
+        }
+
+        async function restartCameraStream(event) {
+          if (event) {
+            try { event.preventDefault(); event.stopPropagation(); } catch(e) {}
+          }
+          const btn = document.getElementById('scannerResetCameraBtn');
+          if (btn) {
+            btn.style.transform = 'scale(0.92)';
+            setTimeout(() => { if (btn) btn.style.transform = ''; }, 200);
+          }
+          setScannerFeedback('idle', 'جاري إعادة تنشيط الكاميرا...', 'يرجى الانتظار');
+
+          if (typeof destroyScannerInstance === 'function') {
+            await destroyScannerInstance();
+          } else if (html5QrScanner) {
+            try { await html5QrScanner.stop(); } catch(e){}
+            try { html5QrScanner.clear(); } catch(e){}
+            html5QrScanner = null;
+          }
+
+          const readerEl = document.getElementById('reader');
+          if (readerEl) readerEl.innerHTML = '';
+
+          setTimeout(() => {
+            if (typeof openBarcodeScanner === 'function') {
+              openBarcodeScanner();
+            }
+          }, 250);
+        }
+
+        function openOnlineOfferPopup(cleanCode) {
+          const clean = String(cleanCode || '').trim();
+          const memItem = (typeof scannedItemsMemory !== 'undefined') ? scannedItemsMemory.find(i => String(i.cleanCode).trim() === clean) : null;
+          const modal = document.getElementById('onlineOfferPopupModal');
+          const body = document.getElementById('onlineOfferPopupBody');
+          const linkBtn = document.getElementById('onlineOfferPopupLinkBtn');
+          if (!modal || !body) return;
+
+          const productUrl = `https://www.al-dawaa.com/en/p/${encodeURIComponent(clean)}`;
+          if (linkBtn) {
+            linkBtn.onclick = () => window.open(productUrl, '_blank');
+          }
+
+          const oData = memItem?.onlineOfferData;
+          const oText = memItem?.onlineOffer || oData?.offer || oData?.offerText || 'عرض أونلاين متاح';
+          const finalPrice = (oData && oData.finalPrice != null) ? Number(oData.finalPrice) : null;
+          const origPrice = (oData && oData.originalPrice != null) ? Number(oData.originalPrice) : null;
+          const showStrike = origPrice != null && finalPrice != null && origPrice > finalPrice;
+          const savings = (showStrike && origPrice != null && finalPrice != null) ? (origPrice - finalPrice) : null;
+          const nameAR = memItem?.nameAR || '';
+          const nameEN = memItem?.nameEN || '';
+          const imgUrl = memItem?.imageUrl || '';
+
+          body.innerHTML = `
+            ${imgUrl ? `
+            <div style="width:100%; display:flex; justify-content:center; margin-bottom:4px;">
+              <img src="${imgUrl}" style="max-height:120px; max-width:180px; object-fit:contain; border-radius:12px; background:#fff; padding:6px;" />
+            </div>` : ''}
+
+            <div style="font-size:14px; font-weight:800; color:#fbbf24; direction:rtl; line-height:1.4;">
+              ${escapeHtml(nameAR)}
+            </div>
+            <div style="font-size:12px; color:#cbd5e1; line-height:1.3;">
+              ${escapeHtml(nameEN)}
+            </div>
+
+            <div style="margin-top:8px; padding:12px; border-radius:14px; background:linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(79,70,229,0.2) 100%); border:1px solid rgba(167,139,250,0.35);">
+              <div style="font-size:14px; font-weight:900; color:#c4b5fd; margin-bottom:6px;">
+                🎉 ${escapeHtml(oText)}
+              </div>
+
+              ${finalPrice != null ? `
+              <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:6px;">
+                ${showStrike ? `
+                  <span style="font-size:13px; color:rgba(255,255,255,0.6); text-decoration:line-through; font-weight:700;">
+                    ${origPrice.toFixed(2)} SAR
+                  </span>
+                ` : ''}
+                <span style="font-size:20px; font-weight:900; color:#34d399;">
+                  ${finalPrice.toFixed(2)} SAR
+                </span>
+              </div>
+              ` : ''}
+
+              ${savings != null && savings > 0 ? `
+              <div style="margin-top:6px; display:inline-block; background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#a7f3d0; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:800;">
+                وفر ${savings.toFixed(2)} SAR (${Number(oData.savingPercentage || 0).toFixed(0)}%)
+              </div>
+              ` : ''}
+            </div>
+          `;
+
+          modal.style.display = 'flex';
+        }
+
+        function closeOnlineOfferPopup() {
+          const modal = document.getElementById('onlineOfferPopupModal');
+          if (modal) modal.style.display = 'none';
+        }
+
+        function deleteScannedItem(code, event) {
+          if (event) {
+            try { event.stopPropagation(); event.preventDefault(); } catch(e) {}
+          }
+          const clean = String(code || '').trim();
+          if (!clean) return;
+
+          const row = document.getElementById(`card-row-${clean}`);
+          if (row) row.remove();
+
+          if (typeof scannedItemsMemory !== 'undefined') {
+            scannedItemsMemory = scannedItemsMemory.filter(i => String(i.cleanCode).trim() !== clean);
+            if (typeof scannedCodesSet !== 'undefined') {
+              scannedCodesSet.delete(clean);
+            }
+            try {
+              localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+              sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+            } catch(e) {}
+          }
+          if (typeof updateSelectedCount === 'function') updateSelectedCount();
+        }
+
+        function autoDetectScannerFoldLayout() {
+          const shell = document.querySelector('.scanner-shell');
+          if (!shell) return;
+          const isLandscapeWide = (window.innerWidth > window.innerHeight && window.innerWidth >= 580);
+          if (isLandscapeWide) {
+            shell.classList.add('scanner-shell-horizontal');
+          } else {
+            shell.classList.remove('scanner-shell-horizontal');
+          }
+        }
+        window.addEventListener('resize', autoDetectScannerFoldLayout);
+        window.addEventListener('orientationchange', autoDetectScannerFoldLayout);
+
+        function manualShowProductPrice(cleanCode, event) {
+          if (event) {
+            try { event.stopPropagation(); event.preventDefault(); } catch(e) {}
+          }
+          const clean = String(cleanCode || '').trim();
+          if (!clean) return;
+
+          const allPriceBoxes = document.querySelectorAll(`[id="price-box-${clean}"]`);
+          allPriceBoxes.forEach(box => {
+            box.removeAttribute('onclick');
+            box.style.background = "rgba(16,185,129,0.12)";
+            box.style.border = "1px dashed rgba(52,211,153,0.45)";
+            box.style.boxShadow = "none";
+            box.innerHTML = `<div class="scanner-mini-loader"></div><span style="font-size:11px;color:#34d399;font-weight:700;">فحص السعر...</span>`;
+          });
+
+          const renderFoundPrice = (priceVal) => {
+            const numPrice = Number(priceVal);
+            if (typeof scannedItemsMemory !== 'undefined') {
+              const itemInMem = scannedItemsMemory.find(i => String(i.cleanCode).trim() === clean);
+              if (itemInMem) {
+                itemInMem.revealedPrice = numPrice;
+                try {
+                  localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+                  sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+                } catch(e) {}
+              }
+            }
+
+            allPriceBoxes.forEach(box => {
+              box.style.background = "linear-gradient(135deg, #065f46 0%, #047857 100%)";
+              box.style.border = "1px solid #34d399";
+              box.style.boxShadow = "0 3px 8px rgba(16,185,129,0.25)";
+              box.style.cursor = "default";
+              box.onclick = null;
+              box.innerHTML = `
+                <span style="font-size:12px; color:#ffffff; font-weight:800; white-space:nowrap;">
+                  💵 <span style="color:#a7f3d0; font-weight:900;">${numPrice.toFixed(2)} SAR</span>
+                </span>
+              `;
+            });
+          };
+
+          const renderNotFoundPrice = () => {
+            allPriceBoxes.forEach(box => {
+              box.style.background = "rgba(239,68,68,0.12)";
+              box.style.border = "1px solid rgba(239,68,68,0.4)";
+              box.style.cursor = "default";
+              box.onclick = null;
+              box.innerHTML = `<span style="color:#fecaca;font-weight:800;font-size:11px;">💵 غير متوفر</span>`;
+            });
+          };
+
+          const _tk = sessionStorage.getItem("_tk") || "";
+          fetch(`https://online.meralmohamed121022.workers.dev/api/product?code=${encodeURIComponent(clean)}&t=${Date.now()}`, {
+            headers: { "x-session-token": _tk }
+          })
+            .then(res => res.json())
+            .then(data => {
+              const p = data?.originalPrice ?? data?.unitPrice ?? data?.price ?? data?.finalPrice;
+              if (p != null && !isNaN(parseFloat(p)) && parseFloat(p) > 0) {
+                renderFoundPrice(parseFloat(p));
+              } else {
+                const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
+                const prod = targetDB.find(pr => String(pr.Code).trim() === clean || parseInt(pr.Code) === parseInt(clean, 10));
+                const rawLocalPrice = prod ? (prod["Unit Price"] ?? prod.unit_price ?? prod.unitprice ?? prod["Price"] ?? prod.price) : null;
+                if (rawLocalPrice != null && !isNaN(parseFloat(rawLocalPrice)) && parseFloat(rawLocalPrice) > 0) {
+                  renderFoundPrice(parseFloat(rawLocalPrice));
+                } else {
+                  renderNotFoundPrice();
+                }
+              }
+            })
+            .catch(() => {
+              const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
+              const prod = targetDB.find(pr => String(pr.Code).trim() === clean || parseInt(pr.Code) === parseInt(clean, 10));
+              const rawLocalPrice = prod ? (prod["Unit Price"] ?? prod.unit_price ?? prod.unitprice ?? prod["Price"] ?? prod.price) : null;
+              if (rawLocalPrice != null && !isNaN(parseFloat(rawLocalPrice)) && parseFloat(rawLocalPrice) > 0) {
+                renderFoundPrice(parseFloat(rawLocalPrice));
+              } else {
+                renderNotFoundPrice();
+              }
+            });
+        }
+
         async function openBarcodeScanner() {
           const overlay = document.getElementById('scannerModalOverlay');
           const readerEl = document.getElementById('reader');
@@ -36266,11 +36147,23 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const manualInput = document.getElementById('scannerManualCode');
 
           if (overlay) {
+            if (overlay.parentElement !== document.body) {
+              document.body.appendChild(overlay);
+            }
             overlay.style.display = 'flex';
           }
 
           if (typeof autoDetectScannerFoldLayout === 'function') {
             autoDetectScannerFoldLayout();
+          }
+
+          const shell = document.querySelector('.scanner-shell');
+          if (shell) {
+            if (window.innerWidth >= 768) {
+              shell.classList.add('scanner-shell-horizontal');
+            } else {
+              shell.classList.remove('scanner-shell-horizontal');
+            }
           }
 
           const toggleBtn = document.getElementById('toolsSidebarToggle');
@@ -36313,122 +36206,88 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
           setScannerFeedback('idle', 'جاري تهيئة الكاميرا...', 'يرجى توجيه الكاميرا نحو الكود');
 
-          // Launch camera with robust multi-camera and Samsung Fold fallback logic
-          const launchCamera = async () => {
+          // Launch camera using index.html's high-speed and accurate 1:1 square logic
+          const launchCamera = () => {
             try {
-              if (html5QrScanner) {
-                try {
-                  if (html5QrScanner.isScanning) await html5QrScanner.stop();
-                } catch (e) {}
-                try { await html5QrScanner.clear(); } catch (e) {}
-                html5QrScanner = null;
-              }
-
               if (readerEl) readerEl.innerHTML = '';
               html5QrScanner = new Html5Qrcode("reader");
+            } catch (e) {
+              console.warn("Html5Qrcode instance creation warning:", e);
+            }
 
-              const config = {
-                fps: 20,
-                qrbox: (viewfinderWidth, viewfinderHeight) => {
-                  const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.78);
-                  return { width: edge, height: edge };
-                },
-                aspectRatio: 1.0,
-                formatsToSupport: [
-                  Html5QrcodeSupportedFormats.DATA_MATRIX,
-                  Html5QrcodeSupportedFormats.QR_CODE,
-                  Html5QrcodeSupportedFormats.EAN_13,
-                  Html5QrcodeSupportedFormats.EAN_8,
-                  Html5QrcodeSupportedFormats.CODE_128,
-                  Html5QrcodeSupportedFormats.CODE_39
-                ]
-              };
+            const config = {
+              fps: 20,
+              qrbox: (viewfinderWidth, viewfinderHeight) => {
+                const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.78);
+                return { width: edge, height: edge };
+              },
+              aspectRatio: 1.0,
+              formatsToSupport: [
+                Html5QrcodeSupportedFormats.DATA_MATRIX,
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39
+              ]
+            };
 
-              const onScanSuccess = (decodedText) => {
-                const cleanDecoded = String(decodedText || "").trim();
-                const now = Date.now();
-                if (!cleanDecoded) return;
-                if (cleanDecoded === lastScannedValue && (now - lastScannedAt) < 1800) {
-                  return;
-                }
-                lastScannedValue = cleanDecoded;
-                lastScannedAt = now;
-                processScannedCode(cleanDecoded, cleanDecoded);
-              };
-
-              // 1. Try back camera by facingMode
-              try {
-                await html5QrScanner.start({ facingMode: "environment" }, config, onScanSuccess, () => {});
-                setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
-                resetScannerSwipeState();
+            const onScanSuccess = (decodedText) => {
+              const cleanDecoded = String(decodedText || "").trim();
+              const now = Date.now();
+              if (!cleanDecoded) return;
+              if (cleanDecoded === lastScannedValue && (now - lastScannedAt) < 1800) {
                 return;
-              } catch (backErr) {
-                console.warn("Back camera facingMode constraint failed:", backErr);
               }
+              lastScannedValue = cleanDecoded;
+              lastScannedAt = now;
 
-              // 2. Try camera devices lookup
-              try {
-                const devices = await Html5Qrcode.getCameras();
-                if (devices && devices.length > 0) {
-                  const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
-                  await html5QrScanner.start(backCam.id, config, onScanSuccess, () => {});
-                  setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
-                  resetScannerSwipeState();
-                  return;
-                }
-              } catch (camErr) {
-                console.warn("Camera list lookup fallback failed:", camErr);
-              }
+              // تمرير النص المقروء بالكامل للمطابقة الفورية بالـ GTIN والكود السداسي
+              processScannedCode(cleanDecoded, cleanDecoded);
+            };
 
-              // 3. Fallback without facingMode constraint
-              await html5QrScanner.start({}, config, onScanSuccess, () => {});
+            html5QrScanner.start(
+              { facingMode: "environment" },
+              config,
+              onScanSuccess,
+              () => {}
+            ).then(() => {
               setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
               resetScannerSwipeState();
-            } catch (err) {
-              console.error("Camera startup error:", err);
-              setScannerFeedback('error', 'تعذر تشغيل الكاميرا', 'يرجى التحقق من أذونات الكاميرا ثم الضغط على زر التنشيط');
-              flashScannerSwipe('error');
-            }
+            }).catch(err => {
+              console.error("Camera start error with environment:", err);
+              // Fallback without environment constraint if camera fails
+              html5QrScanner.start(
+                {},
+                config,
+                onScanSuccess,
+                () => {}
+              ).then(() => {
+                setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
+                resetScannerSwipeState();
+              }).catch(e => {
+                console.error("Camera fallback start error:", e);
+                setScannerFeedback('error', 'تعذر تشغيل الكاميرا', 'يرجى التحقق من أذونات الكاميرا في المتصفح');
+                flashScannerSwipe('error');
+              });
+            });
           };
 
-          window.launchScannerCamera = launchCamera;
-          await launchCamera();
-        }
-
-        let _isCameraRestarting = false;
-        async function restartCameraStream(event) {
-          if (event) {
-            try { event.stopPropagation(); event.preventDefault(); } catch (e) {}
-          }
-          if (_isCameraRestarting) return;
-          _isCameraRestarting = true;
-
-          const btn = document.getElementById('scannerResetCameraBtn');
-          if (btn) {
-            btn.style.opacity = '0.5';
-            btn.style.pointerEvents = 'none';
-          }
-          setScannerFeedback('idle', 'جاري تنشيط الكاميرا...', 'يتم الآن إعادة الاتصال بمستشعر الكاميرا');
-
-          try {
-            if (typeof window.launchScannerCamera === 'function') {
-              await window.launchScannerCamera();
-            }
-          } catch (err) {
-            console.error("Camera restart error:", err);
-          } finally {
-            setTimeout(() => {
-              _isCameraRestarting = false;
-              if (btn) {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-              }
-            }, 800);
+          if (html5QrScanner) {
+            html5QrScanner.stop().then(() => {
+              try { html5QrScanner.clear(); } catch(e){}
+              html5QrScanner = null;
+              launchCamera();
+            }).catch(() => {
+              html5QrScanner = null;
+              launchCamera();
+            });
+          } else {
+            launchCamera();
           }
         }
-        window.restartCameraStream = restartCameraStream;
 
-// Process Code
+        // Process Code
         // =====================================================
         function updateCardWithOnlineOffer(code, onlineOfferText, onlineOfferData = null) {
           const cleanCode = String(code || '').trim();
@@ -36489,7 +36348,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const showStrike = originalPrice != null && finalPrice != null && originalPrice > finalPrice;
 
           onlineBox.classList.add('online-offer-badge');
-          onlineBox.setAttribute('onclick', `window.open('${productUrl}', '_blank')`);
+          onlineBox.setAttribute('onclick', `openOnlineOfferPopup('${cleanCode}')`);
           onlineBox.style.display = 'flex';
           onlineBox.style.cursor = 'pointer';
           onlineBox.style.marginTop = '8px';
@@ -36549,63 +36408,25 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
         // Close Scanner
         // =====================================================
         async function closeBarcodeScanner() {
+          const overlay = document.getElementById('scannerModalOverlay');
+          if (overlay) overlay.style.display = 'none';
+
+          // إظهار زر المنيو فور إغلاق السكاير
+          const toggleBtn = document.getElementById('toolsSidebarToggle');
+          if (toggleBtn) toggleBtn.style.display = 'flex';
+
+          clearManualScannerInput();
+
           await destroyScannerInstance();
 
           const readerEl = document.getElementById('reader');
           if (readerEl) readerEl.innerHTML = "";
 
-          clearManualScannerInput();
-
-          const isScannerMode = document.documentElement.classList.contains('scanner-mode-active') ||
-                                window.location.search.includes('mode=scanner') ||
-                                window.location.hash.includes('scanner');
-
-          if (isScannerMode) {
-            if (window.history.length > 1 && document.referrer) {
-              window.history.back();
-            } else {
-              window.location.href = 'https://monosystem.vercel.app/';
-            }
-            return;
-          }
-
-          const overlay = document.getElementById('scannerModalOverlay');
-          if (overlay) {
-            overlay.style.setProperty('display', 'none', 'important');
-          }
-
-          document.documentElement.classList.remove('scanner-mode-active');
-
-          const toggleBtn = document.getElementById('toolsSidebarToggle');
-          if (toggleBtn) toggleBtn.style.display = 'flex';
-
+          // -- السطرين الجداد عشان نمسح الهاش --
           if (window.location.hash.includes('scanner')) {
             history.replaceState(null, '', window.location.pathname + window.location.search);
           }
         }
-        window.closeBarcodeScanner = closeBarcodeScanner;
-
-        function goHomeUrl(event) {
-          if (event) {
-            try { event.preventDefault(); event.stopPropagation(); } catch(e) {}
-          }
-          try {
-            if (html5QrScanner && typeof html5QrScanner.stop === 'function') {
-              html5QrScanner.stop().catch(()=>{});
-            }
-          } catch(e) {}
-
-          const targetUrl = 'https://monosystem.vercel.app/';
-          try {
-            if (window.top && window.top !== window) {
-              window.top.location.href = targetUrl;
-              return;
-            }
-          } catch(e) {}
-
-          window.location.href = targetUrl;
-        }
-        window.goHomeUrl = goHomeUrl;
 
 
         function openPromoMedia(type, url) {
@@ -36633,33 +36454,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
         function toggleScannerLayout() {
           const shell = document.querySelector('.scanner-shell');
-          if (!shell) return;
-          const isWide = (window.innerWidth >= 540) || (window.innerWidth > window.innerHeight);
-          if (isWide) {
-            shell.classList.toggle('force-vertical');
-            shell.classList.remove('force-horizontal');
-          } else {
-            shell.classList.toggle('force-horizontal');
-            shell.classList.remove('force-vertical');
+          if (shell) {
+            shell.classList.toggle('scanner-shell-horizontal');
           }
         }
-        window.toggleScannerLayout = toggleScannerLayout;
-
-        // تنظيف التبديل اليدوي عند تغيير وضع الجهاز ليطبق الفولد تلقائياً فوراً
-        window.addEventListener('resize', () => {
-          const shell = document.querySelector('.scanner-shell');
-          if (shell) {
-            shell.classList.remove('force-vertical');
-            shell.classList.remove('force-horizontal');
-          }
-        });
-        window.addEventListener('orientationchange', () => {
-          const shell = document.querySelector('.scanner-shell');
-          if (shell) {
-            shell.classList.remove('force-vertical');
-            shell.classList.remove('force-horizontal');
-          }
-        });
 
         function toggleScannerPrintPanel() {
           const panel = document.getElementById('scannerPrintPanel');
@@ -37154,10 +36952,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           if (typeof scannedItems !== 'undefined') scannedItems = [];
           if (typeof window.scannedItems !== 'undefined') window.scannedItems = [];
           if (typeof scannedCodesSet !== 'undefined') scannedCodesSet.clear();
-          try {
-            localStorage.removeItem('scanned_items_session');
-            sessionStorage.removeItem('scanned_items_session');
-          } catch(e) {}
+          try { try { localStorage.removeItem('scanned_items_session'); } catch(e){} try { sessionStorage.removeItem('scanned_items_session'); } catch(e){} } catch(e) {}
 
           // 2. تفريغ الحاوية التي تعرض الكروت الممسوحة في الشاشة
           const listContainer = document.getElementById('scannedItemsList');
