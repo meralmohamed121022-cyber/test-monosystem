@@ -7298,31 +7298,45 @@
 
           #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
             display: grid !important;
-            grid-template-columns: 380px 1fr !important;
-            grid-template-rows: auto 1fr !important;
+            grid-template-columns: minmax(280px, 380px) 1fr !important;
+            grid-template-rows: auto auto 1fr !important;
             max-width: 1200px !important;
-            width: 95% !important;
-            height: 90vh !important;
+            width: 96% !important;
+            height: 94vh !important;
+          }
+
+          #scannerModalOverlay .scanner-shell.scanner-shell-horizontal > h2 {
+            grid-column: 1 / 3 !important;
+            grid-row: 1 / 2 !important;
+            padding: 10px 0 !important;
+            margin: 0 !important;
           }
 
           #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-camera-wrap {
             grid-column: 1 / 2 !important;
-            grid-row: 1 / 2 !important;
+            grid-row: 2 / 3 !important;
             border-right: 2px solid #334155 !important;
             border-bottom: none !important;
-            min-height: 220px !important;
+            min-height: 200px !important;
             width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
           }
 
           #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-manual-wrap {
             grid-column: 1 / 2 !important;
-            grid-row: 2 / 3 !important;
+            grid-row: 3 / 4 !important;
             border-right: 2px solid #334155 !important;
+            border-top: 1px solid #334155 !important;
           }
 
           #scannerModalOverlay .scanner-shell.scanner-shell-horizontal .scanner-cards-wrap {
             grid-column: 2 / 3 !important;
-            grid-row: 1 / 3 !important; padding-top: 65px !important;
+            grid-row: 2 / 4 !important;
+            padding-top: 10px !important;
+            border-top: none !important;
+            height: 100% !important;
           }
 
           #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList {
@@ -7330,6 +7344,8 @@
             overflow-y: auto !important;
             overflow-x: hidden !important;
             scroll-snap-type: y mandatory !important;
+            height: 100% !important;
+            padding-bottom: 90px !important;
           }
 
           #scannerModalOverlay .scanner-shell.scanner-shell-horizontal #scannedItemsList>* {
@@ -7345,8 +7361,24 @@
             margin-bottom: 10px !important;
           }
 
-          /* 🟢 تحويل الوضع للرأسي للموبايل الصغير فقط لتجنب كسر الهيكل الأفقي داخل الـ Iframe */
-          @media (max-width: 480px) {
+          #scannerResetCameraBtn:hover {
+            background: rgba(255,255,255,0.18) !important;
+            color: #fff !important;
+            border-color: #60a5fa !important;
+          }
+          #scannerResetCameraBtn:active {
+            transform: scale(0.96) !important;
+          }
+
+          .scanner-price-box {
+            transition: all 0.2s ease;
+          }
+          .scanner-price-box:hover {
+            filter: brightness(1.1);
+          }
+
+          /* تحويل الوضع للرأسي للموبايل الصغير في وضع البورتريه فقط */
+          @media (max-width: 480px) and (orientation: portrait) {
             #scannerModalOverlay .scanner-shell.scanner-shell-horizontal {
               display: flex !important;
               flex-direction: column !important;
@@ -7563,16 +7595,29 @@
           <div class="scanner-shell">
             <h2 style="color:white; text-align:center; padding-top:15px; margin:0; display: flex; align-items: center; justify-content: center; gap: 8px;">SCANNER <span style="font-size: 14px; background: #fbbf24; color: #111; padding: 2px 8px; border-radius: 6px; font-weight: 900; letter-spacing: 1px;">V9</span></h2>
 
-            <button onclick="toggleScannerLayout()" title="تغيير العرض (أفقي/رأسي)"
-              style="position:absolute; right:60px; top:12px; z-index:1001; background:#3b82f6; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">⇄</button>
-            <button onclick="closeBarcodeScanner()"
-              style="position:absolute; right:12px; top:12px; z-index:1001; background:#ef4444; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">✕</button>
+            <div class="scanner-top-actions" style="position:absolute; right:12px; top:12px; z-index:1001; display:flex; align-items:center; gap:8px;">
+              <button onclick="toggleScannerLayout()" title="تغيير العرض (أفقي/رأسي)"
+                style="background:#3b82f6; color:white; border:none; border-radius:50%; width:38px; height:38px; cursor:pointer; font-weight:bold; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25); transition:transform 0.2s;">⇄</button>
+              <button onclick="goHomeUrl()" title="الصفحة الرئيسية (Home)"
+                style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:50%; width:38px; height:38px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(16,185,129,0.35); transition:transform 0.2s;">
+                <i class="fas fa-home"></i>
+              </button>
+              <button onclick="closeBarcodeScanner()" title="إغلاق (Close)"
+                style="background:#ef4444; color:white; border:none; border-radius:50%; width:38px; height:38px; cursor:pointer; font-weight:bold; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(239,68,68,0.35); transition:transform 0.2s;">✕</button>
+            </div>
 
             <div class="scanner-camera-wrap">
               <div class="scanner-camera-box">
                 <div id="reader" style="width:100%; max-width:480px; min-height:260px; margin:0 auto; background:#000; border:2px solid #667eea; border-radius:18px; overflow:hidden; position:relative;">
                 </div>
                 <div class="scanner-frame"></div>
+              </div>
+              <div class="scanner-camera-reset-bar" style="display:flex; justify-content:center; padding: 6px 0 4px;">
+                <button id="scannerResetCameraBtn" onclick="restartCameraStream(event)" title="إعادة تشغيل الكاميرا عند التهنيج"
+                  style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.22); color:#cbd5e1; border-radius:20px; padding:5px 14px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s ease; box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+                  <span style="font-size:13px;">🔄</span>
+                  <span>إعادة تشغيل الكاميرا (Reset Camera)</span>
+                </button>
               </div>
             </div>
 
@@ -35126,6 +35171,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const offer = (typeof getOfferForScanner === 'function') ? getOfferForScanner(realCode) : ((typeof getOffer === 'function') ? getOffer(realCode) : null);
           const isOfferActive = (typeof isOfferCurrentlyActive === 'function') ? isOfferCurrentlyActive(offer) : !!offer;
 
+          const prodPrice = (product && (product["Unit Price"] ?? product.unit_price ?? product.unitprice ?? product.price)) ? parseFloat(product["Unit Price"] ?? product.unit_price ?? product.unitprice ?? product.price) : null;
+
+          const existingItem = (typeof scannedItemsMemory !== 'undefined') ? scannedItemsMemory.find(i => String(i.cleanCode).trim() === realCode) : null;
+
           const itemData = {
             imageUrl: (imageUrl && imageUrl !== "No Image") ? imageUrl : "",
             needsWorkerImage: !imageUrl || imageUrl === "No Image",
@@ -35135,8 +35184,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             offerLabel: isOfferActive ? (offer?.offerTypeAR || offer?.offerType || 'العرض متاح') : '❌ لا يوجد عرض نشط حالياً',
             offerLabelEN: isOfferActive ? (offer?.offerType || offer?.offerTypeEN || 'Offer Active') : 'No Active Offer',
             statusColor: isOfferActive ? '#38ef7d' : '#ef4444',
-            onlineOffer: "",
-            onlineOfferData: null
+            onlineOffer: existingItem ? (existingItem.onlineOffer || "") : "",
+            onlineOfferData: existingItem ? (existingItem.onlineOfferData || null) : null,
+            originalPrice: prodPrice,
+            revealedPrice: existingItem ? (existingItem.revealedPrice || null) : null
           };
 
           // إظهار الكارت وإضافته للقائمة
@@ -35146,6 +35197,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           scannedCodesSet.add(realCode);
 
           try {
+            localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
             sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
           } catch (e) { }
 
@@ -35206,7 +35258,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const listEl = document.getElementById('scannedItemsList');
           if (listEl) listEl.innerHTML = '';
 
-          const saved = sessionStorage.getItem('scanned_items_session');
+          const saved = localStorage.getItem('scanned_items_session') || sessionStorage.getItem('scanned_items_session');
           if (saved) {
             try {
               scannedItemsMemory = JSON.parse(saved);
@@ -35227,7 +35279,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               offerLabel: item.offerLabel,
               offerLabelEN: item.offerLabelEN,
               statusColor: item.statusColor,
-              onlineOffer: item.onlineOffer || ''
+              onlineOffer: item.onlineOffer || '',
+              onlineOfferData: item.onlineOfferData || null,
+              revealedPrice: item.revealedPrice || null,
+              originalPrice: item.originalPrice || null
             });
           });
 
@@ -35244,6 +35299,9 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                 offerLabelEN: lastItem.offerLabelEN,
                 statusColor: lastItem.statusColor,
                 onlineOffer: lastItem.onlineOffer || '',
+                onlineOfferData: lastItem.onlineOfferData || null,
+                revealedPrice: lastItem.revealedPrice || null,
+                originalPrice: lastItem.originalPrice || null,
                 compact: false
               })
             );
@@ -35295,6 +35353,16 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
         }
 
         async function destroyScannerInstance() {
+          const videos = document.querySelectorAll('#reader video');
+          videos.forEach(v => {
+            if (v.srcObject && typeof v.srcObject.getTracks === 'function') {
+              v.srcObject.getTracks().forEach(track => {
+                try { track.stop(); } catch(e) {}
+              });
+              v.srcObject = null;
+            }
+          });
+
           if (!html5QrScanner) return;
 
           try {
@@ -35484,6 +35552,104 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             });
         }
 
+        function manualShowProductPrice(cleanCode, event) {
+          if (event) {
+            try { event.stopPropagation(); event.preventDefault(); } catch(e) {}
+          }
+          const clean = String(cleanCode || '').trim();
+          if (!clean) return;
+
+          const allPriceBoxes = document.querySelectorAll(`[id="price-box-${clean}"]`);
+          allPriceBoxes.forEach(box => {
+            box.removeAttribute('onclick');
+            box.style.background = "rgba(16,185,129,0.12)";
+            box.style.border = "1px dashed rgba(52,211,153,0.45)";
+            box.style.boxShadow = "none";
+            box.innerHTML = `<div class="scanner-mini-loader"></div><span style="font-size:11px;color:#34d399;font-weight:700;">جاري استخراج السعر الأصلي...</span>`;
+          });
+
+          const renderFoundPrice = (priceVal) => {
+            const numPrice = Number(priceVal);
+            if (typeof scannedItemsMemory !== 'undefined') {
+              const itemInMem = scannedItemsMemory.find(i => String(i.cleanCode).trim() === clean);
+              if (itemInMem) {
+                itemInMem.revealedPrice = numPrice;
+                try {
+                  localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+                  sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+                } catch(e) {}
+              }
+            }
+
+            allPriceBoxes.forEach(box => {
+              box.style.background = "linear-gradient(135deg, #065f46 0%, #047857 100%)";
+              box.style.border = "1px solid #34d399";
+              box.style.boxShadow = "0 4px 10px rgba(16,185,129,0.3)";
+              box.style.cursor = "default";
+              box.onclick = null;
+              box.innerHTML = `
+                <span style="font-size:12px; color:#ffffff; font-weight:800;">
+                  💵 السعر الأصلي: <span style="color:#a7f3d0; font-size:13px; font-weight:900;">${numPrice.toFixed(2)} SAR</span>
+                </span>
+              `;
+            });
+          };
+
+          const renderNotFoundPrice = () => {
+            allPriceBoxes.forEach(box => {
+              box.style.background = "rgba(239,68,68,0.12)";
+              box.style.border = "1px solid rgba(239,68,68,0.4)";
+              box.style.cursor = "default";
+              box.onclick = null;
+              box.innerHTML = `<span style="color:#fecaca;font-weight:800;font-size:11px;">💵 السعر الأصلي: غير متوفر</span>`;
+            });
+          };
+
+          // 1. Check productsDB first
+          const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
+          const prod = targetDB.find(p => String(p.Code).trim() === clean || parseInt(p.Code) === parseInt(clean, 10));
+
+          let foundPrice = null;
+          if (prod) {
+            const rawPrice = prod["Unit Price"] ?? prod.unit_price ?? prod.unitprice ?? prod["Price"] ?? prod.price;
+            if (rawPrice != null && !isNaN(parseFloat(rawPrice)) && parseFloat(rawPrice) > 0) {
+              foundPrice = parseFloat(rawPrice);
+            }
+          }
+
+          // 2. Check in memory
+          if (!foundPrice && typeof scannedItemsMemory !== 'undefined') {
+            const memItem = scannedItemsMemory.find(i => String(i.cleanCode).trim() === clean);
+            if (memItem && memItem.originalPrice != null && parseFloat(memItem.originalPrice) > 0) {
+              foundPrice = parseFloat(memItem.originalPrice);
+            }
+          }
+
+          if (foundPrice != null) {
+            renderFoundPrice(foundPrice);
+            return;
+          }
+
+          // 3. Fallback: Fetch from worker API
+          const _tk = sessionStorage.getItem("_tk") || "";
+          fetch(`https://online.meralmohamed121022.workers.dev/api/product?code=${encodeURIComponent(clean)}&t=${Date.now()}`, {
+            headers: { "x-session-token": _tk }
+          })
+            .then(res => res.json())
+            .then(data => {
+              const p = data?.originalPrice ?? data?.unitPrice ?? data?.price ?? data?.finalPrice;
+              if (p != null && !isNaN(parseFloat(p)) && parseFloat(p) > 0) {
+                renderFoundPrice(parseFloat(p));
+              } else {
+                renderNotFoundPrice();
+              }
+            })
+            .catch(() => {
+              renderNotFoundPrice();
+            });
+        }
+        window.manualShowProductPrice = manualShowProductPrice;
+
         function buildNoImageBox(text) {
           return `
         <div style="color:#94a3b8;font-size:11px;text-align:center;line-height:1.3;">
@@ -35553,7 +35719,9 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           statusColor = '#38ef7d',
           compact = false,
           onlineOffer = '',
-          onlineOfferData = null
+          onlineOfferData = null,
+          revealedPrice = null,
+          originalPrice = null
         }) {
           const imageW = compact ? 148 : 180;
           const imageH = compact ? 105 : 125;
@@ -35657,6 +35825,29 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                 <span style="font-size:11px; color:#ffffff; font-weight:800;">🌐 Show Online Offer / عرض العرض أونلاين</span>
             </div>`;
 
+          const hasRevealedPrice = (revealedPrice != null && !isNaN(revealedPrice) && Number(revealedPrice) > 0);
+          const priceHTML = hasRevealedPrice
+            ? `
+            <div id="price-box-${cleanCode}" class="scanner-price-box"
+                 style="margin-top:2px; padding:6px 12px; border-radius:10px;
+                        background:linear-gradient(135deg, #065f46 0%, #047857 100%);
+                        border:1px solid #34d399; display:flex; align-items:center; justify-content:center; gap:8px; min-height:28px;
+                        box-shadow: 0 4px 10px rgba(16,185,129,0.25);">
+                <span style="font-size:12px; color:#ffffff; font-weight:800;">
+                    💵 السعر الأصلي: <span style="color:#a7f3d0; font-size:13px; font-weight:900;">${Number(revealedPrice).toFixed(2)} SAR</span>
+                </span>
+            </div>`
+            : `
+            <div id="price-box-${cleanCode}" class="scanner-price-box"
+                 onclick="manualShowProductPrice('${cleanCode}', event)"
+                 style="margin-top:2px; padding:6px 12px; border-radius:10px;
+                        background:linear-gradient(135deg, #059669 0%, #10b981 100%);
+                        border:none; display:flex; align-items:center; justify-content:center; gap:8px; min-height:28px; cursor:pointer;
+                        box-shadow: 0 4px 10px rgba(16,185,129,0.25);
+                        transition: all 0.2s ease;">
+                <span style="font-size:11px; color:#ffffff; font-weight:800;">💵 عرض السعر الأصلي (Show Price)</span>
+            </div>`;
+
           return `
         <!-- الكارت الأساسي -->
         <div style="
@@ -35750,8 +35941,11 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                     </div>
                 </div>
                 
-                <!-- 💡 عرض الأونلاين (يأخذ العرض بالكامل تحت الصورة والنص) -->
-                ${onlineOfferHTML}
+                <!-- 💡 عرض الأونلاين وعرض السعر الأصلي المستقل -->
+                <div style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                  ${onlineOfferHTML}
+                  ${priceHTML}
+                </div>
 
             </div>
         </div>
@@ -35766,7 +35960,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           offerLabel = '',
           offerLabelEN = '',
           statusColor = '#38ef7d',
-          onlineOffer = ''
+          onlineOffer = '',
+          onlineOfferData = null,
+          revealedPrice = null,
+          originalPrice = null
         }) {
           const listEl = document.getElementById('scannedItemsList');
           const shell = document.querySelector('.scanner-shell');
@@ -35809,7 +36006,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             offerLabelEN,
             statusColor,
             compact: true,
-            onlineOffer
+            onlineOffer,
+            onlineOfferData,
+            revealedPrice,
+            originalPrice
           });
 
           // =====================================================
@@ -35853,7 +36053,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               row.remove();
               if (typeof scannedCodesSet !== 'undefined') scannedCodesSet.delete(cleanCode);
               scannedItemsMemory = scannedItemsMemory.filter(i => i.cleanCode !== cleanCode);
-              sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+              try {
+                localStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+                sessionStorage.setItem('scanned_items_session', JSON.stringify(scannedItemsMemory));
+              } catch(e) {}
               if (typeof updateScannerDots === 'function') updateScannerDots();
               if (typeof updateSelectedCount === 'function') updateSelectedCount();
             }, 200);
@@ -35903,13 +36106,8 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             overlay.style.display = 'flex';
           }
 
-          const shell = document.querySelector('.scanner-shell');
-          if (shell) {
-            if (window.innerWidth >= 768) {
-              shell.classList.add('scanner-shell-horizontal');
-            } else {
-              shell.classList.remove('scanner-shell-horizontal');
-            }
+          if (typeof autoDetectScannerFoldLayout === 'function') {
+            autoDetectScannerFoldLayout();
           }
 
           const toggleBtn = document.getElementById('toolsSidebarToggle');
@@ -36019,6 +36217,8 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             });
           };
 
+          window.launchScannerCamera = launchCamera;
+
           if (html5QrScanner) {
             html5QrScanner.stop().then(() => {
               try { html5QrScanner.clear(); } catch(e){}
@@ -36032,6 +36232,59 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             launchCamera();
           }
         }
+
+        async function restartCameraStream(event) {
+          if (event) {
+            try { event.stopPropagation(); event.preventDefault(); } catch(e) {}
+          }
+          const btn = document.getElementById('scannerResetCameraBtn');
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<span style="font-size:13px; animation:spin 1s linear infinite;">🔄</span><span>جاري تشغيل الكاميرا...</span>`;
+          }
+          setScannerFeedback('idle', 'جاري إعادة تشغيل الكاميرا...', 'يتم الآن إعادة الاتصال بمستشعر الكاميرا');
+
+          try {
+            await destroyScannerInstance();
+
+            const readerEl = document.getElementById('reader');
+            if (readerEl) readerEl.innerHTML = '';
+
+            await new Promise(r => setTimeout(r, 250));
+
+            if (typeof window.launchScannerCamera === 'function') {
+              window.launchScannerCamera();
+            } else if (typeof openBarcodeScanner === 'function') {
+              await openBarcodeScanner();
+            }
+          } catch (err) {
+            console.error("Camera restart error:", err);
+            setScannerFeedback('error', 'تعذر إعادة تشغيل الكاميرا', 'يرجى مراجعة إذن الكاميرا أو تحديث الصفحة');
+          } finally {
+            setTimeout(() => {
+              const resetBtn = document.getElementById('scannerResetCameraBtn');
+              if (resetBtn) {
+                resetBtn.disabled = false;
+                resetBtn.innerHTML = `<span style="font-size:13px;">🔄</span><span>إعادة تشغيل الكاميرا (Reset Camera)</span>`;
+              }
+            }, 1000);
+          }
+        }
+        window.restartCameraStream = restartCameraStream;
+
+        // Auto recovery on mobile tab visibility change
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            const overlay = document.getElementById('scannerModalOverlay');
+            if (overlay && overlay.style.display !== 'none') {
+              const video = document.querySelector('#reader video');
+              if (!video || video.paused || video.ended || video.readyState < 2) {
+                console.log("Auto-recovering camera stream on visibility change...");
+                restartCameraStream();
+              }
+            }
+          }
+        });
 
         // Process Code
         // =====================================================
@@ -36154,25 +36407,47 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
         // Close Scanner
         // =====================================================
         async function closeBarcodeScanner() {
-          const overlay = document.getElementById('scannerModalOverlay');
-          if (overlay) overlay.style.display = 'none';
-
-          // إظهار زر المنيو فور إغلاق السكاير
-          const toggleBtn = document.getElementById('toolsSidebarToggle');
-          if (toggleBtn) toggleBtn.style.display = 'flex';
-
-          clearManualScannerInput();
-
           await destroyScannerInstance();
 
           const readerEl = document.getElementById('reader');
           if (readerEl) readerEl.innerHTML = "";
 
-          // -- السطرين الجداد عشان نمسح الهاش --
+          clearManualScannerInput();
+
+          const isScannerMode = document.documentElement.classList.contains('scanner-mode-active') ||
+                                window.location.search.includes('mode=scanner') ||
+                                window.location.hash.includes('scanner');
+
+          if (isScannerMode) {
+            if (window.history.length > 1 && document.referrer) {
+              window.history.back();
+            } else {
+              window.location.href = 'https://monosystem.vercel.app/';
+            }
+            return;
+          }
+
+          const overlay = document.getElementById('scannerModalOverlay');
+          if (overlay) {
+            overlay.style.setProperty('display', 'none', 'important');
+          }
+
+          document.documentElement.classList.remove('scanner-mode-active');
+
+          const toggleBtn = document.getElementById('toolsSidebarToggle');
+          if (toggleBtn) toggleBtn.style.display = 'flex';
+
           if (window.location.hash.includes('scanner')) {
             history.replaceState(null, '', window.location.pathname + window.location.search);
           }
         }
+        window.closeBarcodeScanner = closeBarcodeScanner;
+
+        function goHomeUrl() {
+          destroyScannerInstance();
+          window.location.href = 'https://monosystem.vercel.app/';
+        }
+        window.goHomeUrl = goHomeUrl;
 
 
         function openPromoMedia(type, url) {
@@ -36202,7 +36477,40 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const shell = document.querySelector('.scanner-shell');
           if (shell) {
             shell.classList.toggle('scanner-shell-horizontal');
+            window._scannerManualLayoutUserToggled = true;
           }
+        }
+        window.toggleScannerLayout = toggleScannerLayout;
+
+        function autoDetectScannerFoldLayout(force = false) {
+          const shell = document.querySelector('.scanner-shell');
+          if (!shell) return;
+          if (window._scannerManualLayoutUserToggled && !force) return;
+
+          // Samsung Galaxy Z Fold unfolded portrait is ~674px - 720px
+          // Tablet or landscape is also wide:
+          const isFoldOrWide = (window.innerWidth >= 580) || (window.innerWidth > window.innerHeight);
+
+          if (isFoldOrWide) {
+            shell.classList.add('scanner-shell-horizontal');
+          } else {
+            shell.classList.remove('scanner-shell-horizontal');
+          }
+        }
+        window.autoDetectScannerFoldLayout = autoDetectScannerFoldLayout;
+
+        window.addEventListener('resize', () => {
+          autoDetectScannerFoldLayout();
+        });
+        window.addEventListener('orientationchange', () => {
+          window._scannerManualLayoutUserToggled = false;
+          setTimeout(() => autoDetectScannerFoldLayout(true), 150);
+        });
+        if (window.screen && window.screen.orientation) {
+          window.screen.orientation.addEventListener('change', () => {
+            window._scannerManualLayoutUserToggled = false;
+            setTimeout(() => autoDetectScannerFoldLayout(true), 150);
+          });
         }
 
         function toggleScannerPrintPanel() {
@@ -36698,7 +37006,10 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           if (typeof scannedItems !== 'undefined') scannedItems = [];
           if (typeof window.scannedItems !== 'undefined') window.scannedItems = [];
           if (typeof scannedCodesSet !== 'undefined') scannedCodesSet.clear();
-          try { sessionStorage.removeItem('scanned_items_session'); } catch(e) {}
+          try {
+            localStorage.removeItem('scanned_items_session');
+            sessionStorage.removeItem('scanned_items_session');
+          } catch(e) {}
 
           // 2. تفريغ الحاوية التي تعرض الكروت الممسوحة في الشاشة
           const listContainer = document.getElementById('scannedItemsList');
