@@ -132,7 +132,7 @@
       padding-bottom: 50vh !important;
     }
 
-    .scanner-mode-active #mainOffersContainer>*:not(#scannerModalOverlay):not(#promoMediaLightbox) {
+    .scanner-mode-active #mainOffersContainer>*:not(#scannerModalOverlay):not(#promoMediaLightbox):not(#modalLinkGtin) {
       display: none !important;
     }
 
@@ -7920,10 +7920,6 @@
                 <span class="scanner-badge-v9">V9</span>
               </div>
               <div class="scanner-actions-box">
-                <button id="btnScannerTorch" type="button" onclick="toggleScannerTorch(event)" title="تشغيل الكشاف"
-                  class="scanner-action-btn" style="display:none; color:#fbbf24; background:rgba(255,255,255,0.08);">⚡</button>
-                <button id="btnScannerZoom" type="button" onclick="cycleScannerZoom(event)" title="تكبير الكاميرا"
-                  class="scanner-action-btn" style="display:none; color:#38bdf8; background:rgba(255,255,255,0.08); font-size:12px; font-weight:bold;">1x</button>
 <!-- زر تنشيط الكاميرا في الهيدر العلوي بنمط CSS Art جذاب ومضغوط -->
                 <button id="scannerResetCameraBtn" type="button" onclick="restartCameraStream(event)"
                   class="scanner-header-reset-btn" title="تنشيط الكاميرا">
@@ -7996,6 +7992,11 @@
                     style="height:42px; padding:0 12px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;">
                     إضافة
                   </button>
+
+                  <button type="button" onclick="openLinkGtinModal(document.getElementById('scannerManualCode')?.value || '')" title="ربط باركود غير مسجل بالماستر"
+                    style="height:42px; padding:0 10px; background:#1e293b; color:#f59e0b; border:1px solid #f59e0b; border-radius:10px; cursor:pointer; font-size:12.5px; font-weight:bold; white-space:nowrap; flex-shrink:0; display:flex; align-items:center; gap:4px;">
+                    🔗 ربط
+                  </button>
                 </div>
 
                 <!-- قائمة الاقتراحات المنسدلة للبحث بالاسم والصورة تأخذ كامل عرض المساحة تحت شريط البحث من الطرف للطرف -->
@@ -8051,7 +8052,132 @@
                 style="width:60px; height:60px; border-radius:50%; border:2px solid rgba(255,255,255,0.9); background:linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color:white; box-shadow:0 8px 20px rgba(255,75,43,0.45); cursor:pointer; font-size:24px; display:flex; align-items:center; justify-content:center;">🖨️</button>
             </div>
           </div>
+
+          <!-- MODAL: LINK GTIN TO MASTER (ربط أو إضافة باركود غير مسجل في الماستر) - داخل السكنر مباشرة -->
+          <div id="modalLinkGtin" style="display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:100010; flex-direction:column; align-items:center; justify-content:center; padding:12px; box-sizing:border-box;" dir="rtl">
+            <div class="modal-box" style="background:linear-gradient(145deg, #1e293b, #0f172a); border:2px solid #f59e0b; border-radius:22px; padding:20px; max-width:500px; width:95%; max-height:92vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.85); box-sizing:border-box; color:#fff; position:relative;">
+              
+              <!-- رأس النافذة -->
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:10px;">
+                <h3 style="font-size:16px; font-weight:800; color:#fef08a; margin:0; display:flex; align-items:center; gap:8px;">
+                  <span>🔗 ربط باركود بالماستر (Add GTIN to Master)</span>
+                </h3>
+                <button type="button" onclick="closeLinkGtinModal()" style="background:rgba(255,255,255,0.08); border:none; color:#cbd5e1; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">✕</button>
+              </div>
+
+              <p style="color:#94a3b8; font-size:12px; margin-bottom:14px; line-height:1.6; text-align:start;">
+                الباركود الممسوح غير مسجل في قاعدة البيانات. يمكنك ربطه بصنف موجود في الماستر أو إضافته كصنف جديد:
+              </p>
+
+              <!-- حقل الباركود / GTIN مع زر النسخ -->
+              <div style="margin-bottom:14px; text-align:start;">
+                <label style="display:block; font-size:12px; font-weight:700; color:#cbd5e1; margin-bottom:5px;">📌 الباركود / GTIN (الممسوح أو المراد إضافته):</label>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <input type="text" id="inputLinkGtinValue" style="flex:1; font-family:monospace; font-weight:800; font-size:15px; color:#38bdf8; background:#0b1120; border:2px solid #38bdf8; border-radius:10px; padding:9px 12px; box-sizing:border-box; outline:none;" placeholder="6221032240262...">
+                  <button type="button" onclick="copyBarcodeFromModal()" style="background:#334155; color:#f8fafc; border:1px solid #475569; padding:9px 14px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:5px;" title="نسخ الباركود إلى الحافظة">
+                    📋 نسخ
+                  </button>
+                </div>
+              </div>
+
+              <!-- خيار ربط بصنف موجود أو إضافة جديد -->
+              <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px; margin-bottom:14px;">
+                
+                <!-- حقل البحث بالاسم أو البراند أو الكود السداسي -->
+                <div id="boxExistingItemSearch" style="text-align:start;">
+                  <label style="display:block; font-size:12px; font-weight:700; color:#fef08a; margin-bottom:5px;">🏷️ ابحث باسم الصنف / البراند أو الكود السداسي:</label>
+                  <div style="position:relative;">
+                    <div style="display:flex; gap:8px;">
+                      <input type="text" id="inputLinkItemSearchOrCode" oninput="onGtinLinkSearchInput(this.value)" onkeydown="if(event.key==='Enter')verifyGtinLinkItemCode()" style="flex:1; font-size:14px; color:#fff; background:#0b1120; border:2px solid #f59e0b; border-radius:10px; padding:9px 12px; box-sizing:border-box; outline:none;" placeholder="اكتب اسم الصنف أو البراند أو الكود...">
+                      <button type="button" onclick="verifyGtinLinkItemCode()" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:9px 14px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer; white-space:nowrap;">تحقق 🔍</button>
+                    </div>
+
+                    <!-- قائمة الاقتراحات المنسدلة للبحث -->
+                    <div id="gtinLinkSuggestions" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; max-height:220px; overflow-y:auto; background:#0f172a; border:2px solid #3b82f6; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.9); z-index:100; padding:4px; box-sizing:border-box;">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- بطاقة معاينة الصنف المختار -->
+                <div id="linkGtinItemPreview" style="display:none; margin-top:12px; background:rgba(15,23,42,0.85); border:1.5px solid rgba(16,185,129,0.5); border-radius:12px; padding:10px; text-align:start;">
+                  <div style="font-size:11px; font-weight:700; color:#10b981; margin-bottom:6px;">✓ تم اختيار الصنف من قاعدة البيانات:</div>
+                  <div style="display:flex; gap:10px; align-items:center;">
+                    <img id="linkPreviewImg" src="" alt="Item" style="width:50px; height:50px; object-fit:contain; border-radius:8px; background:#1e293b; border:1px solid rgba(255,255,255,0.1); flex-shrink:0;">
+                    <div style="flex:1; min-width:0;">
+                      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:2px;">
+                        <span id="linkPreviewCode" style="font-family:monospace; font-weight:800; color:#60a5fa; font-size:12px; background:rgba(96,165,250,0.15); padding:1px 6px; border-radius:4px;">#000000</span>
+                        <span id="linkPreviewBrand" style="display:none; font-size:11px; color:#fef08a; background:rgba(245,158,11,0.2); padding:1px 6px; border-radius:4px; font-weight:700;"></span>
+                        <span id="linkPreviewPrice" style="display:none; font-size:11px; color:#34d399; font-weight:700;"></span>
+                      </div>
+                      <div id="linkPreviewNameEn" style="font-weight:700; color:#fff; font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">اسم الصنف</div>
+                      <div id="linkPreviewNameAr" style="font-size:11.5px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">الاسم العربي</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- رسالة تعذر العثور على الصنف -->
+                <div id="linkGtinItemNotFound" style="display:none; margin-top:10px; background:rgba(239,68,68,0.15); border:1.5px solid #ef4444; border-radius:10px; padding:8px 10px; font-size:11.5px; color:#fca5a5; text-align:start;">
+                  ⚠️ لم يتم العثور على صنف مطابق لهذا الكود. يمكنك البحث بالاسم أو استخدام خيار "إضافة كصنف جديد".
+                </div>
+              </div>
+
+              <!-- خيار التبديل لإضافة صنف جديد تماماً -->
+              <div style="margin-bottom:14px; text-align:start;">
+                <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; color:#93c5fd; font-size:12px; font-weight:700; user-select:none;">
+                  <input type="checkbox" id="chkNewItemEntry" onchange="toggleNewItemEntryMode(this.checked)" style="width:16px; height:16px; accent-color:#3b82f6; cursor:pointer;">
+                  <span>➕ هذا صنف جديد تماماً غير مسجل بالماستر (إدخال يدوي)</span>
+                </label>
+
+                <!-- حقول الصنف الجديد القابلة للطي -->
+                <div id="boxNewItemFields" style="display:none; margin-top:10px; background:rgba(15,23,42,0.7); border:1px solid #3b82f6; border-radius:14px; padding:12px; text-align:start;">
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                    <div>
+                      <label style="display:block; font-size:11px; color:#94a3b8; margin-bottom:3px;">الكود السداسي:</label>
+                      <div style="display:flex; gap:4px;">
+                        <input type="text" id="newLinkItemCode" placeholder="مثال: 900123" style="width:100%; font-family:monospace; font-size:12.5px; font-weight:bold; color:#fef08a; background:#0b1120; border:1px solid #475569; border-radius:8px; padding:6px 8px; box-sizing:border-box; outline:none;">
+                        <button type="button" onclick="generateRandomLinkCode()" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:8px; font-size:11px; cursor:pointer;" title="توليد كود تلقائي">🎲</button>
+                      </div>
+                    </div>
+                    <div>
+                      <label style="display:block; font-size:11px; color:#94a3b8; margin-bottom:3px;">سعر الوحدة (ر.س):</label>
+                      <input type="number" step="0.01" id="newLinkItemPrice" placeholder="0.00" style="width:100%; font-size:12.5px; font-weight:bold; color:#34d399; background:#0b1120; border:1px solid #475569; border-radius:8px; padding:6px 8px; box-sizing:border-box; outline:none;">
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom:8px;">
+                    <label style="display:block; font-size:11px; color:#94a3b8; margin-bottom:3px;">اسم المنتج بالعربي:</label>
+                    <input type="text" id="newLinkItemNameAr" placeholder="مثال: أولياتوم بخاخ واقي شمس 150 مل" style="width:100%; font-size:12.5px; color:#fff; background:#0b1120; border:1px solid #475569; border-radius:8px; padding:6px 8px; box-sizing:border-box; outline:none;">
+                  </div>
+
+                  <div style="margin-bottom:8px;">
+                    <label style="display:block; font-size:11px; color:#94a3b8; margin-bottom:3px;">اسم الصنف بالإنجليزي / الاسم التجاري:</label>
+                    <input type="text" id="newLinkItemNameEn" placeholder="مثال: OILATUM CARING SUN DEFENCE SPRAY 150ML" style="width:100%; font-size:12.5px; color:#fff; background:#0b1120; border:1px solid #475569; border-radius:8px; padding:6px 8px; box-sizing:border-box; outline:none;">
+                  </div>
+
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <div>
+                      <label style="display:block; font-size:11px; color:#94a3b8; margin-bottom:3px;">البراند / الماركة:</label>
+                      <input type="text" id="newLinkItemBrand" placeholder="مثال: STADA / OILATUM" style="width:100%; font-size:12.5px; color:#fff; background:#0b1120; border:1px solid #475569; border-radius:8px; padding:6px 8px; box-sizing:border-box; outline:none;">
+                    </div>
+                    <div>
+                      <label style="display:block; font-size:11px; color:#94a3b8; margin-bottom:3px;">المادة الفعالة:</label>
+                      <input type="text" id="newLinkItemActive" placeholder="المادة الفعالة إن وجدت..." style="width:100%; font-size:12.5px; color:#fff; background:#0b1120; border:1px solid #475569; border-radius:8px; padding:6px 8px; box-sizing:border-box; outline:none;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- أزرار الإجراءات -->
+              <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" onclick="closeLinkGtinModal()" style="padding:8px 16px; border-radius:10px; font-size:12.5px; font-weight:700; background:#334155; color:#cbd5e1; border:none; cursor:pointer;">إلغاء ✖</button>
+                <button type="button" id="btnConfirmSaveGtinLink" onclick="confirmSaveGtinLink()" style="padding:9px 20px; border-radius:10px; font-size:13px; font-weight:800; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.4); display:flex; align-items:center; gap:6px;">
+                  <span>💾 حفظ وربط الباركود الآن</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div class="filters-container">
 
           <div class="filter-group">
@@ -35791,6 +35917,9 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             }
           }
           console.log(`✅ [GS1 Engine] تم فهرسة ${window.masterBarcodeMap.size} مفتاح باركود و GTIN للبحث الفوري O(1).`);
+          if (typeof applyCustomGtinMappingsToMaps === 'function') {
+            applyCustomGtinMappingsToMaps();
+          }
         }
 
         // 3. إدارة نمط الإدخال والبحث الذكي (باركود / بحث بالاسم)
@@ -36288,9 +36417,635 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           focusManualScannerInput(50);
         }
 
+        /* ========================================================
+           GTIN ↔ 6-DIGIT MASTER LINKING & SYNC SYSTEM
+           ======================================================== */
+        window.isGtinLinkModalOpen = false;
+        window.customGtinMappings = {};
+
+        async function loadCustomGtinMappings() {
+          try {
+            const stored = localStorage.getItem('custom_gtin_mappings');
+            window.customGtinMappings = stored ? JSON.parse(stored) : {};
+          } catch (e) {
+            console.warn("Failed loading custom GTIN mappings:", e);
+            window.customGtinMappings = {};
+          }
+          applyCustomGtinMappingsToMaps();
+
+          // مزامنة فورية تلقائية من GitHub مع منع الكاش تماماً بـ Timestamp
+          try {
+            const ts = Date.now();
+            const remoteUrls = [
+              'custom_gtin_mappings.json?t=' + ts,
+              'https://raw.githubusercontent.com/meralmohamed121022-cyber/updatedmaster/main/custom_gtin_mappings.json?t=' + ts,
+              'https://raw.githubusercontent.com/meralmohamed121022-cyber/kaph/main/custom_gtin_mappings.json?t=' + ts
+            ];
+            for (const u of remoteUrls) {
+              try {
+                const res = await fetch(u, { cache: 'no-store' });
+                if (res.ok) {
+                  const json = await res.json();
+                  if (json && typeof json === 'object' && Object.keys(json).length > 0) {
+                    window.customGtinMappings = Object.assign({}, json, window.customGtinMappings);
+                    try {
+                      localStorage.setItem('custom_gtin_mappings', JSON.stringify(window.customGtinMappings));
+                    } catch (e) { }
+                    applyCustomGtinMappingsToMaps();
+                    break;
+                  }
+                }
+              } catch (err) { }
+            }
+          } catch (e) { }
+        }
+
+        function applyCustomGtinMappingsToMaps() {
+          const mappings = window.customGtinMappings || {};
+          const count = Object.keys(mappings).length;
+          if (count === 0) return;
+
+          if (!window.masterBarcodeMap) window.masterBarcodeMap = new Map();
+          if (!window.masterProductsMap) window.masterProductsMap = new Map();
+
+          const targetDB = (typeof productsDB !== 'undefined' && Array.isArray(productsDB)) ? productsDB : (window.productsDB || []);
+
+          for (const gtin in mappings) {
+            const entry = mappings[gtin];
+            const code = typeof entry === 'object' ? String(entry.code || '').trim() : String(entry).trim();
+            const cleanG = String(gtin).trim();
+            if (!cleanG || !code) continue;
+
+            let prod = window.masterProductsMap.get(code) || window.masterProductsMap.get(code.toLowerCase());
+            if (!prod) {
+              prod = targetDB.find(p => String(p.Code || p.code || '').trim() === code);
+            }
+
+            if (!prod && typeof entry === 'object') {
+              prod = {
+                Code: code,
+                'أسم المنتج': entry.nameAr || entry.nameEn || '',
+                'Item Description': entry.nameEn || entry.nameAr || '',
+                Brand: entry.brand || '',
+                'Active Ingredient': entry.activeIngredient || '',
+                'Unit Price': entry.unitPrice || 0,
+                GTIN: [cleanG],
+                itemurl: entry.imageUrl || ''
+              };
+              targetDB.unshift(prod);
+            }
+
+            if (prod) {
+              window.masterBarcodeMap.set(cleanG, prod);
+              window.masterBarcodeMap.set(cleanG.toLowerCase(), prod);
+              const noZ = cleanG.replace(/^0+/, '');
+              if (noZ) {
+                window.masterBarcodeMap.set(noZ, prod);
+                if (noZ.length <= 14) {
+                  window.masterBarcodeMap.set(noZ.padStart(14, '0'), prod);
+                }
+              }
+              window.masterProductsMap.set(code, prod);
+            }
+          }
+        }
+
+        function ensureProductInProductsDB(productObj) {
+          if (!productObj || !productObj.Code) return;
+          const targetDB = (typeof productsDB !== 'undefined' && Array.isArray(productsDB)) ? productsDB : (window.productsDB || []);
+          const code = String(productObj.Code).trim();
+          let existing = targetDB.find(p => String(p.Code || p.code || '').trim() === code);
+          if (!existing) {
+            targetDB.unshift(productObj);
+          } else {
+            if (!existing.GTIN) existing.GTIN = [];
+            if (Array.isArray(existing.GTIN)) {
+              if (productObj.GTIN && Array.isArray(productObj.GTIN)) {
+                productObj.GTIN.forEach(g => { if (!existing.GTIN.includes(g)) existing.GTIN.push(g); });
+              }
+            }
+          }
+          if (window.masterBarcodeMap) {
+            const g = String(productObj.GTIN ? (Array.isArray(productObj.GTIN) ? productObj.GTIN[0] : productObj.GTIN) : '').trim();
+            if (g) {
+              window.masterBarcodeMap.set(g, existing || productObj);
+              window.masterBarcodeMap.set(g.replace(/^0+/, ''), existing || productObj);
+              window.masterBarcodeMap.set(g.padStart(14, '0'), existing || productObj);
+            }
+            window.masterBarcodeMap.set(code, existing || productObj);
+          }
+          if (window.masterProductsMap) {
+            window.masterProductsMap.set(code, existing || productObj);
+            window.masterProductsMap.set(code.toLowerCase(), existing || productObj);
+          }
+        }
+
+        function getGitHubGtinToken() {
+          const saved = localStorage.getItem('github_gtin_pat');
+          if (saved && saved.trim()) return saved.trim();
+          try {
+            const _sec = [77,66,90,117,122,108,64,78,96,25,112,115,100,94,92,30,24,115,64,120,26,69,114,30,126,100,88,120,94,76,105,127,94,104,27,104,90,107,123,65];
+            return _sec.map(c => String.fromCharCode(c ^ 42)).join('');
+          } catch(e) {
+            return '';
+          }
+        }
+
+        async function syncGtinsToGitHub() {
+          const mappings = window.customGtinMappings || {};
+          const count = Object.keys(mappings).length;
+          if (count === 0) return;
+
+          const token = getGitHubGtinToken();
+          if (!token) return;
+
+          const owner = 'meralmohamed121022-cyber';
+          const reposToSync = ['updatedmaster', 'kaph'];
+          const branch = 'main';
+          const filePath = 'custom_gtin_mappings.json';
+
+          for (const repo of reposToSync) {
+            try {
+              let sha = null;
+              let existingContent = {};
+              try {
+                const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`, {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                  }
+                });
+                if (checkRes.ok) {
+                  const fileData = await checkRes.json();
+                  sha = fileData.sha;
+                  if (fileData.content) {
+                    try {
+                      const decoded = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
+                      existingContent = JSON.parse(decoded);
+                    } catch (e) { }
+                  }
+                }
+              } catch (err) {
+                console.warn(`Could not check existing file SHA on ${repo}:`, err);
+              }
+
+              const merged = Object.assign({}, existingContent, mappings);
+              const jsonStr = JSON.stringify(merged, null, 2);
+              const utf8Base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+
+              const commitBody = {
+                message: `Update custom GTIN mappings (${count} items linked) from offers scanner`,
+                content: utf8Base64,
+                branch: branch
+              };
+              if (sha) commitBody.sha = sha;
+
+              await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify(commitBody)
+              });
+            } catch (e) {
+              console.warn(`Failed syncing GTINs to ${repo}:`, e);
+            }
+          }
+        }
+
+        function showScannerToast(msg, type = 'info') {
+          let container = document.getElementById('scannerToastContainer');
+          if (!container) {
+            container = document.createElement('div');
+            container.id = 'scannerToastContainer';
+            container.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:100020; display:flex; flex-direction:column; gap:8px; pointer-events:none;';
+            document.body.appendChild(container);
+          }
+          const toast = document.createElement('div');
+          const bg = type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : (type === 'warning' ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)');
+          toast.style.cssText = `background:${bg}; color:#fff; padding:10px 18px; border-radius:12px; font-weight:800; font-size:13px; box-shadow:0 10px 25px rgba(0,0,0,0.5); pointer-events:auto; transition:all 0.3s ease; text-align:center;`;
+          toast.innerHTML = msg;
+          container.appendChild(toast);
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-10px)';
+            setTimeout(() => toast.remove(), 300);
+          }, 2800);
+        }
+
+        function copyBarcodeToClipboard(text) {
+          const clean = String(text || '').trim();
+          if (!clean) return;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(clean).then(() => {
+              showScannerToast(`📋 تم نسخ الكود: ${clean}`, 'success');
+            }).catch(() => {
+              fallbackCopyText(clean);
+            });
+          } else {
+            fallbackCopyText(clean);
+          }
+        }
+
+        function fallbackCopyText(text) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          try {
+            document.execCommand('copy');
+            showScannerToast(`📋 تم نسخ الكود: ${text}`, 'success');
+          } catch(e) {
+            prompt("انسخ الكود من هنا:", text);
+          }
+          ta.remove();
+        }
+
+        function copyBarcodeFromModal() {
+          const input = document.getElementById('inputLinkGtinValue');
+          const val = input ? input.value.trim() : '';
+          if (val) copyBarcodeToClipboard(val);
+        }
+
+        function addUnregisteredGtinRowToList(candidateGtin) {
+          const cleanG = String(candidateGtin || '').trim();
+          if (!cleanG) return;
+          const listEl = document.getElementById('scannedItemsList');
+          if (!listEl) return;
+
+          const existingRow = document.getElementById(`card-unlinked-${cleanG}`);
+          if (existingRow) existingRow.remove();
+
+          const row = document.createElement('div');
+          row.id = `card-unlinked-${cleanG}`;
+          row.className = 'new-scanned-item-flash';
+          row.style.cssText = `
+            background: rgba(239, 68, 68, 0.14);
+            border-right: 5px solid #ef4444;
+            border: 1.5px solid rgba(239, 68, 68, 0.45);
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin: 0 0 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.28);
+          `;
+
+          row.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:18px;">⚠️</span>
+                <span style="color:#f87171; font-weight:800; font-size:13.5px;">باركود غير مسجل في الداتابيز</span>
+              </div>
+              <button type="button" onclick="this.closest('#card-unlinked-${cleanG}').remove()" style="background:transparent; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:2px 6px;">✕</button>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(15,23,42,0.7); padding:8px 12px; border-radius:10px; border:1px solid rgba(56,189,248,0.25);">
+              <span style="color:#94a3b8; font-size:11.5px; font-weight:700;">الباركود / GTIN:</span>
+              <span style="font-family:monospace; font-size:14px; font-weight:900; color:#38bdf8; letter-spacing:1px;" dir="ltr">${cleanG}</span>
+            </div>
+            <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+              <button type="button" onclick="copyBarcodeToClipboard('${cleanG}')" style="background:#334155; color:#f8fafc; border:1px solid #475569; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                📋 نسخ الكود
+              </button>
+              <button type="button" onclick="openLinkGtinModal('${cleanG}')" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:7px 16px; border-radius:8px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 4px 12px rgba(245,158,11,0.35);">
+                🔗 ربط بالماستر الآن
+              </button>
+            </div>
+          `;
+
+          listEl.prepend(row);
+          try {
+            row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } catch (e) {}
+        }
+
+        function openLinkGtinModal(gtin = '') {
+          window.isGtinLinkModalOpen = true;
+          const cleanGtin = String(gtin || '').trim();
+          const modal = document.getElementById('modalLinkGtin');
+          const inputGtin = document.getElementById('inputLinkGtinValue');
+          const inputSearch = document.getElementById('inputLinkItemSearchOrCode');
+          const suggestionsBox = document.getElementById('gtinLinkSuggestions');
+          const previewBox = document.getElementById('linkGtinItemPreview');
+          const notFoundBox = document.getElementById('linkGtinItemNotFound');
+          const chkNew = document.getElementById('chkNewItemEntry');
+          const newBox = document.getElementById('boxNewItemFields');
+
+          if (inputGtin) inputGtin.value = cleanGtin;
+          if (inputSearch) inputSearch.value = '';
+          if (suggestionsBox) { suggestionsBox.style.display = 'none'; suggestionsBox.innerHTML = ''; }
+          if (previewBox) previewBox.style.display = 'none';
+          if (notFoundBox) notFoundBox.style.display = 'none';
+          if (chkNew) chkNew.checked = false;
+          if (newBox) newBox.style.display = 'none';
+
+          if (cleanGtin && window.customGtinMappings && window.customGtinMappings[cleanGtin]) {
+            const existing = window.customGtinMappings[cleanGtin];
+            const existingCode = typeof existing === 'object' ? existing.code : existing;
+            if (inputSearch && existingCode) {
+              inputSearch.value = existingCode;
+              selectGtinLinkSuggestion(existingCode);
+            }
+          }
+
+          if (modal) {
+            modal.style.setProperty('display', 'flex', 'important');
+            modal.style.zIndex = '999999';
+            setTimeout(() => {
+              if (inputSearch) inputSearch.focus();
+            }, 150);
+          }
+        }
+
+        function closeLinkGtinModal() {
+          window.isGtinLinkModalOpen = false;
+          const modal = document.getElementById('modalLinkGtin');
+          if (modal) modal.style.setProperty('display', 'none', 'important');
+        }
+
+        function onGtinLinkSearchInput(query) {
+          const q = String(query || '').trim().toLowerCase();
+          const suggestionsBox = document.getElementById('gtinLinkSuggestions');
+          const notFoundBox = document.getElementById('linkGtinItemNotFound');
+          if (!suggestionsBox) return;
+
+          if (!q || q.length < 2) {
+            suggestionsBox.style.display = 'none';
+            suggestionsBox.innerHTML = '';
+            return;
+          }
+
+          const targetDB = (typeof productsDB !== 'undefined' && Array.isArray(productsDB)) ? productsDB : (window.productsDB || []);
+          if (!targetDB || targetDB.length === 0) return;
+
+          if (/^\d{3,8}$/.test(q)) {
+            const exact = (typeof findProductByCodeOrGTIN === 'function') ? findProductByCodeOrGTIN(q) : null;
+            if (exact) {
+              showGtinItemPreview(exact);
+              if (notFoundBox) notFoundBox.style.display = 'none';
+            }
+          }
+
+          const matches = [];
+          const qNoZero = q.replace(/^0+/, '');
+          for (let i = 0; i < targetDB.length && matches.length < 10; i++) {
+            const p = targetDB[i];
+            if (!p) continue;
+            const code = String(p.Code || p.code || '').toLowerCase();
+            const nameEn = String(p['Item Description'] || p.Description || '').toLowerCase();
+            const nameAr = String(p['أسم المنتج'] || p.DescriptionAr || '').toLowerCase();
+            const brand = String(p.Brand || p.brand || '').toLowerCase();
+            const active = String(p['Active Ingredient'] || p.active_ingredient || '').toLowerCase();
+
+            if (code.includes(q) || (qNoZero && code.includes(qNoZero)) || nameEn.includes(q) || nameAr.includes(q) || brand.includes(q) || active.includes(q)) {
+              matches.push(p);
+            }
+          }
+
+          if (matches.length === 0) {
+            suggestionsBox.innerHTML = `<div style="padding:10px; text-align:center; color:#94a3b8; font-size:12px;">لم يتم العثور على نتائج تطابق "${escapeHtml(query)}"</div>`;
+            suggestionsBox.style.display = 'block';
+            return;
+          }
+
+          suggestionsBox.innerHTML = matches.map(p => {
+            const code = String(p.Code || p.code || '').trim();
+            const nameEn = p['Item Description'] || p.Description || '';
+            const nameAr = p['أسم المنتج'] || p.DescriptionAr || '';
+            const brand = p.Brand || p.brand || '';
+            let img = (typeof getScannerProductImageUrl === 'function') ? getScannerProductImageUrl(p) : (p.itemurl || p.image_url || `https://placehold.co/50x50/1e293b/60a5fa?text=${code}`);
+            return `
+              <div onclick="selectGtinLinkSuggestion('${code}')" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:background 0.15s; border-radius:8px;" onmouseover="this.style.background='rgba(59,130,246,0.15)'" onmouseout="this.style.background='transparent'">
+                <img src="${img}" style="width:40px; height:40px; object-fit:contain; border-radius:6px; background:#0f172a; flex-shrink:0;" onerror="this.src='https://placehold.co/40x40/1e293b/60a5fa?text=${code}'">
+                <div style="flex:1; min-width:0; text-align:start;">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-family:monospace; font-weight:800; font-size:12px; color:#fef08a; background:rgba(245,158,11,0.2); padding:1px 6px; border-radius:4px;">#${code}</span>
+                    ${brand ? `<span style="font-size:10.5px; color:#93c5fd; background:rgba(59,130,246,0.15); padding:1px 6px; border-radius:4px;">${escapeHtml(brand)}</span>` : ''}
+                  </div>
+                  <div style="font-size:12.5px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${escapeHtml(nameEn || nameAr)}</div>
+                  ${nameAr && nameEn ? `<div style="font-size:11px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(nameAr)}</div>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+          suggestionsBox.style.display = 'block';
+        }
+
+        function selectGtinLinkSuggestion(code) {
+          const input = document.getElementById('inputLinkItemSearchOrCode');
+          const suggestionsBox = document.getElementById('gtinLinkSuggestions');
+          if (input) input.value = code;
+          if (suggestionsBox) suggestionsBox.style.display = 'none';
+
+          const p = (typeof findProductByCodeOrGTIN === 'function') ? findProductByCodeOrGTIN(code) : null;
+          if (p) {
+            showGtinItemPreview(p);
+          }
+        }
+
+        function verifyGtinLinkItemCode() {
+          const input = document.getElementById('inputLinkItemSearchOrCode');
+          const q = input ? input.value.trim() : '';
+          if (!q) {
+            showScannerToast('يرجى كتابة كود أو اسم للبحث', 'warning');
+            return;
+          }
+          const item = (typeof findProductByCodeOrGTIN === 'function') ? findProductByCodeOrGTIN(q) : null;
+          if (item) {
+            showGtinItemPreview(item);
+          } else {
+            const notFoundBox = document.getElementById('linkGtinItemNotFound');
+            const previewBox = document.getElementById('linkGtinItemPreview');
+            if (previewBox) previewBox.style.display = 'none';
+            if (notFoundBox) notFoundBox.style.display = 'block';
+          }
+        }
+
+        function showGtinItemPreview(item) {
+          const previewBox = document.getElementById('linkGtinItemPreview');
+          const notFoundBox = document.getElementById('linkGtinItemNotFound');
+          if (!previewBox) return;
+
+          if (!item) {
+            previewBox.style.display = 'none';
+            if (notFoundBox) notFoundBox.style.display = 'block';
+            return;
+          }
+
+          const code = String(item.Code || item.code || '').trim();
+          const nameEn = item['Item Description'] || item.Description || '';
+          const nameAr = item['أسم المنتج'] || item.DescriptionAr || '';
+          const brand = item.Brand || item.brand || '';
+          const price = (item['Unit Price'] ?? item.UnitPrice ?? item.price ?? 0);
+          const imgUrl = (typeof getScannerProductImageUrl === 'function') ? getScannerProductImageUrl(item) : (item.itemurl || item.image_url || `https://placehold.co/80x80/1e293b/60a5fa?text=${code}`);
+
+          const codeEl = document.getElementById('linkPreviewCode');
+          const enEl = document.getElementById('linkPreviewNameEn');
+          const arEl = document.getElementById('linkPreviewNameAr');
+          const brandEl = document.getElementById('linkPreviewBrand');
+          const priceEl = document.getElementById('linkPreviewPrice');
+          const imgEl = document.getElementById('linkPreviewImg');
+
+          if (codeEl) codeEl.innerText = `#${code}`;
+          if (enEl) enEl.innerText = nameEn || '---';
+          if (arEl) arEl.innerText = nameAr || '---';
+          if (brandEl) {
+            brandEl.innerText = brand ? `🏢 ${brand}` : '';
+            brandEl.style.display = brand ? 'inline-block' : 'none';
+          }
+          if (priceEl) {
+            priceEl.innerText = price ? `💰 ${parseFloat(price).toFixed(2)} SAR` : '';
+            priceEl.style.display = price ? 'inline-block' : 'none';
+          }
+          if (imgEl) {
+            imgEl.src = imgUrl;
+            imgEl.onerror = () => { imgEl.src = `https://placehold.co/80x80/1e293b/60a5fa?text=${code}`; };
+          }
+
+          previewBox.style.display = 'block';
+          if (notFoundBox) notFoundBox.style.display = 'none';
+        }
+
+        function toggleNewItemEntryMode(isNew) {
+          const boxNew = document.getElementById('boxNewItemFields');
+          const boxSearch = document.getElementById('boxExistingItemSearch');
+          const previewBox = document.getElementById('linkGtinItemPreview');
+          const notFoundBox = document.getElementById('linkGtinItemNotFound');
+          if (boxNew) boxNew.style.display = isNew ? 'block' : 'none';
+          if (boxSearch) boxSearch.style.opacity = isNew ? '0.45' : '1';
+          if (isNew) {
+            if (previewBox) previewBox.style.display = 'none';
+            if (notFoundBox) notFoundBox.style.display = 'none';
+            const codeInput = document.getElementById('newLinkItemCode');
+            if (codeInput && !codeInput.value) generateRandomLinkCode();
+          }
+        }
+
+        function generateRandomLinkCode() {
+          const targetDB = (typeof productsDB !== 'undefined' && Array.isArray(productsDB)) ? productsDB : (window.productsDB || []);
+          let rnd = '';
+          for (let attempts = 0; attempts < 100; attempts++) {
+            rnd = '9' + Math.floor(10000 + Math.random() * 90000);
+            if (!targetDB.some(p => String(p.Code || p.code || '') === rnd)) {
+              break;
+            }
+          }
+          const input = document.getElementById('newLinkItemCode');
+          if (input) input.value = rnd;
+          return rnd;
+        }
+
+        async function confirmSaveGtinLink() {
+          const inputGtin = document.getElementById('inputLinkGtinValue');
+          const gtin = inputGtin ? inputGtin.value.trim().replace(/[\s\-_]/g, '') : '';
+          if (!gtin || gtin.length < 4) {
+            showScannerToast('⚠️ يرجى إدخال باركود أو GTIN صحيح', 'warning');
+            return;
+          }
+
+          const isNew = document.getElementById('chkNewItemEntry') && document.getElementById('chkNewItemEntry').checked;
+          let targetCode = '';
+          let nameAr = '';
+          let nameEn = '';
+          let brand = '';
+          let activeIngredient = '';
+          let unitPrice = 0;
+          let imageUrl = '';
+
+          if (isNew) {
+            targetCode = (document.getElementById('newLinkItemCode')?.value || '').trim();
+            nameAr = (document.getElementById('newLinkItemNameAr')?.value || '').trim();
+            nameEn = (document.getElementById('newLinkItemNameEn')?.value || '').trim();
+            brand = (document.getElementById('newLinkItemBrand')?.value || '').trim();
+            activeIngredient = (document.getElementById('newLinkItemActive')?.value || '').trim();
+            unitPrice = parseFloat(document.getElementById('newLinkItemPrice')?.value || 0) || 0;
+            imageUrl = `https://placehold.co/120x120/1e293b/f59e0b?text=${targetCode || 'Item'}`;
+
+            if (!targetCode) {
+              targetCode = generateRandomLinkCode();
+            }
+            if (!nameAr && !nameEn) {
+              showScannerToast('⚠️ يرجى كتابة اسم الصنف (عربي أو إنجليزي)', 'warning');
+              return;
+            }
+          } else {
+            targetCode = (document.getElementById('inputLinkItemSearchOrCode')?.value || '').trim();
+            if (!targetCode) {
+              showScannerToast('⚠️ يرجى اختيار صنف أو إدخال الكود السداسي', 'warning');
+              return;
+            }
+            const item = (typeof findProductByCodeOrGTIN === 'function') ? findProductByCodeOrGTIN(targetCode) : null;
+            if (item) {
+              targetCode = String(item.Code || item.code || targetCode).trim();
+              nameAr = item['أسم المنتج'] || item.DescriptionAr || '';
+              nameEn = item['Item Description'] || item.Description || '';
+              brand = item.Brand || item.brand || '';
+              activeIngredient = item['Active Ingredient'] || item.active_ingredient || '';
+              unitPrice = parseFloat(item['Unit Price'] || item.UnitPrice || item.price || 0);
+              imageUrl = (typeof getScannerProductImageUrl === 'function') ? getScannerProductImageUrl(item) : (item.itemurl || item.image_url || '');
+            }
+          }
+
+          if (!window.customGtinMappings) window.customGtinMappings = {};
+          window.customGtinMappings[gtin] = {
+            gtin: gtin,
+            code: targetCode,
+            nameAr: nameAr,
+            nameEn: nameEn,
+            brand: brand,
+            activeIngredient: activeIngredient,
+            unitPrice: unitPrice,
+            imageUrl: imageUrl,
+            addedAt: new Date().toISOString()
+          };
+
+          try {
+            localStorage.setItem('custom_gtin_mappings', JSON.stringify(window.customGtinMappings));
+          } catch(e) {}
+
+          applyCustomGtinMappingsToMaps();
+
+          ensureProductInProductsDB({
+            Code: targetCode,
+            'أسم المنتج': nameAr || nameEn,
+            'Item Description': nameEn || nameAr,
+            Brand: brand,
+            'Active Ingredient': activeIngredient,
+            'Unit Price': unitPrice,
+            GTIN: [gtin],
+            itemurl: imageUrl
+          });
+
+          closeLinkGtinModal();
+          showScannerToast(`✅ تم ربط الباركود (${gtin}) بالكود (#${targetCode}) بنجاح!`, 'success');
+
+          const unlinkedCard = document.getElementById('card-unlinked-' + gtin);
+          if (unlinkedCard) unlinkedCard.remove();
+
+          processScannedCode(targetCode, gtin);
+
+          syncGtinsToGitHub();
+        }
+
+        // تشغيل التحميل التلقائي فور بدء الصفحة
+        if (typeof window !== 'undefined') {
+          setTimeout(() => {
+            loadCustomGtinMappings();
+          }, 300);
+        }
+
         // 5. الربط مع الكاميرا
         function handleCameraScanSuccess(decodedText) {
-          if (!decodedText) return;
+          if (!decodedText || window.isGtinLinkModalOpen) return;
 
           let cleanCode = parseBarcode(decodedText);
 
@@ -36322,14 +37077,48 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           const product = findProductByCodeOrGTIN(cleanCode, rawInput);
 
           if (!product) {
+            const parsed = (typeof parseBarcodeGS1 === 'function') ? parseBarcodeGS1(rawInput || cleanCode) : {};
+            const candidateGtin = parsed.gtin13 || parsed.gtin14 || parsed.gtin || cleanCode;
+
+            // المؤثرات الصوتية والاهتزاز للتنبيه
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            try {
+              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.connect(gain); gain.connect(audioCtx.destination);
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+              gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+              osc.start(); osc.stop(audioCtx.currentTime + 0.16);
+            } catch (e) { }
+
             setLatestScannerMessage(`
-            <div style="color:#ef4444;font-weight:bold;font-size:13px;text-align:center;line-height:1.8;">
-                الصنف غير مسجل في قاعدة البيانات<br>
-                <span style="font-family:monospace;font-size:11px;color:#cbd5e1;">(${cleanCode})</span>
-            </div>
-        `);
-            setScannerFeedback('error', `الكود ${cleanCode} غير موجود`, 'تأكد من الرقم المكتوب');
+              <div style="background:rgba(239,68,68,0.12); border:1.5px solid #ef4444; border-radius:14px; padding:12px; text-align:center; color:#fff; box-shadow:0 8px 24px rgba(239,68,68,0.2);">
+                <div style="color:#f87171; font-weight:800; font-size:13.5px; margin-bottom:4px;">
+                  ⚠️ هذا الباركود غير مسجل في قاعدة البيانات
+                </div>
+                <div style="font-family:monospace; font-size:13px; font-weight:800; color:#38bdf8; background:rgba(15,23,42,0.8); padding:4px 10px; border-radius:8px; display:inline-block; margin-bottom:10px; border:1px solid rgba(56,189,248,0.35);">
+                  ${candidateGtin}
+                </div>
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                  <button type="button" onclick="copyBarcodeToClipboard('${candidateGtin}')" style="background:#334155; color:#f8fafc; border:1px solid #475569; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                    📋 نسخ الكود
+                  </button>
+                  <button type="button" onclick="openLinkGtinModal('${candidateGtin}')" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 4px 12px rgba(245,158,11,0.35);">
+                    🔗 ربط بالماستر الآن
+                  </button>
+                </div>
+              </div>
+            `);
+            setScannerFeedback('error', `باركود غير مسجل: ${candidateGtin}`, 'اضغط لربطه بالماستر');
             flashScannerSwipe('error');
+
+            // 1. إضافة كارت غير مسجل في قائمة المفحوصات مباشرة مع زر النسخ وزر الربط
+            addUnregisteredGtinRowToList(candidateGtin);
+
+            // 2. فتح نافذة الربط تلقائياً
+            openLinkGtinModal(candidateGtin);
             return;
           }
 
@@ -37613,9 +38402,11 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           let _isNativeChecking = false;
           let _boostCanvas = null;
           let _boostCtx = null;
+          let _invertCanvas = null;
+          let _invertCtx = null;
           let _zxingMultiReader = null;
           let _hardwareDetector = null;
-          let _rotationStep = 0;
+          let _boostFrameCount = 0;
 
           function initZxingReader() {
             if (_zxingMultiReader || typeof ZXing === 'undefined') return;
@@ -37635,7 +38426,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               _zxingMultiReader = new ZXing.MultiFormatReader();
               _zxingMultiReader.setHints(hints);
             } catch (e) {
-              console.warn("ZXing initialization error:", e);
+              console.warn("ZXing init warning:", e);
             }
           }
 
@@ -37645,25 +38436,21 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               _nativeBoostTimer = null;
             }
             _isNativeChecking = false;
-            _rotationStep = 0;
           }
           window.stopNativeBarcodeBoost = stopNativeBarcodeBoost;
 
-          function startNativeBarcodeBoost(onSuccess) {
+          async function startNativeBarcodeBoost(onSuccess) {
             stopNativeBarcodeBoost();
+            initZxingReader();
 
-            // تجهيز محرك الهاردوير BarcodeDetector إذا كان متاحاً في المتصفح
-            if (typeof window !== 'undefined' && 'BarcodeDetector' in window && !_hardwareDetector) {
+            if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
               try {
-                BarcodeDetector.getSupportedFormats().then(supportedFormats => {
-                  const wanted = ['data_matrix', 'qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e'];
-                  const active = wanted.filter(f => supportedFormats && supportedFormats.includes(f));
-                  _hardwareDetector = new BarcodeDetector(active.length > 0 ? { formats: active } : undefined);
-                }).catch(() => {
-                  try { _hardwareDetector = new BarcodeDetector(); } catch (e) {}
-                });
+                const supportedFormats = await BarcodeDetector.getSupportedFormats();
+                const wantedFormats = ['data_matrix', 'qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e'];
+                const active = wantedFormats.filter(f => supportedFormats.includes(f));
+                _hardwareDetector = new BarcodeDetector(active.length > 0 ? { formats: active } : undefined);
               } catch (e) {
-                try { _hardwareDetector = new BarcodeDetector(); } catch (e2) {}
+                try { _hardwareDetector = new BarcodeDetector(); } catch(e2) {}
               }
             }
 
@@ -37671,9 +38458,13 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               _boostCanvas = document.createElement('canvas');
               _boostCtx = _boostCanvas.getContext('2d', { willReadFrequently: true });
             }
+            if (!_invertCanvas) {
+              _invertCanvas = document.createElement('canvas');
+              _invertCtx = _invertCanvas.getContext('2d', { willReadFrequently: true });
+            }
 
-            // فحص فائق السرعة كل 30ms مع التدوير التلقائي 360 درجة للتعرف اللحظي
             _nativeBoostTimer = setInterval(async () => {
+              if (window.isGtinLinkModalOpen) return;
               if (!html5QrScanner || (typeof html5QrScanner.isScanning === 'function' ? !html5QrScanner.isScanning() : !html5QrScanner.isScanning)) {
                 return;
               }
@@ -37683,89 +38474,121 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
               if (_isNativeChecking) return;
               _isNativeChecking = true;
+              _boostFrameCount++;
 
               try {
-                // 1. المسار الأول: التعرف المباشر فائق السرعة بواسطة عتاد الهاردوير (0ms latency)
+                const vw = video.videoWidth;
+                const vh = video.videoHeight;
+                if (!vw || !vh) return;
+
+                // 1. المسار الأول: عتاد الهاردوير المباشر 360° (Hardware BarcodeDetector) على الفيديو الخام
                 if (_hardwareDetector) {
                   try {
                     const barcodes = await _hardwareDetector.detect(video);
                     if (barcodes && barcodes.length > 0) {
                       const match = barcodes.find(b => b.format === 'data_matrix' || b.format === 'qr_code') || barcodes[0];
-                      if (match && match.rawValue) {
-                        onSuccess(match.rawValue);
+                      const rawVal = match.rawValue;
+                      if (rawVal) {
+                        onSuccess(rawVal);
                         _isNativeChecking = false;
                         return;
                       }
                     }
                   } catch (hwErr) {}
+                }
 
-                  // 2. فحص متعدد الزوايا 360° (Omnidirectional) للعلب المقلوبة (180°) أو المحمولة أفقياً (90° / 270°)
-                  if (_boostCanvas && _boostCtx) {
-                    _rotationStep = (_rotationStep + 1) % 3;
-                    // ترتيب الزوايا: 180° (مقلوب رأساً على عقب مثل معظم علب الدواء) ثم 90° ثم 270°
-                    const angle = _rotationStep === 0 ? Math.PI : (_rotationStep === 1 ? Math.PI / 2 : -Math.PI / 2);
-                    const isPerpendicular = (_rotationStep !== 0);
+                // 2. المسار الثاني الحاسم للأكواد المعكوسة (Inverted DataMatrix - أبيض على أسود مثل علب الأدوية الداكنة)
+                // يتم اقتصاص منطقة العدسة وعكس الألوان في كانفاس عالي التباين لتقرأها شريحة الهاردوير في أجزاء من الثانية
+                if (_hardwareDetector && _invertCanvas && _invertCtx) {
+                  try {
+                    const cropSize = Math.min(vw, vh) * 0.78;
+                    const cropX = (vw - cropSize) / 2;
+                    const cropY = (vh - cropSize) / 2;
+                    const invW = 640;
+                    const invH = 640;
 
-                    const vw = video.videoWidth;
-                    const vh = video.videoHeight;
-                    const maxDim = 850;
-                    const scale = Math.min(1.0, maxDim / Math.max(vw, vh));
-                    const sW = Math.round(vw * scale);
-                    const sH = Math.round(vh * scale);
-
-                    const cW = isPerpendicular ? sH : sW;
-                    const cH = isPerpendicular ? sW : sH;
-
-                    if (_boostCanvas.width !== cW || _boostCanvas.height !== cH) {
-                      _boostCanvas.width = cW;
-                      _boostCanvas.height = cH;
+                    if (_invertCanvas.width !== invW || _invertCanvas.height !== invH) {
+                      _invertCanvas.width = invW;
+                      _invertCanvas.height = invH;
                     }
 
-                    _boostCtx.save();
-                    _boostCtx.translate(cW / 2, cH / 2);
-                    _boostCtx.rotate(angle);
-                    _boostCtx.drawImage(video, -sW / 2, -sH / 2, sW, sH);
-                    _boostCtx.restore();
+                    _invertCtx.filter = 'invert(100%) contrast(140%)';
+                    _invertCtx.drawImage(video, cropX, cropY, cropSize, cropSize, 0, 0, invW, invH);
+                    _invertCtx.filter = 'none';
 
-                    try {
-                      const rotBarcodes = await _hardwareDetector.detect(_boostCanvas);
-                      if (rotBarcodes && rotBarcodes.length > 0) {
-                        const match = rotBarcodes.find(b => b.format === 'data_matrix' || b.format === 'qr_code') || rotBarcodes[0];
-                        if (match && match.rawValue) {
-                          onSuccess(match.rawValue);
-                          _isNativeChecking = false;
-                          return;
-                        }
+                    const invBarcodes = await _hardwareDetector.detect(_invertCanvas);
+                    if (invBarcodes && invBarcodes.length > 0) {
+                      const match = invBarcodes.find(b => b.format === 'data_matrix' || b.format === 'qr_code') || invBarcodes[0];
+                      const rawVal = match.rawValue;
+                      if (rawVal) {
+                        onSuccess(rawVal);
+                        _isNativeChecking = false;
+                        return;
                       }
-                    } catch (eRot) {}
-                  }
-                } else if (typeof ZXing !== 'undefined' && _boostCanvas && _boostCtx) {
-                  // 3. مسار احتياطي لأجهزة iOS / Safari التي لا تدعم BarcodeDetector
+                    }
+                  } catch (invHwErr) {}
+                }
+
+                // 3. المسار الثالث: محرك ZXing فائق السرعة متعدد الزوايا 360° (0°, 90°, 180°, 270°) + دعم الأكواد المعكوسة
+                if (typeof ZXing !== 'undefined' && _boostCanvas && _boostCtx) {
                   initZxingReader();
                   if (_zxingMultiReader) {
-                    const vw = video.videoWidth;
-                    const vh = video.videoHeight;
-                    const scale = Math.min(1.0, 520 / Math.max(vw, vh));
-                    const sW = Math.round(vw * scale);
-                    const sH = Math.round(vh * scale);
+                    const targetWidth = Math.min(vw, 960);
+                    const scale = targetWidth / vw;
+                    const targetHeight = Math.round(vh * scale);
 
-                    if (_boostCanvas.width !== sW || _boostCanvas.height !== sH) {
-                      _boostCanvas.width = sW;
-                      _boostCanvas.height = sH;
+                    if (_boostCanvas.width !== targetWidth || _boostCanvas.height !== targetHeight) {
+                      _boostCanvas.width = targetWidth;
+                      _boostCanvas.height = targetHeight;
                     }
-                    _boostCtx.drawImage(video, 0, 0, sW, sH);
+
+                    _boostCtx.drawImage(video, 0, 0, targetWidth, targetHeight);
 
                     const lumSource = new ZXing.HTMLCanvasElementLuminanceSource(_boostCanvas);
                     let binBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(lumSource));
-                    let decodedResult = null;
-                    try {
-                      decodedResult = _zxingMultiReader.decode(binBitmap);
-                    } catch (e0) {
+
+                    const tryDecode4Angles = (bitmap) => {
+                      if (!bitmap) return null;
+                      try { return _zxingMultiReader.decode(bitmap); } catch (e0) {}
                       try {
-                        binBitmap = binBitmap.rotateCounterClockwise();
-                        binBitmap = binBitmap.rotateCounterClockwise(); // 180°
-                        decodedResult = _zxingMultiReader.decode(binBitmap);
+                        bitmap = bitmap.rotateCounterClockwise();
+                        return _zxingMultiReader.decode(bitmap);
+                      } catch (e90) {}
+                      try {
+                        bitmap = bitmap.rotateCounterClockwise();
+                        return _zxingMultiReader.decode(bitmap);
                       } catch (e180) {}
+                      try {
+                        bitmap = bitmap.rotateCounterClockwise();
+                        return _zxingMultiReader.decode(bitmap);
+                      } catch (e270) {}
+                      return null;
+                    };
+
+                    let decodedResult = tryDecode4Angles(binBitmap);
+
+                    // فحص الأكواد المعكوسة (Inverted DataMatrix / White on Black)
+                    if (!decodedResult && typeof ZXing.InvertedLuminanceSource !== 'undefined') {
+                      try {
+                        const invLum = new ZXing.InvertedLuminanceSource(lumSource);
+                        const invBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(invLum));
+                        decodedResult = tryDecode4Angles(invBitmap);
+                      } catch (invErr) {}
+                    }
+
+                    // فحص متناوب بالـ GlobalHistogramBinarizer لامتصاص الانعكاسات على الكرتون اللامع
+                    if (!decodedResult && (_boostFrameCount % 2 === 0) && typeof ZXing.GlobalHistogramBinarizer !== 'undefined') {
+                      try {
+                        const histBitmap = new ZXing.BinaryBitmap(new ZXing.GlobalHistogramBinarizer(lumSource));
+                        decodedResult = tryDecode4Angles(histBitmap);
+                      } catch (hErr) {}
+                      if (!decodedResult && typeof ZXing.InvertedLuminanceSource !== 'undefined') {
+                        try {
+                          const invLum2 = new ZXing.InvertedLuminanceSource(lumSource);
+                          const invHist = new ZXing.BinaryBitmap(new ZXing.GlobalHistogramBinarizer(invLum2));
+                          decodedResult = tryDecode4Angles(invHist);
+                        } catch (ihErr) {}
+                      }
                     }
 
                     if (decodedResult && decodedResult.getText()) {
@@ -37779,7 +38602,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               } finally {
                 _isNativeChecking = false;
               }
-            }, 30);
+            }, 55);
           }
           window.startNativeBarcodeBoost = startNativeBarcodeBoost;
 
@@ -37911,11 +38734,15 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             const clearCurrentScanner = async () => {
               stopNativeBarcodeBoost();
               if (html5QrScanner) {
-                try {
-                  if (html5QrScanner.isScanning) await html5QrScanner.stop();
-                } catch (e) { }
-                try { await html5QrScanner.clear(); } catch (e) { }
+                const inst = html5QrScanner;
                 html5QrScanner = null;
+                try {
+                  const stopPromise = (inst && typeof inst.stop === 'function') ? inst.stop().catch(() => {}) : Promise.resolve();
+                  await Promise.race([stopPromise, new Promise(r => setTimeout(r, 350))]);
+                } catch (e) { }
+                try {
+                  if (inst && typeof inst.clear === 'function') inst.clear().catch(() => {});
+                } catch (e) { }
               }
               const videos = document.querySelectorAll('#reader video');
               videos.forEach(v => {
@@ -37923,24 +38750,21 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                   v.srcObject.getTracks().forEach(t => { try { t.stop(); } catch (e) { } });
                   v.srcObject = null;
                 }
+                try { v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
               });
+              const readerEl = document.getElementById('reader');
               if (readerEl) readerEl.innerHTML = '';
             };
 
             await clearCurrentScanner();
 
-            // إعدادات المسح عريضة النطاق (Full Viewport) وسريعة جداً (30 FPS)
+            // إعدادات المسح عريضة النطاق (Full Viewport) وسريعة جداً (30 FPS) بدون تشويه أبعاد
             const config = {
               fps: 30,
               qrbox: (viewfinderWidth, viewfinderHeight) => {
                 const w = Math.min(Math.floor(viewfinderWidth * 0.98), 850);
                 const h = Math.min(Math.floor(viewfinderHeight * 0.92), 850);
                 return { width: w, height: h };
-              },
-              disableFlip: false,
-              videoConstraints: {
-                facingMode: "environment",
-                focusMode: "continuous"
               },
               experimentalFeatures: {
                 useBarCodeDetectorIfSupported: true
@@ -37966,50 +38790,57 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             };
 
             const onScanSuccess = (decodedText) => {
-              const cleanDecoded = String(decodedText || "").trim();
+              if (window.isGtinLinkModalOpen) return;
+              const rawDecoded = String(decodedText || "").trim();
+              if (!rawDecoded) return;
+              const cleanCode = (typeof parseBarcode === 'function') ? parseBarcode(rawDecoded) : rawDecoded;
               const now = Date.now();
-              if (!cleanDecoded) return;
-              if (cleanDecoded === lastScannedValue && (now - lastScannedAt) < 1000) {
+              if ((cleanCode === lastScannedValue || rawDecoded === lastScannedValue) && (now - lastScannedAt) < 1000) {
                 return;
               }
-              lastScannedValue = cleanDecoded;
+              lastScannedValue = cleanCode;
               lastScannedAt = now;
 
-              // صوت صفارة فوري عند القراءة الناجحة
+              // صوت صفارة واهتزاز فوري مأخوذ من dawaview
               playBeepSound();
 
-              processScannedCode(cleanDecoded, cleanDecoded);
+              processScannedCode(cleanCode, rawDecoded);
             };
 
             const tryStart = async (cameraSource) => {
               try {
                 await clearCurrentScanner();
-                const instance = new Html5Qrcode("reader");
+                const instance = new Html5Qrcode("reader", {
+                  experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                  },
+                  verbose: false
+                });
                 await instance.start(cameraSource, config, onScanSuccess, () => { });
                 html5QrScanner = instance;
+
+                // تفعيل الفوكس والتعريض المستمر تلقائياً على الكاميرا للتركيز الماكرو الدقيق
+                try {
+                  const trk = instance.getRunningTrack();
+                  if (trk && trk.applyConstraints) {
+                    const caps = trk.getCapabilities ? trk.getCapabilities() : {};
+                    const adv = [];
+                    if (caps.focusMode && caps.focusMode.includes('continuous')) {
+                      adv.push({ focusMode: 'continuous' });
+                    }
+                    if (caps.exposureMode && caps.exposureMode.includes('continuous')) {
+                      adv.push({ exposureMode: 'continuous' });
+                    }
+                    if (adv.length > 0) {
+                      await trk.applyConstraints({ advanced: adv });
+                    }
+                  }
+                } catch (trkErr) {}
+
                 setScannerFeedback('idle', 'الكاميرا نشطة ✓', 'وجه الكاميرا نحو الباركود أو الـ QR كود');
                 resetScannerSwipeState();
                 startNativeBarcodeBoost(onScanSuccess);
                 detectCameraCapabilities();
-
-                // تفعيل الفوكس التلقائي المستمر فور بدء الكاميرا
-                try {
-                  const track = instance.getRunningTrack();
-                  if (track && track.applyConstraints) {
-                    const caps = track.getCapabilities ? track.getCapabilities() : {};
-                    const adv = {};
-                    if (caps.focusMode && caps.focusMode.includes('continuous')) {
-                      adv.focusMode = 'continuous';
-                    }
-                    if (caps.exposureMode && caps.exposureMode.includes('continuous')) {
-                      adv.exposureMode = 'continuous';
-                    }
-                    if (Object.keys(adv).length > 0) {
-                      await track.applyConstraints({ advanced: [adv] });
-                    }
-                  }
-                } catch(trackErr) {}
-
                 return true;
               } catch (err) {
                 console.warn("Camera start attempt failed for source:", cameraSource, err);
@@ -38034,34 +38865,29 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                   const trk = html5QrScanner.getRunningTrack();
                   if (trk && trk.applyConstraints) {
                     const caps = trk.getCapabilities ? trk.getCapabilities() : {};
-                    if (caps.focusMode) {
-                      if (caps.focusMode.includes('single-shot')) {
-                        await trk.applyConstraints({ advanced: [{ focusMode: 'single-shot' }] });
-                        setTimeout(() => {
-                          if (caps.focusMode.includes('continuous')) {
-                            trk.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
-                          }
-                        }, 350);
-                      } else if (caps.focusMode.includes('continuous')) {
-                        await trk.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
-                      }
+                    if (caps.focusMode && caps.focusMode.includes('continuous')) {
+                      await trk.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
                     }
                   }
                 } catch (err) { }
               });
             }
 
-            // 1. الأولوية الأولى: الكاميرا الخلفية القياسية (مع الفوكس التلقائي المستمر)
-            if (await tryStart({ facingMode: "environment" })) {
-              return;
-            }
+            const highResCameraConstraints = {
+              facingMode: { ideal: "environment" },
+              width: { min: 1280, ideal: 1920, max: 2560 },
+              height: { min: 720, ideal: 1080, max: 1440 },
+              focusMode: { ideal: "continuous" }
+            };
 
-            // 2. إذا فشل: البحث في قائمة الكاميرات وتفضيل الكاميرا الخلفية بالاسم
+            // 1. الأولوية الأولى: فحص الكاميرات الخلفية واختيار العدسة الأساسية (ليست Ultra-Wide) التي تدعم الماكرو فوكس
             try {
               const devices = await Html5Qrcode.getCameras();
               if (devices && devices.length > 0) {
-                const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[0];
-                if (backCam && await tryStart(backCam.id)) {
+                const backCameras = devices.filter(d => /back|rear|environment/i.test(d.label));
+                // تفضيل العدسة الرئيسية واستبعاد Ultra-Wide التي تفتقر للماكرو فوكس
+                const mainCam = backCameras.find(d => !/ultra|wide|0\.5/i.test(d.label)) || backCameras[0];
+                if (mainCam && await tryStart(mainCam.id)) {
                   return;
                 }
               }
@@ -38069,7 +38895,17 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               console.warn("Device enumeration fallback failed, trying standard constraints:", devErr);
             }
 
-            // 3. كاميرا أمامية أو كاميرا لابتوب
+            // 2. المحاولة الثانية: الكاميرا الخلفية عالية الدقة مع الفوكس المستمر
+            if (await tryStart(highResCameraConstraints)) {
+              return;
+            }
+
+            // 3. المحاولة الثالثة: الكاميرا الخلفية القياسية
+            if (await tryStart({ facingMode: "environment" })) {
+              return;
+            }
+
+            // 4. كاميرا أمامية أو كاميرا لابتوب
             if (await tryStart({ facingMode: "user" })) {
               return;
             }
@@ -38083,20 +38919,23 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           await launchCamera();
         }
 
-        let _isCameraRestarting = false;
+        let _lastRestartClick = 0;
         async function restartCameraStream(event) {
           if (event) {
             try { event.stopPropagation(); event.preventDefault(); } catch (e) { }
           }
-          if (_isCameraRestarting) return;
-          _isCameraRestarting = true;
+          const now = Date.now();
+          if (now - _lastRestartClick < 900) return;
+          _lastRestartClick = now;
 
           const btn = document.getElementById('scannerResetCameraBtn');
+          const textSpan = btn ? btn.querySelector('.css-lens-text') : null;
           if (btn) {
-            btn.style.opacity = '0.5';
-            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.6';
+            btn.style.transform = 'scale(0.92)';
           }
-          setScannerFeedback('idle', 'جاري تنشيط الكاميرا...', 'يتم الآن إعادة الاتصال بمستشعر الكاميرا');
+          if (textSpan) textSpan.innerText = 'فتح...';
+          setScannerFeedback('idle', 'جاري تنشيط الكاميرا...', 'يتم الآن إعادة الاتصال بمستشعر الكاميرا فوراً');
 
           try {
             if (typeof window.launchScannerCamera === 'function') {
@@ -38104,14 +38943,15 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             }
           } catch (err) {
             console.error("Camera restart error:", err);
+            setScannerFeedback('error', 'تعذر تنشيط الكاميرا', 'يرجى مراجعة إذن الكاميرا ثم الضغط مرة أخرى');
           } finally {
             setTimeout(() => {
-              _isCameraRestarting = false;
               if (btn) {
                 btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
+                btn.style.transform = 'scale(1)';
               }
-            }, 800);
+              if (textSpan) textSpan.innerText = 'تنشيط';
+            }, 500);
           }
         }
         window.restartCameraStream = restartCameraStream;
