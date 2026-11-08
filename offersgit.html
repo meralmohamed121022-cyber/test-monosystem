@@ -71,6 +71,7 @@
 
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
   <script>
     window.stagedOffers = [];
     if (window.location.href.indexOf('mode=scanner') !== -1) {
@@ -7919,6 +7920,10 @@
                 <span class="scanner-badge-v9">V9</span>
               </div>
               <div class="scanner-actions-box">
+                <button id="btnScannerTorch" type="button" onclick="toggleScannerTorch(event)" title="تشغيل الكشاف"
+                  class="scanner-action-btn" style="display:none; color:#fbbf24; background:rgba(255,255,255,0.08);">⚡</button>
+                <button id="btnScannerZoom" type="button" onclick="cycleScannerZoom(event)" title="تكبير الكاميرا"
+                  class="scanner-action-btn" style="display:none; color:#38bdf8; background:rgba(255,255,255,0.08); font-size:12px; font-weight:bold;">1x</button>
 <!-- زر تنشيط الكاميرا في الهيدر العلوي بنمط CSS Art جذاب ومضغوط -->
                 <button id="scannerResetCameraBtn" type="button" onclick="restartCameraStream(event)"
                   class="scanner-header-reset-btn" title="تنشيط الكاميرا">
@@ -7949,6 +7954,18 @@
                   <!-- خط الليزر الأخضر المتحرك عالي الدقة (مطابق لـ dawaview) -->
                   <div class="scanner-laser-line"></div>
                   <div class="scanner-frame"></div>
+
+                  <!-- أزرار الكشاف والزووم العائمة فوق الكاميرا -->
+                  <div class="scanner-camera-tools-overlay" style="position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 25;">
+                    <button id="cameraOverlayTorch" type="button" onclick="toggleScannerTorch(event)"
+                      style="display:none; padding: 4px 10px; border-radius: 20px; background: rgba(15,23,42,0.85); border: 1px solid rgba(251,191,36,0.6); color: #fbbf24; font-size: 11.5px; font-weight: bold; cursor: pointer; backdrop-filter: blur(4px);">
+                      ⚡ كشاف
+                    </button>
+                    <button id="cameraOverlayZoom" type="button" onclick="cycleScannerZoom(event)"
+                      style="display:none; padding: 4px 10px; border-radius: 20px; background: rgba(15,23,42,0.85); border: 1px solid rgba(56,189,248,0.6); color: #38bdf8; font-size: 11.5px; font-weight: bold; cursor: pointer; backdrop-filter: blur(4px);">
+                      🔍 1.0x
+                    </button>
+                  </div>
 
                 </div>
               </div>
@@ -35585,8 +35602,8 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             str = str.substring(3);
           }
 
-          // توحيد فواصل FNC1 / ASCII 29 إلى الفاصل '|'
-          str = str.replace(/[\x1d\x1e\x1f]/g, '|');
+          // توحيد فواصل FNC1 / ASCII 29 إلى الفاصل '|' وإزالة الفواصل البادئة
+          str = str.replace(/[\x1d\x1e\x1f]/g, '|').replace(/^[|]+/, '').trim();
 
           let gtin14 = "";
           let exp = "";
@@ -36288,7 +36305,8 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
         // 6. دالة تنفيذ معالجة الكود وإظهار كرت الصنف (processScannedCode)
         async function processScannedCode(scannedCode, rawInput = "") {
-          let cleanCode = String(scannedCode || '').trim();
+          const raw = String(rawInput || scannedCode || '').trim();
+          let cleanCode = (typeof parseBarcode === 'function') ? parseBarcode(scannedCode || raw) : String(scannedCode || '').trim();
           if (!cleanCode) return;
 
           ensureScannerUiExtras();
@@ -37587,9 +37605,39 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           }
           window.playBeepSound = playBeepSound;
 
-          // معزز قراءة الـ DataMatrix والـ QR في أي زاوية أو اتجاه (Hardware BarcodeDetector)
+          // ============================================================
+          // 🚀 SUPERCHARGED 360° HYBRID BARCODE & GS1 SCANNER ENGINE
+          // معزز قراءة الـ DataMatrix والـ QR في أي زاوية 360° (Hardware BarcodeDetector + Multi-Angle ZXing)
+          // ============================================================
           let _nativeBoostTimer = null;
           let _isNativeChecking = false;
+          let _boostCanvas = null;
+          let _boostCtx = null;
+          let _zxingMultiReader = null;
+          let _hardwareDetector = null;
+          let _rotationStep = 0;
+
+          function initZxingReader() {
+            if (_zxingMultiReader || typeof ZXing === 'undefined') return;
+            try {
+              const hints = new Map();
+              hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+              hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+                ZXing.BarcodeFormat.DATA_MATRIX,
+                ZXing.BarcodeFormat.QR_CODE,
+                ZXing.BarcodeFormat.EAN_13,
+                ZXing.BarcodeFormat.EAN_8,
+                ZXing.BarcodeFormat.CODE_128,
+                ZXing.BarcodeFormat.CODE_39,
+                ZXing.BarcodeFormat.UPC_A,
+                ZXing.BarcodeFormat.UPC_E
+              ]);
+              _zxingMultiReader = new ZXing.MultiFormatReader();
+              _zxingMultiReader.setHints(hints);
+            } catch (e) {
+              console.warn("ZXing initialization error:", e);
+            }
+          }
 
           function stopNativeBarcodeBoost() {
             if (_nativeBoostTimer) {
@@ -37597,52 +37645,141 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               _nativeBoostTimer = null;
             }
             _isNativeChecking = false;
+            _rotationStep = 0;
           }
           window.stopNativeBarcodeBoost = stopNativeBarcodeBoost;
 
           function startNativeBarcodeBoost(onSuccess) {
             stopNativeBarcodeBoost();
-            if (typeof window === 'undefined' || !('BarcodeDetector' in window)) return;
 
-            try {
-              BarcodeDetector.getSupportedFormats().then(supportedFormats => {
-                if (!Array.isArray(supportedFormats)) return;
-                const targetFormats = ['data_matrix', 'qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39']
-                  .filter(f => supportedFormats.includes(f));
+            // تجهيز محرك الهاردوير BarcodeDetector إذا كان متاحاً في المتصفح
+            if (typeof window !== 'undefined' && 'BarcodeDetector' in window && !_hardwareDetector) {
+              try {
+                BarcodeDetector.getSupportedFormats().then(supportedFormats => {
+                  const wanted = ['data_matrix', 'qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e'];
+                  const active = wanted.filter(f => supportedFormats && supportedFormats.includes(f));
+                  _hardwareDetector = new BarcodeDetector(active.length > 0 ? { formats: active } : undefined);
+                }).catch(() => {
+                  try { _hardwareDetector = new BarcodeDetector(); } catch (e) {}
+                });
+              } catch (e) {
+                try { _hardwareDetector = new BarcodeDetector(); } catch (e2) {}
+              }
+            }
 
-                if (targetFormats.length === 0) return;
+            if (!_boostCanvas) {
+              _boostCanvas = document.createElement('canvas');
+              _boostCtx = _boostCanvas.getContext('2d', { willReadFrequently: true });
+            }
 
-                const detector = new BarcodeDetector({ formats: targetFormats });
+            // فحص فائق السرعة كل 30ms مع التدوير التلقائي 360 درجة للتعرف اللحظي
+            _nativeBoostTimer = setInterval(async () => {
+              if (!html5QrScanner || (typeof html5QrScanner.isScanning === 'function' ? !html5QrScanner.isScanning() : !html5QrScanner.isScanning)) {
+                return;
+              }
 
-                _nativeBoostTimer = setInterval(async () => {
-                  if (!html5QrScanner || !html5QrScanner.isScanning) {
-                    stopNativeBarcodeBoost();
-                    return;
-                  }
+              const video = document.querySelector('#reader video');
+              if (!video || video.readyState < 2 || video.paused || video.ended || !video.videoWidth) return;
 
-                  const video = document.querySelector('#reader video');
-                  if (!video || video.readyState < 2 || video.paused || video.ended) return;
+              if (_isNativeChecking) return;
+              _isNativeChecking = true;
 
-                  if (_isNativeChecking) return;
-                  _isNativeChecking = true;
-
+              try {
+                // 1. المسار الأول: التعرف المباشر فائق السرعة بواسطة عتاد الهاردوير (0ms latency)
+                if (_hardwareDetector) {
                   try {
-                    const barcodes = await detector.detect(video);
+                    const barcodes = await _hardwareDetector.detect(video);
                     if (barcodes && barcodes.length > 0) {
-                      // 🎯 الأولوية المطلقة لـ data_matrix و qr_code لمنع التقاط الباركود الخطي بدلاً من كيو آر الدواء GS1
                       const match = barcodes.find(b => b.format === 'data_matrix' || b.format === 'qr_code') || barcodes[0];
-                      const rawVal = match.rawValue;
-                      if (rawVal) {
-                        onSuccess(rawVal);
+                      if (match && match.rawValue) {
+                        onSuccess(match.rawValue);
+                        _isNativeChecking = false;
+                        return;
                       }
                     }
-                  } catch (err) {
-                  } finally {
-                    _isNativeChecking = false;
+                  } catch (hwErr) {}
+
+                  // 2. فحص متعدد الزوايا 360° (Omnidirectional) للعلب المقلوبة (180°) أو المحمولة أفقياً (90° / 270°)
+                  if (_boostCanvas && _boostCtx) {
+                    _rotationStep = (_rotationStep + 1) % 3;
+                    // ترتيب الزوايا: 180° (مقلوب رأساً على عقب مثل معظم علب الدواء) ثم 90° ثم 270°
+                    const angle = _rotationStep === 0 ? Math.PI : (_rotationStep === 1 ? Math.PI / 2 : -Math.PI / 2);
+                    const isPerpendicular = (_rotationStep !== 0);
+
+                    const vw = video.videoWidth;
+                    const vh = video.videoHeight;
+                    const maxDim = 850;
+                    const scale = Math.min(1.0, maxDim / Math.max(vw, vh));
+                    const sW = Math.round(vw * scale);
+                    const sH = Math.round(vh * scale);
+
+                    const cW = isPerpendicular ? sH : sW;
+                    const cH = isPerpendicular ? sW : sH;
+
+                    if (_boostCanvas.width !== cW || _boostCanvas.height !== cH) {
+                      _boostCanvas.width = cW;
+                      _boostCanvas.height = cH;
+                    }
+
+                    _boostCtx.save();
+                    _boostCtx.translate(cW / 2, cH / 2);
+                    _boostCtx.rotate(angle);
+                    _boostCtx.drawImage(video, -sW / 2, -sH / 2, sW, sH);
+                    _boostCtx.restore();
+
+                    try {
+                      const rotBarcodes = await _hardwareDetector.detect(_boostCanvas);
+                      if (rotBarcodes && rotBarcodes.length > 0) {
+                        const match = rotBarcodes.find(b => b.format === 'data_matrix' || b.format === 'qr_code') || rotBarcodes[0];
+                        if (match && match.rawValue) {
+                          onSuccess(match.rawValue);
+                          _isNativeChecking = false;
+                          return;
+                        }
+                      }
+                    } catch (eRot) {}
                   }
-                }, 50);
-              }).catch(() => {});
-            } catch (e) {}
+                } else if (typeof ZXing !== 'undefined' && _boostCanvas && _boostCtx) {
+                  // 3. مسار احتياطي لأجهزة iOS / Safari التي لا تدعم BarcodeDetector
+                  initZxingReader();
+                  if (_zxingMultiReader) {
+                    const vw = video.videoWidth;
+                    const vh = video.videoHeight;
+                    const scale = Math.min(1.0, 520 / Math.max(vw, vh));
+                    const sW = Math.round(vw * scale);
+                    const sH = Math.round(vh * scale);
+
+                    if (_boostCanvas.width !== sW || _boostCanvas.height !== sH) {
+                      _boostCanvas.width = sW;
+                      _boostCanvas.height = sH;
+                    }
+                    _boostCtx.drawImage(video, 0, 0, sW, sH);
+
+                    const lumSource = new ZXing.HTMLCanvasElementLuminanceSource(_boostCanvas);
+                    let binBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(lumSource));
+                    let decodedResult = null;
+                    try {
+                      decodedResult = _zxingMultiReader.decode(binBitmap);
+                    } catch (e0) {
+                      try {
+                        binBitmap = binBitmap.rotateCounterClockwise();
+                        binBitmap = binBitmap.rotateCounterClockwise(); // 180°
+                        decodedResult = _zxingMultiReader.decode(binBitmap);
+                      } catch (e180) {}
+                    }
+
+                    if (decodedResult && decodedResult.getText()) {
+                      onSuccess(decodedResult.getText());
+                      _isNativeChecking = false;
+                      return;
+                    }
+                  }
+                }
+              } catch (loopErr) {
+              } finally {
+                _isNativeChecking = false;
+              }
+            }, 30);
           }
           window.startNativeBarcodeBoost = startNativeBarcodeBoost;
 
@@ -37682,7 +37819,13 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               if (capabilities.zoom) {
                 const min = capabilities.zoom.min || 1.0;
                 const max = Math.min(capabilities.zoom.max || 3.0, 3.0);
-                currentZoom = currentZoom >= 2.0 ? min : 2.0;
+                if (currentZoom < 1.4) {
+                  currentZoom = Math.min(1.5, max);
+                } else if (currentZoom < 2.2) {
+                  currentZoom = Math.min(2.0, max);
+                } else {
+                  currentZoom = min;
+                }
                 await track.applyConstraints({ advanced: [{ zoom: currentZoom }] });
 
                 const btnHeader = document.getElementById('btnScannerZoom');
@@ -37786,35 +37929,53 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
             await clearCurrentScanner();
 
-            // إعدادات dawaview القياسية والمطابقة تماماً لسرعة القراءة الفائقة والدقيقة
+            // إعدادات المسح عريضة النطاق (Full Viewport) وسريعة جداً (30 FPS)
             const config = {
-              fps: 22,
+              fps: 30,
               qrbox: (viewfinderWidth, viewfinderHeight) => {
-                const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.78);
-                return { width: edge, height: edge };
+                const w = Math.min(Math.floor(viewfinderWidth * 0.98), 850);
+                const h = Math.min(Math.floor(viewfinderHeight * 0.92), 850);
+                return { width: w, height: h };
               },
-              aspectRatio: 1.0,
+              disableFlip: false,
+              videoConstraints: {
+                facingMode: "environment",
+                focusMode: "continuous"
+              },
+              experimentalFeatures: {
+                useBarCodeDetectorIfSupported: true
+              },
               formatsToSupport: [
                 Html5QrcodeSupportedFormats.DATA_MATRIX,
+                Html5QrcodeSupportedFormats.DATAMATRIX,
                 Html5QrcodeSupportedFormats.QR_CODE,
-                Html5QrcodeSupportedFormats.EAN_13,
-                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.QRCODE,
                 Html5QrcodeSupportedFormats.CODE_128,
-                Html5QrcodeSupportedFormats.CODE_39
-              ]
+                Html5QrcodeSupportedFormats.CODE128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.CODE39,
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.EAN13,
+                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.EAN8,
+                Html5QrcodeSupportedFormats.UPC_A,
+                Html5QrcodeSupportedFormats.UPCA,
+                Html5QrcodeSupportedFormats.UPC_E,
+                Html5QrcodeSupportedFormats.UPCE
+              ].filter(f => f !== undefined)
             };
 
             const onScanSuccess = (decodedText) => {
               const cleanDecoded = String(decodedText || "").trim();
               const now = Date.now();
               if (!cleanDecoded) return;
-              if (cleanDecoded === lastScannedValue && (now - lastScannedAt) < 1800) {
+              if (cleanDecoded === lastScannedValue && (now - lastScannedAt) < 1000) {
                 return;
               }
               lastScannedValue = cleanDecoded;
               lastScannedAt = now;
 
-              // صوت صفارة واهتزاز فوري مأخوذ من dawaview
+              // صوت صفارة فوري عند القراءة الناجحة
               playBeepSound();
 
               processScannedCode(cleanDecoded, cleanDecoded);
@@ -37830,6 +37991,25 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                 resetScannerSwipeState();
                 startNativeBarcodeBoost(onScanSuccess);
                 detectCameraCapabilities();
+
+                // تفعيل الفوكس التلقائي المستمر فور بدء الكاميرا
+                try {
+                  const track = instance.getRunningTrack();
+                  if (track && track.applyConstraints) {
+                    const caps = track.getCapabilities ? track.getCapabilities() : {};
+                    const adv = {};
+                    if (caps.focusMode && caps.focusMode.includes('continuous')) {
+                      adv.focusMode = 'continuous';
+                    }
+                    if (caps.exposureMode && caps.exposureMode.includes('continuous')) {
+                      adv.exposureMode = 'continuous';
+                    }
+                    if (Object.keys(adv).length > 0) {
+                      await track.applyConstraints({ advanced: [adv] });
+                    }
+                  }
+                } catch(trackErr) {}
+
                 return true;
               } catch (err) {
                 console.warn("Camera start attempt failed for source:", cameraSource, err);
@@ -37854,15 +38034,24 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                   const trk = html5QrScanner.getRunningTrack();
                   if (trk && trk.applyConstraints) {
                     const caps = trk.getCapabilities ? trk.getCapabilities() : {};
-                    if (caps.focusMode && caps.focusMode.includes('continuous')) {
-                      await trk.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+                    if (caps.focusMode) {
+                      if (caps.focusMode.includes('single-shot')) {
+                        await trk.applyConstraints({ advanced: [{ focusMode: 'single-shot' }] });
+                        setTimeout(() => {
+                          if (caps.focusMode.includes('continuous')) {
+                            trk.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
+                          }
+                        }, 350);
+                      } else if (caps.focusMode.includes('continuous')) {
+                        await trk.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+                      }
                     }
                   }
                 } catch (err) { }
               });
             }
 
-            // 1. الأولوية الأولى: الكاميرا الخلفية القياسية (مع الحفاظ على الفوكس التلقائي المستمر للأجهزة)
+            // 1. الأولوية الأولى: الكاميرا الخلفية القياسية (مع الفوكس التلقائي المستمر)
             if (await tryStart({ facingMode: "environment" })) {
               return;
             }
