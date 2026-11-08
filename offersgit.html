@@ -7569,6 +7569,7 @@
               left: 6px !important;
               right: 6px !important;
               width: calc(100% - 12px) !important;
+              max-height: min(540px, 68vh) !important;
               box-sizing: border-box !important;
             }
 
@@ -8001,7 +8002,7 @@
 
                 <!-- قائمة الاقتراحات المنسدلة للبحث بالاسم والصورة تأخذ كامل عرض المساحة تحت شريط البحث من الطرف للطرف -->
                 <div id="scannerSearchSuggestions"
-                  style="display:none; position:absolute; top:calc(100% + 2px); left:6px; right:6px; width:calc(100% - 12px); max-height:450px; overflow-y:auto; background:rgba(15, 23, 42, 0.98); backdrop-filter:blur(16px); border:2px solid #3b82f6; border-radius:14px; box-shadow:0 18px 45px rgba(0,0,0,0.95); z-index:999999; padding:6px; box-sizing:border-box;">
+                  style="display:none; position:absolute; top:calc(100% + 2px); left:6px; right:6px; width:calc(100% - 12px); max-height:min(540px, 68vh); overflow-y:auto; background:rgba(15, 23, 42, 0.98); backdrop-filter:blur(16px); border:2px solid #3b82f6; border-radius:14px; box-shadow:0 18px 45px rgba(0,0,0,0.95); z-index:999999; padding:6px; box-sizing:border-box;">
                 </div>
               </div>
             </div>
@@ -25760,20 +25761,39 @@
         } catch (e) {}
 
         function formatScannerProductImageUrl(url) {
-          if (!url || typeof url !== 'string') return '';
-          let clean = url.trim();
-          if (clean === '' || /^no\s*image$/i.test(clean) || clean === '1' || clean === 'null' || clean === 'undefined') return '';
-          if (clean.startsWith('//')) clean = 'https:' + clean;
-          else if (clean.startsWith('/medias/') || clean.startsWith('/media/') || clean.startsWith('/')) {
+          if (!url) return '';
+          let clean = String(url)
+            .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, '') // إزالة محارف التوجيه والـ bidi الخفية
+            .replace(/^["']|["']$/g, '')
+            .trim();
+          if (!clean || /^no\s*image$/i.test(clean) || clean === '1' || clean === 'null' || clean === 'undefined' || clean === 'false') return '';
+          
+          if (clean.startsWith('//')) {
+            clean = 'https:' + clean;
+          } else if (clean.startsWith('/medias/') || clean.startsWith('/media/') || clean.startsWith('/')) {
             clean = 'https://stgprevapi.al-dawaa.com' + (clean.startsWith('/') ? clean : '/' + clean);
+          } else if (clean.startsWith('medias/') || clean.startsWith('media/')) {
+            clean = 'https://stgprevapi.al-dawaa.com/' + clean;
+          } else if (!/^https?:\/\//i.test(clean)) {
+            if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(clean)) {
+              clean = 'https://' + clean;
+            } else if (clean.includes('/')) {
+              clean = 'https://stgprevapi.al-dawaa.com/medias/' + clean.replace(/^\/+/, '');
+            } else {
+              return '';
+            }
           }
-          if (!/^https?:\/\//i.test(clean)) return '';
 
+          // معالجة الروابط التي تحتوي على حروف أو كلمات عربية بأمان ودون إفساد الـ encoding
           try {
-            clean = encodeURI(decodeURI(clean));
-          } catch (e) {
-            try { clean = encodeURI(clean); } catch (e2) {}
-          }
+            try {
+              clean = decodeURI(clean);
+            } catch (e1) {
+              clean = decodeURI(clean.replace(/%(?![0-9a-fA-F]{2})/g, '%25'));
+            }
+            clean = encodeURI(clean);
+          } catch (e2) {}
+
           return clean;
         }
 
@@ -25784,7 +25804,8 @@
 
           // 1. فحص كاش الصور المصلحة في الذاكرة
           if (code && window.repairedImages && window.repairedImages[code] && window.repairedImages[code] !== 'FAILED') {
-            return formatScannerProductImageUrl(window.repairedImages[code]);
+            const formatted = formatScannerProductImageUrl(window.repairedImages[code]);
+            if (formatted) return formatted;
           }
 
           // 2. فحص كاش localStorage
@@ -25794,7 +25815,8 @@
               if (cached[code] && cached[code] !== 'FAILED') {
                 window.repairedImages = window.repairedImages || {};
                 window.repairedImages[code] = cached[code];
-                return formatScannerProductImageUrl(cached[code]);
+                const formatted = formatScannerProductImageUrl(cached[code]);
+                if (formatted) return formatted;
               }
             } catch (e) {}
           }
@@ -25802,7 +25824,7 @@
           // 3. فحص عنصر الصورة في الـ DOM إن وجد ومحمّل
           if (code) {
             const exist = document.querySelector(`img[data-code="${code}"]`);
-            if (exist && exist.src && !exist.src.includes('data:image/svg') && !exist.src.includes(window.location.href)) {
+            if (exist && exist.src && !exist.src.startsWith('data:image/svg') && !exist.src.includes(window.location.href)) {
               const formatted = formatScannerProductImageUrl(exist.src);
               if (formatted) return formatted;
             }
@@ -25817,7 +25839,15 @@
             target.imageurl ||
             target.imageUrl ||
             target.ImageURL ||
-            target.itemURL || '';
+            target.itemURL ||
+            target["Item Image"] ||
+            target["Image URL"] ||
+            target["رابط الصورة"] ||
+            target["صورة الصنف"] ||
+            target["الرابط"] ||
+            target.img ||
+            target.photo ||
+            target.picture || '';
 
           return formatScannerProductImageUrl(rawUrl);
         }
@@ -26222,10 +26252,19 @@
           const primaryAr = arWords.filter(w => !brandWords.includes(w) && !stopWords.has(w) && !/^\d+$/.test(w));
 
           const queries = [];
+          // استخراج أي أرقام مميزة بالحجم أو العبوة (مثل 800 أو 400 أو 1 أو 2 أو 3)
+          const distinctNumbers = [...new Set([...(normAR.match(/\b\d+\b/g) || []), ...(normEN.match(/\b\d+\b/g) || [])])].filter(n => n !== cleanCode && n.length <= 4);
+
           // أولوية 1: البراند + الاسم الأساسي بالإنجليزي (مثل FAS QUPENE)
           if (brand && primaryEn.length > 0) queries.push(`${brand} ${primaryEn.slice(0, 2).join(' ')}`);
-          // أولوية 2: البراند + الاسم الأساسي بالعربي (مثل فاس كيوبين)
+          // أولوية 2: البراند + الاسم الأساسي بالعربي (مثل فاس كيوبين أو هيومانا حليب)
           if (brand && primaryAr.length > 0) queries.push(`${brand} ${primaryAr.slice(0, 2).join(' ')}`);
+          // أولوية 2ب: البراند + رقم الحجم إن وجد (مثل HUMANA 800 أو هيومانا 800)
+          distinctNumbers.forEach(num => {
+            if (brand) queries.push(`${brand} ${num}`);
+            if (primaryAr.length > 0) queries.push(`${primaryAr[0]} ${num}`);
+            if (primaryAr.length > 1) queries.push(`${primaryAr.slice(0, 2).join(' ')} ${num}`);
+          });
           // أولوية 3: الاسم الإنجليزي الأساسي بمفرده (مثل QUPENE)
           if (primaryEn.length > 0) queries.push(primaryEn.slice(0, 2).join(' '));
           // أولوية 4: الاسم العربي الأساسي بمفرده (مثل كيوبين)
@@ -26283,7 +26322,6 @@
             }
           }
 
-          window.repairedImages[cleanCode] = 'FAILED';
           return null;
         }
 
@@ -29811,9 +29849,9 @@
             }
             page.appendChild(row1);
 
-            // --- Row 2 Wrapper (تثبيت على مسافة 7mm لحماية طرف الـ QR من قص هامش الطابعة مع بقاء الدوائر بعيدة عن الخط الأحمر) ---
+            // --- Row 2 Wrapper (تثبيت من أسفل الصفحة مباشرة 4mm لتبدأ رسم الكروت من الأسفل ويرتفع الـ QR وتنزاح الدوائر بعيداً عن الخط الأحمر) ---
             const row2Wrapper = document.createElement("div");
-            row2Wrapper.style.cssText = "position: absolute !important; bottom: 7mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column; direction: ltr !important;";
+            row2Wrapper.style.cssText = "position: absolute !important; bottom: 4mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column; direction: ltr !important;";
 
             const row2 = document.createElement('div');
             row2.className = 'print-row';
@@ -30440,28 +30478,32 @@
 
           const uploadedSet = new Set(uploadedBrands || []);
 
-          // 🔥 1. دالة صغيرة جوه عشان تجيب اسم العرض
-          const getOfferNameForBrand = (brandName) => {
-            if (typeof exclusiveOffersDB === 'undefined') return '';
-            // بنشوف البراند ده موجود في انهي عرض
-            const offer = exclusiveOffersDB.find(o => o.codes && o.codes.includes(brandName));
-            // بنرجع الاسم العربي لو موجود، أو الانجليزي
-            return offer ? (offer.offerTypeAR || offer.offerType) : '';
-          };
+          // 🔥 1. فهرسة سريعة جداً O(1) لاسم العرض بدلاً من البحث التكراري
+          const brandOfferMap = new Map();
+          if (typeof exclusiveOffersDB !== 'undefined' && Array.isArray(exclusiveOffersDB)) {
+            for (let i = 0; i < exclusiveOffersDB.length; i++) {
+              const o = exclusiveOffersDB[i];
+              if (Array.isArray(o.codes)) {
+                const oName = o.offerTypeAR || o.offerType || '';
+                for (let j = 0; j < o.codes.length; j++) {
+                  const b = String(o.codes[j] || '').trim().toUpperCase();
+                  if (b && !brandOfferMap.has(b)) brandOfferMap.set(b, oName);
+                }
+              }
+            }
+          }
+
+          const fragment = document.createDocumentFragment();
 
           allBrands.forEach(brand => {
             const isUploaded = uploadedSet.has(brand);
-
-            // 🔥 2. هنا بنجيب اسم العرض ونخزنه
-            const offerName = getOfferNameForBrand(brand);
+            const offerName = brandOfferMap.get(String(brand).trim().toUpperCase()) || '';
 
             const item = document.createElement('div');
             item.className = 'brand-item';
             item.setAttribute('data-brand', brand);
-            // عشان نفلتر باللي موجود في الملف
             item.setAttribute('data-uploaded', isUploaded ? 'true' : 'false');
 
-            // ستايل العنصر (مربع البراند)
             const bgColor = isUploaded ? 'rgba(251, 191, 36, 0.2)' : 'rgba(255, 255, 255, 0.1)';
             const borderColor = isUploaded ? 'rgba(251, 191, 36, 0.5)' : 'rgba(255, 255, 255, 0.2)';
 
@@ -30478,7 +30520,6 @@
       gap: 12px;
     `;
 
-            // مربع الاختيار (Checkbox)
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.className = 'brand-checkbox';
@@ -30492,11 +30533,9 @@
       flex-shrink: 0;
     `;
 
-            // حاوية الكلام (الاسم + العرض)
             const labelDiv = document.createElement('div');
             labelDiv.style.cssText = `flex: 1; display: flex; flex-direction: column; justify-content: center;`;
 
-            // 🔥 3. طريقة العرض الجديدة: الاسم فوق والعرض تحته
             labelDiv.innerHTML = `
       <div style="color: white; font-weight: 700; font-size: 15px; line-height: 1.2;">
         ${isUploaded ? '⭐ ' : ''}${brand}
@@ -30509,7 +30548,6 @@
             item.appendChild(checkbox);
             item.appendChild(labelDiv);
 
-            // تحديث الشكل لما تختار
             const updateStyle = () => {
               if (checkbox.checked) {
                 item.style.background = isUploaded ? 'rgba(251, 191, 36, 0.4)' : 'rgba(16, 185, 129, 0.3)';
@@ -30521,7 +30559,6 @@
             };
             updateStyle();
 
-            // تشغيل الـ Checkbox عند الضغط على أي مكان في المربع
             item.addEventListener('click', (e) => {
               if (e.target !== checkbox) {
                 checkbox.checked = !checkbox.checked;
@@ -30530,34 +30567,40 @@
             });
 
             checkbox.addEventListener('change', updateStyle);
-
-            container.appendChild(item);
+            fragment.appendChild(item);
           });
+
+          container.appendChild(fragment);
         }
-        // ====== 5️⃣ فلترة القائمة بالبحث ======
+
+        // ====== 5️⃣ فلترة القائمة بالبحث (سريعة وسلسة وبدون تهنيج) ======
+        let filterBrandsDebounceTimer = null;
         function filterBrandsList() {
-          const searchInput = document.getElementById('brandSearchInput');
-          if (!searchInput) return;
+          if (filterBrandsDebounceTimer) clearTimeout(filterBrandsDebounceTimer);
+          filterBrandsDebounceTimer = setTimeout(() => {
+            const searchInput = document.getElementById('brandSearchInput');
+            if (!searchInput) return;
 
-          const searchTerm = searchInput.value.trim().toLowerCase();
-          const items = document.querySelectorAll('.brand-item');
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const items = document.querySelectorAll('.brand-item');
 
-          let visibleCount = 0;
+            let visibleCount = 0;
 
-          items.forEach(item => {
-            const brand = item.getAttribute('data-brand').toLowerCase();
+            items.forEach(item => {
+              const brand = (item.getAttribute('data-brand') || '').toLowerCase();
 
-            if (brand.includes(searchTerm)) {
-              item.style.display = 'flex';
-              visibleCount++;
-            } else {
-              item.style.display = 'none';
-            }
-          });
+              if (!searchTerm || brand.includes(searchTerm)) {
+                item.style.display = 'flex';
+                visibleCount++;
+              } else {
+                item.style.display = 'none';
+              }
+            });
 
-          console.log(`🔍 Search "${searchTerm}": ${visibleCount} brands visible`);
+            console.log(`🔍 Search "${searchTerm}": ${visibleCount} brands visible`);
+          }, 60);
         }
-        // ====== 6️⃣ اختيار الكل (مُعدَّل) ======
+                // ====== 6️⃣ اختيار الكل (مُعدَّل) ======
         function selectAllBrands() {
           const checkboxes = document.querySelectorAll('.brand-checkbox');
           let selectedCount = 0;
@@ -31182,8 +31225,8 @@
 
             // --- Row 2 Wrapper (Absolute Bottom) ---
             const row2Wrapper = document.createElement("div");
-            // ✅ رفع الصف السفلي بمقدار 3 ملم (من 4mm إلى 7mm) لمنع قص طرف الـ QR في هامش الطابعة الفيزيائي مع بقاء الدائرة بعيدة تماماً عن الخط الأحمر
-            row2Wrapper.style.cssText = "position: absolute !important; bottom: 7mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column;";
+            // ✅ تثبيت الصف السفلي من أسفل الصفحة مباشرة (4mm) لتبدأ رسم الكروت من الأسفل ويرتفع الـ QR وتنزاح الدوائر بعيداً عن الخط الأحمر
+            row2Wrapper.style.cssText = "position: absolute !important; bottom: 4mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column;";
 
             const row2Products = [];
             for (let j = 0; j < itemsPerRow && (i + itemsPerRow + j) < filteredProducts.length; j++) {
@@ -35938,11 +35981,11 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
               btn.style.color = '#ffffff';
               btn.style.borderColor = '#60a5fa';
               btn.style.boxShadow = '0 0 12px rgba(37,99,235,0.6)';
-              btn.innerHTML = '📝 بالاسم';
+              btn.innerHTML = '📝 بالاسم والبراند';
             }
             input.setAttribute('inputmode', 'text');
             input.removeAttribute('pattern');
-            input.placeholder = 'ابحث باسم المنتج (عربي / English)...';
+            input.placeholder = 'ابحث بالبراند أو اسم المنتج أو الكود...';
             input.style.borderColor = '#3b82f6';
             input.style.textAlign = 'right';
             input.dir = 'auto';
@@ -35982,6 +36025,7 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             .trim();
         }
 
+        let scannerManualInputDebounceTimer = null;
         function handleScannerManualInput(event) {
           const input = document.getElementById('scannerManualCode');
           if (!input) return;
@@ -35994,59 +36038,133 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
 
           const query = input.value.trim();
           if (!query) {
+            if (scannerManualInputDebounceTimer) clearTimeout(scannerManualInputDebounceTimer);
             hideScannerSearchSuggestions();
             return;
           }
 
-          renderScannerSearchSuggestions(query);
+          if (scannerManualInputDebounceTimer) clearTimeout(scannerManualInputDebounceTimer);
+          scannerManualInputDebounceTimer = setTimeout(() => {
+            renderScannerSearchSuggestions(query);
+          }, 120);
         }
 
         function formatScannerProductImageUrl(url) {
-          if (!url || typeof url !== 'string') return '';
-          let clean = url.trim();
-          if (clean === '' || /^no\s*image$/i.test(clean) || clean === '1' || clean === 'null' || clean === 'undefined') return '';
-          if (clean.startsWith('//')) clean = 'https:' + clean;
-          else if (clean.startsWith('/medias/') || clean.startsWith('/media/') || clean.startsWith('/')) {
+          if (!url) return '';
+          let clean = String(url)
+            .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, '') // إزالة محارف التوجيه والـ bidi الخفية
+            .replace(/^["']|["']$/g, '')
+            .trim();
+          if (!clean || /^no\s*image$/i.test(clean) || clean === '1' || clean === 'null' || clean === 'undefined' || clean === 'false') return '';
+          
+          if (clean.startsWith('//')) {
+            clean = 'https:' + clean;
+          } else if (clean.startsWith('/medias/') || clean.startsWith('/media/') || clean.startsWith('/')) {
             clean = 'https://stgprevapi.al-dawaa.com' + (clean.startsWith('/') ? clean : '/' + clean);
+          } else if (clean.startsWith('medias/') || clean.startsWith('media/')) {
+            clean = 'https://stgprevapi.al-dawaa.com/' + clean;
+          } else if (!/^https?:\/\//i.test(clean)) {
+            if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(clean)) {
+              clean = 'https://' + clean;
+            } else if (clean.includes('/')) {
+              clean = 'https://stgprevapi.al-dawaa.com/medias/' + clean.replace(/^\/+/, '');
+            } else {
+              return '';
+            }
           }
-          if (!/^https?:\/\//i.test(clean)) return '';
 
+          // معالجة الروابط التي تحتوي على حروف أو كلمات عربية بأمان ودون إفساد الـ encoding
           try {
-            clean = encodeURI(decodeURI(clean));
-          } catch (e) {
-            try { clean = encodeURI(clean); } catch (e2) {}
-          }
+            try {
+              clean = decodeURI(clean);
+            } catch (e1) {
+              clean = decodeURI(clean.replace(/%(?![0-9a-fA-F]{2})/g, '%25'));
+            }
+            clean = encodeURI(clean);
+          } catch (e2) {}
+
           return clean;
         }
 
         function getScannerProductImageUrl(product) {
           if (!product) return '';
-          const code = String(product.Code || product.code || '').trim();
-          if (window.repairedImages && window.repairedImages[code] && window.repairedImages[code] !== 'FAILED') {
-            return formatScannerProductImageUrl(window.repairedImages[code]);
+          const target = product.product || product;
+          const code = String(target.Code || target.code || '').trim();
+
+          // 1. فحص كاش الصور المصلحة في الذاكرة
+          if (code && window.repairedImages && window.repairedImages[code] && window.repairedImages[code] !== 'FAILED') {
+            const formatted = formatScannerProductImageUrl(window.repairedImages[code]);
+            if (formatted) return formatted;
           }
 
-          const rawUrl = product.image_url ||
-            product.itemurl ||
-            product.ItemURL ||
-            product.Image ||
-            product.image ||
-            product.imageurl ||
-            product.imageUrl ||
-            product.ImageURL ||
-            product.itemURL || '';
-          return formatScannerProductImageUrl(rawUrl);
+          // 2. فحص كاش localStorage المحمّل مسبقاً في الذاكرة لتفادي التكرار
+          if (code && typeof localStorage !== 'undefined') {
+            try {
+              if (!window.se7enRepairedImagesCacheLoaded) {
+                window.se7enRepairedImagesCache = JSON.parse(localStorage.getItem('se7en_repaired_images_cache') || '{}');
+                window.se7enRepairedImagesCacheLoaded = true;
+              }
+              const cached = window.se7enRepairedImagesCache || {};
+              if (cached[code] && cached[code] !== 'FAILED') {
+                window.repairedImages = window.repairedImages || {};
+                window.repairedImages[code] = cached[code];
+                const formatted = formatScannerProductImageUrl(cached[code]);
+                if (formatted) return formatted;
+              }
+            } catch (e) {}
+          }
+
+          // 3. استخراج رابط الصورة من جميع الحقول المحتملة
+          const rawUrl = target.image_url ||
+            target.itemurl ||
+            target.ItemURL ||
+            target.Image ||
+            target.image ||
+            target.imageurl ||
+            target.imageUrl ||
+            target.ImageURL ||
+            target.itemURL ||
+            target["Item Image"] ||
+            target["Image URL"] ||
+            target["رابط الصورة"] ||
+            target["صورة الصنف"] ||
+            target["الرابط"] ||
+            target.img ||
+            target.photo ||
+            target.picture || '';
+
+          const formattedRaw = formatScannerProductImageUrl(rawUrl);
+          if (formattedRaw) return formattedRaw;
+
+          return '';
         }
 
         function handleScannerImageError(imgEl, code, brand) {
           if (!imgEl) return;
-          imgEl.onerror = null;
+          imgEl.onerror = null; // منع التكرار
 
           const cleanCode = String(code || '').trim();
-          if (cleanCode && typeof autoRepairBrokenImage === 'function' && (!imgEl.dataset.repaired || imgEl.dataset.repaired === 'false')) {
+          if (cleanCode && (!imgEl.dataset.repaired || imgEl.dataset.repaired === 'false')) {
             imgEl.dataset.repaired = 'true';
-            autoRepairBrokenImage(cleanCode, imgEl, brand);
-            return;
+            
+            // استخراج بيانات الصنف الكاملة لمحاولة جلبه فوراً من سيرفر سيفن
+            let nameAR = '';
+            let nameEN = '';
+            const targetDB = (typeof productsDB !== 'undefined' && productsDB.length) ? productsDB : (window.productsDB || []);
+            const p = targetDB.find(x => String(x.Code || x.code || '').trim() === cleanCode);
+            if (p) {
+              nameAR = p["أسم المنتج"] || p.nameAR || '';
+              nameEN = p["Item Description English"] || p["Item Description"] || p.nameEN || '';
+            }
+
+            if (typeof fetchSe7enImageForScannerItem === 'function') {
+              fetchSe7enImageForScannerItem(cleanCode, nameAR, nameEN, imgEl);
+              return;
+            }
+            if (typeof autoRepairBrokenImage === 'function') {
+              autoRepairBrokenImage(cleanCode, imgEl, brand);
+              return;
+            }
           }
 
           if (typeof getBrandVectorSVG === 'function' && brand) {
@@ -36056,6 +36174,66 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           } else {
             imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'><path d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/></svg>";
           }
+        }
+
+        window.scannerCurrentQuery = '';
+        window.scannerCurrentMatches = [];
+        window.scannerRenderedCount = 0;
+        const SCANNER_PAGE_CHUNK = 40;
+
+        function buildScannerSuggestionCardHtml(m) {
+          const cleanImg = formatScannerProductImageUrl(m.imageUrl || getScannerProductImageUrl(m.p));
+          const hasImg = Boolean(cleanImg && cleanImg !== '' && cleanImg !== 'No Image');
+          const fallbackImg = (typeof getBrandVectorSVG === 'function' && m.brand)
+            ? getBrandVectorSVG(m.brand)
+            : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'><path d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/></svg>";
+
+          const offerTag = m.hasOffer ? `
+            <span style="background: rgba(16,185,129,0.22); color:#34d399; border: 1px solid rgba(52,211,153,0.35); padding: 1px 6px; border-radius: 5px; font-size: 10px; font-weight: 700; white-space: nowrap;">
+              🏷️ ${m.offerLabel}
+            </span>
+          ` : '';
+
+          const brandBadge = m.brand ? `
+            <span style="background: rgba(59,130,246,0.18); color:#93c5fd; border: 1px solid rgba(59,130,246,0.3); padding: 1px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 700;">
+              🏢 ${escapeHtml(m.brand)}
+            </span>
+          ` : '';
+
+          return `
+            <div class="scanner-suggestion-item" data-code="${m.code}"
+              data-namear="${escapeHtml(m.nameAR || '')}"
+              data-nameen="${escapeHtml(m.nameEN || '')}"
+              data-needs-image="${!hasImg ? 'true' : 'false'}"
+              onclick="selectScannerSuggestion('${m.code}')"
+              style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid #1e293b; cursor:pointer; border-radius:10px; transition:all 0.15s ease; text-align:right;"
+              onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">
+              <div style="width:46px; height:46px; border-radius:10px; background:#ffffff; border:1.5px solid #334155; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; padding:2px; box-shadow:0 2px 6px rgba(0,0,0,0.25);">
+                <img src="${hasImg ? escapeHtml(cleanImg) : fallbackImg}"
+                  alt="${escapeHtml(m.nameAR || m.nameEN || m.code)}"
+                  referrerpolicy="no-referrer"
+                  loading="lazy"
+                  data-code="${m.code}"
+                  data-brand="${escapeHtml(m.brand || '')}"
+                  onerror="handleScannerImageError(this, '${m.code}', '${escapeHtml(m.brand || '')}')"
+                  style="width:100%; height:100%; object-fit:contain; background:#ffffff; transition:opacity 0.25s ease;" />
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:800; color:#f8fafc; line-height:1.4; word-break:break-word;">
+                  ${m.nameAR || m.nameEN}
+                </div>
+                <div style="font-size:11px; color:#94a3b8; direction:ltr; text-align:left; line-height:1.3; margin-top:1px; word-break:break-word;">
+                  ${m.nameEN || m.brand}
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; margin-top:3px; flex-wrap:wrap;">
+                  <span style="font-family:monospace; font-size:11px; font-weight:700; color:#38bdf8; background:#0f172a; padding:2px 6px; border-radius:4px; border:1px solid #334155;">#${m.code}</span>
+                  ${brandBadge}
+                  ${offerTag}
+                </div>
+              </div>
+              <div style="color:#60a5fa; font-size:18px; font-weight:800; background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); border-radius:8px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">+</div>
+            </div>
+          `;
         }
 
         function renderScannerSearchSuggestions(query) {
@@ -36076,12 +36254,14 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             return;
           }
 
+          window.scannerCurrentQuery = query;
           const matches = [];
+          const seenCodes = new Set();
 
           for (let i = 0; i < targetDB.length; i++) {
             const p = targetDB[i];
             const code = String(p.Code || p.code || '').trim();
-            if (!code) continue;
+            if (!code || seenCodes.has(code)) continue;
 
             const nameAR = String(p["أسم المنتج"] || '').trim();
             const nameEN = String(p["Item Description English"] || p["Item Description"] || '').trim();
@@ -36102,16 +36282,31 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
             }
 
             if (isMatch) {
+              seenCodes.add(code);
               let score = 0;
+
+              // 1. مطابقة الكود بدقة
               if (code === query || code === normQuery) score += 10000;
               else if (code.startsWith(query)) score += 5000;
-              else if (normAR.startsWith(normQuery) || normEN.startsWith(normQuery)) score += 3000;
-              else if (normAR.includes(normQuery) || normEN.includes(normQuery)) score += 1500;
+
+              // 2. مطابقة البراند الفائقة (إظهار كافة براندات الأصناف وترتيبها في الصدارة فوراً)
+              if (normBrand && (normBrand === normQuery || brand.toLowerCase() === query.toLowerCase())) {
+                score += 8000; // مطابقة تامة لاسم البراند
+              } else if (normBrand && normBrand.startsWith(normQuery)) {
+                score += 4500; // يبدأ باسم البراند
+              } else if (normBrand && normBrand.includes(normQuery)) {
+                score += 3000; // يحتوي على اسم البراند
+              }
+
+              // 3. مطابقة الاسم العربي أو الإنجليزي
+              if (normAR.startsWith(normQuery) || normEN.startsWith(normQuery)) score += 3500;
+              else if (normAR.includes(normQuery) || normEN.includes(normQuery)) score += 1800;
               else score += 500;
 
+              // 4. أولوية العروض النشطة
               const offer = (typeof getOfferForScanner === 'function') ? getOfferForScanner(code) : ((typeof getOffer === 'function') ? getOffer(code) : null);
               const isActive = (typeof isOfferCurrentlyActive === 'function') ? isOfferCurrentlyActive(offer) : !!offer;
-              if (isActive) score += 200;
+              if (isActive) score += 300;
 
               matches.push({
                 p,
@@ -36119,80 +36314,156 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
                 nameAR,
                 nameEN,
                 brand,
-                imageUrl: getScannerProductImageUrl(p),
                 hasOffer: isActive,
                 offerLabel: isActive ? (offer?.offerTypeAR || offer?.offerType || 'عرض نشط') : '',
                 score
               });
-
-              if (matches.length >= 100) break;
             }
           }
 
           if (!matches.length) {
-            box.innerHTML = '<div style="padding:14px; text-align:center; color:#94a3b8; font-size:12px;">🔍 لا توجد نتائج مطابقة لـ "' + query.replace(/</g, '&lt;') + '"</div>';
+            box.innerHTML = '<div style="padding:14px; text-align:center; color:#94a3b8; font-size:12px;">🔍 لا توجد نتائج مطابقة لـ "' + escapeHtml(query) + '"</div>';
             box.style.display = 'block';
+            window.scannerCurrentMatches = [];
+            window.scannerRenderedCount = 0;
             return;
           }
 
           matches.sort((a, b) => b.score - a.score);
-          const topMatches = matches.slice(0, 20);
+          window.scannerCurrentMatches = matches;
+          window.scannerRenderedCount = 0;
 
-          let html = '';
-          topMatches.forEach((m) => {
-            const cleanImg = formatScannerProductImageUrl(m.imageUrl || getScannerProductImageUrl(m.p));
-            const hasImg = cleanImg && cleanImg !== '' && cleanImg !== 'No Image';
-            const fallbackImg = (typeof getBrandVectorSVG === 'function' && m.brand)
-              ? getBrandVectorSVG(m.brand)
-              : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'><path d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/></svg>";
+          const initialChunk = matches.slice(0, SCANNER_PAGE_CHUNK);
+          window.scannerRenderedCount = initialChunk.length;
 
-            const offerTag = m.hasOffer ? `
-              <span style="background: rgba(16,185,129,0.22); color:#34d399; border: 1px solid rgba(52,211,153,0.35); padding: 1px 6px; border-radius: 5px; font-size: 10px; font-weight: 700; white-space: nowrap;">
-                🏷️ ${m.offerLabel}
+          let html = `
+            <div style="position:sticky; top:0; z-index:20; background:rgba(15,23,42,0.96); backdrop-filter:blur(8px); padding:6px 12px; border-bottom:1px solid #334155; display:flex; align-items:center; justify-content:space-between; border-radius:8px 8px 0 0; margin:-6px -6px 6px -6px;">
+              <span style="font-size:11px; font-weight:800; color:#38bdf8; display:flex; align-items:center; gap:5px;">
+                🔍 نتائج البحث: <span style="background:rgba(56,189,248,0.18); color:#38bdf8; padding:1px 7px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">${matches.length} صنف</span>
               </span>
-            ` : '';
+              <span id="scannerSearchCountNotice" style="font-size:10px; color:#94a3b8;">(معروض أفضل ${window.scannerRenderedCount})</span>
+            </div>
+            <div id="scannerSuggestionsListContainer">
+          `;
 
+          initialChunk.forEach((m) => {
+            html += buildScannerSuggestionCardHtml(m);
+          });
+
+          html += `</div>`;
+
+          if (matches.length > window.scannerRenderedCount) {
+            const remaining = matches.length - window.scannerRenderedCount;
             html += `
-              <div class="scanner-suggestion-item" data-code="${m.code}" onclick="selectScannerSuggestion('${m.code}')"
-                style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid #1e293b; cursor:pointer; border-radius:10px; transition:all 0.15s ease; text-align:right;"
-                onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">
-                <div style="width:46px; height:46px; border-radius:10px; background:#ffffff; border:1.5px solid #334155; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; padding:2px; box-shadow:0 2px 6px rgba(0,0,0,0.25);">
-                  <img src="${hasImg ? cleanImg : fallbackImg}"
-                    alt="${escapeHtml(m.nameAR || m.nameEN || m.code)}"
-                    referrerpolicy="no-referrer"
-                    loading="lazy"
-                    data-code="${m.code}"
-                    data-brand="${escapeHtml(m.brand || '')}"
-                    ${!hasImg ? `onload="if(!this.dataset.triedRepair){ this.dataset.triedRepair='true'; handleScannerImageError(this, '${m.code}', '${escapeHtml(m.brand || '')}'); }"` : ''}
-                    onerror="handleScannerImageError(this, '${m.code}', '${escapeHtml(m.brand || '')}')"
-                    style="width:100%; height:100%; object-fit:contain; background:#ffffff;" />
-                </div>
-                <div style="flex:1; min-width:0;">
-                  <div style="font-size:13px; font-weight:800; color:#f8fafc; line-height:1.4; word-break:break-word;">
-                    ${m.nameAR || m.nameEN}
-                  </div>
-                  <div style="font-size:11px; color:#94a3b8; direction:ltr; text-align:left; line-height:1.3; margin-top:1px; word-break:break-word;">
-                    ${m.nameEN || m.brand}
-                  </div>
-                  <div style="display:flex; align-items:center; gap:6px; margin-top:3px; flex-wrap:wrap;">
-                    <span style="font-family:monospace; font-size:11px; font-weight:700; color:#38bdf8; background:#0f172a; padding:2px 6px; border-radius:4px; border:1px solid #334155;">#${m.code}</span>
-                    ${offerTag}
-                  </div>
-                </div>
-                <div style="color:#60a5fa; font-size:18px; font-weight:800; background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); border-radius:8px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">+</div>
+              <div id="scannerLoadMoreWrap" style="padding:8px 6px; text-align:center;">
+                <button id="scannerLoadMoreBtn" type="button" onclick="loadMoreScannerSuggestions()"
+                  style="width:100%; padding:9px; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:#38bdf8; border:1px solid #3b82f6; border-radius:8px; cursor:pointer; font-size:11.5px; font-weight:bold; transition:all 0.2s;">
+                  عرض المزيد (+${Math.min(SCANNER_PAGE_CHUNK, remaining)} من ${remaining} صنف متبقي) ⬇️
+                </button>
               </div>
             `;
-          });
+          }
 
           box.innerHTML = html;
           box.style.display = 'block';
+
+          // التمرير التلقائي السلس عند النزول لأسفل القائمة لجلب الدفعة التالية بدون أي تهنيج
+          box.onscroll = function() {
+            if (box.scrollTop + box.clientHeight >= box.scrollHeight - 80) {
+              if (window.scannerCurrentMatches && window.scannerRenderedCount < window.scannerCurrentMatches.length) {
+                loadMoreScannerSuggestions();
+              }
+            }
+          };
+
+          scheduleScannerSuggestionsImageLookup(box);
+        }
+
+        function loadMoreScannerSuggestions() {
+          const box = document.getElementById('scannerSearchSuggestions');
+          const listContainer = document.getElementById('scannerSuggestionsListContainer');
+          if (!box || !listContainer || !window.scannerCurrentMatches) return;
+
+          const matches = window.scannerCurrentMatches;
+          const currentCount = window.scannerRenderedCount || 0;
+          if (currentCount >= matches.length) return;
+
+          const nextChunk = matches.slice(currentCount, currentCount + SCANNER_PAGE_CHUNK);
+          window.scannerRenderedCount = currentCount + nextChunk.length;
+
+          let chunkHtml = '';
+          nextChunk.forEach((m) => {
+            chunkHtml += buildScannerSuggestionCardHtml(m);
+          });
+
+          listContainer.insertAdjacentHTML('beforeend', chunkHtml);
+
+          // تحديث عداد المعروض
+          const notice = document.getElementById('scannerSearchCountNotice');
+          if (notice) {
+            notice.textContent = `(معروض أفضل ${window.scannerRenderedCount} من ${matches.length})`;
+          }
+
+          // تحديث أو إخفاء زر عرض المزيد
+          const moreWrap = document.getElementById('scannerLoadMoreWrap');
+          if (moreWrap) {
+            const remaining = matches.length - window.scannerRenderedCount;
+            if (remaining > 0) {
+              const btn = document.getElementById('scannerLoadMoreBtn');
+              if (btn) {
+                btn.innerHTML = `عرض المزيد (+${Math.min(SCANNER_PAGE_CHUNK, remaining)} من ${remaining} صنف متبقي) ⬇️`;
+              }
+            } else {
+              moreWrap.remove();
+            }
+          }
+
+          scheduleScannerSuggestionsImageLookup(listContainer);
+        }
+
+        function scheduleScannerSuggestionsImageLookup(box) {
+          if (!box) return;
+          const items = box.querySelectorAll('.scanner-suggestion-item[data-needs-image="true"]');
+          if (!items || !items.length) return;
+
+          if (typeof IntersectionObserver !== 'undefined') {
+            const observer = new IntersectionObserver((entries, obs) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const itemEl = entry.target;
+                  obs.unobserve(itemEl);
+                  const code = itemEl.dataset.code;
+                  const nameAR = itemEl.dataset.namear || '';
+                  const nameEN = itemEl.dataset.nameen || '';
+                  if (code && typeof fetchSe7enImageForScannerItem === 'function') {
+                    fetchSe7enImageForScannerItem(code, nameAR, nameEN, itemEl);
+                  }
+                }
+              });
+            }, { root: document.getElementById('scannerSearchSuggestions') || box, rootMargin: '80px' });
+
+            items.forEach(el => observer.observe(el));
+          } else {
+            Array.from(items).slice(0, 8).forEach(el => {
+              const code = el.dataset.code;
+              const nameAR = el.dataset.namear || '';
+              const nameEN = el.dataset.nameen || '';
+              if (code && typeof fetchSe7enImageForScannerItem === 'function') {
+                fetchSe7enImageForScannerItem(code, nameAR, nameEN, el);
+              }
+            });
+          }
         }
 
         function hideScannerSearchSuggestions() {
           const box = document.getElementById('scannerSearchSuggestions');
-          if (box) box.style.display = 'none';
+          if (box) {
+            box.style.display = 'none';
+            box.onscroll = null;
+          }
         }
 
+        
         function selectScannerSuggestion(code) {
           if (!code) return;
           hideScannerSearchSuggestions();
@@ -37856,10 +38127,14 @@ ${sdaiCircleHTML ? '' : badgeHTML} ${bestSellerBadge}
           });
 
           // تحديث الصورة في قائمة الاقتراحات إذا كانت مفتوحة
-          const suggImgs = document.querySelectorAll(`.scanner-suggestion-item[data-code="${cleanCode}"] img`);
-          suggImgs.forEach(img => {
-            img.src = safeUrl;
-            img.style.opacity = '1';
+          const suggItems = document.querySelectorAll(`.scanner-suggestion-item[data-code="${cleanCode}"]`);
+          suggItems.forEach(item => {
+            item.dataset.needsImage = 'false';
+            const img = item.querySelector('img');
+            if (img) {
+              img.src = safeUrl;
+              img.style.opacity = '1';
+            }
           });
         }
 
