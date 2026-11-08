@@ -29811,9 +29811,9 @@
             }
             page.appendChild(row1);
 
-            // --- Row 2 Wrapper (تثبيت من أسفل الصفحة مباشرة 4mm لتبدأ رسم الكروت من الأسفل ويرتفع الـ QR وتنزاح الدوائر بعيداً عن الخط الأحمر) ---
+            // --- Row 2 Wrapper (تثبيت على مسافة 7mm لحماية طرف الـ QR من قص هامش الطابعة مع بقاء الدوائر بعيدة عن الخط الأحمر) ---
             const row2Wrapper = document.createElement("div");
-            row2Wrapper.style.cssText = "position: absolute !important; bottom: 4mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column; direction: ltr !important;";
+            row2Wrapper.style.cssText = "position: absolute !important; bottom: 7mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column; direction: ltr !important;";
 
             const row2 = document.createElement('div');
             row2.className = 'print-row';
@@ -31182,8 +31182,8 @@
 
             // --- Row 2 Wrapper (Absolute Bottom) ---
             const row2Wrapper = document.createElement("div");
-            // ✅ تثبيت الصف السفلي من أسفل الصفحة مباشرة (4mm) لتبدأ رسم الكروت من الأسفل ويرتفع الـ QR وتنزاح الدوائر بعيداً عن الخط الأحمر
-            row2Wrapper.style.cssText = "position: absolute !important; bottom: 4mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column;";
+            // ✅ رفع الصف السفلي بمقدار 3 ملم (من 4mm إلى 7mm) لمنع قص طرف الـ QR في هامش الطابعة الفيزيائي مع بقاء الدائرة بعيدة تماماً عن الخط الأحمر
+            row2Wrapper.style.cssText = "position: absolute !important; bottom: 7mm !important; left: 0 !important; width: 100% !important; z-index: 2 !important; display: flex; flex-direction: column;";
 
             const row2Products = [];
             for (let j = 0; j < itemsPerRow && (i + itemsPerRow + j) < filteredProducts.length; j++) {
