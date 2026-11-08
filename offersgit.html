@@ -7561,8 +7561,9 @@
             }
 
             #scannerModalOverlay #scannerManualCode {
-              height: 36px !important;
-              font-size: 13px !important;
+              height: 40px !important;
+              font-size: 14px !important;
+              width: 100% !important;
             }
 
             #scannerSearchSuggestions {
@@ -7968,36 +7969,41 @@
               </div>
 
               <div class="scanner-manual-wrap"
-                style="position: relative; padding: 10px; background: #0f172a; border-bottom: 1px solid #334155;">
+                style="position: relative; padding: 8px 10px 10px; background: #0f172a; border-bottom: 1px solid #334155; display: flex; flex-direction: column; gap: 8px;">
+                
+                <!-- صف الأزرار العلوية الموزعة بتناسق كامل (مسح، بحث، إضافة، ربط) -->
                 <div class="scanner-manual-row"
-                  style="display:flex; gap:6px; align-items:center; justify-content: space-between;">
+                  style="display:flex; gap:6px; align-items:center; justify-content: space-between; width: 100%;">
 
                   <button onclick="clearAllScannerData()" title="مسح الكل"
-                    style="height:42px; width:42px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
+                    style="height:38px; width:40px; flex-shrink:0; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
                     🗑️
                   </button>
 
+                  <button id="scannerSearchToggleBtn" type="button" onclick="toggleScannerSearchMode()" title="تبديل البحث: بالاسم والبراند أو الباركود"
+                    style="flex: 1.2; height:38px; padding:0 8px; background:#1e293b; color:#93c5fd; border:1px solid #3b82f6; border-radius:10px; cursor:pointer; font-size:12px; font-weight:bold; white-space:nowrap; display:flex; align-items:center; justify-content:center; gap:4px; transition: all 0.2s ease;">
+                    🔍 بحث
+                  </button>
+
+                  <button onclick="processManualScannerCode()"
+                    style="flex: 1; height:38px; padding:0 10px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:12.5px; font-weight:bold; white-space:nowrap; display:flex; align-items:center; justify-content:center;">
+                    إضافة
+                  </button>
+
+                  <button type="button" onclick="openLinkGtinModal(document.getElementById('scannerManualCode')?.value || '')" title="ربط باركود غير مسجل بالماستر"
+                    style="flex: 1; height:38px; padding:0 8px; background:#1e293b; color:#f59e0b; border:1px solid #f59e0b; border-radius:10px; cursor:pointer; font-size:12px; font-weight:bold; white-space:nowrap; display:flex; align-items:center; justify-content:center; gap:3px;">
+                    🔗 ربط
+                  </button>
+                </div>
+
+                <!-- شريط البحث المستقل بكامل العرض 100% لتوفير مساحة كتابة واسعة ومريحة -->
+                <div class="scanner-input-row" style="width: 100%; position: relative;">
                   <input id="scannerManualCode" type="text" inputmode="numeric" maxlength="60"
                     placeholder="كود سداسي أو باركود"
                     oninput="handleScannerManualInput(event)"
                     onkeydown="handleScannerManualInputKey(event)"
                     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                    style="flex: 1; min-width: 0; height:42px; padding:0 10px; border-radius:10px; border:1px solid #475569; background:#111827; color:#fff; font-weight:bold; text-align:center; font-size:13.5px; outline:none; transition: all 0.2s ease;" />
-
-                  <button id="scannerSearchToggleBtn" type="button" onclick="toggleScannerSearchMode()" title="تبديل البحث: بالاسم أو الباركود"
-                    style="height:42px; padding:0 10px; background:#1e293b; color:#93c5fd; border:1px solid #3b82f6; border-radius:10px; cursor:pointer; font-size:12.5px; font-weight:bold; white-space:nowrap; flex-shrink:0; display:flex; align-items:center; gap:4px; transition: all 0.2s ease;">
-                    🔍 بحث
-                  </button>
-
-                  <button onclick="processManualScannerCode()"
-                    style="height:42px; padding:0 12px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:bold; white-space:nowrap; flex-shrink:0;">
-                    إضافة
-                  </button>
-
-                  <button type="button" onclick="openLinkGtinModal(document.getElementById('scannerManualCode')?.value || '')" title="ربط باركود غير مسجل بالماستر"
-                    style="height:42px; padding:0 10px; background:#1e293b; color:#f59e0b; border:1px solid #f59e0b; border-radius:10px; cursor:pointer; font-size:12.5px; font-weight:bold; white-space:nowrap; flex-shrink:0; display:flex; align-items:center; gap:4px;">
-                    🔗 ربط
-                  </button>
+                    style="width: 100%; box-sizing: border-box; height: 42px; padding: 0 14px; border-radius: 10px; border: 1.5px solid #475569; background: #111827; color: #fff; font-weight: bold; text-align: center; font-size: 14px; outline: none; transition: all 0.2s ease;" />
                 </div>
 
                 <!-- قائمة الاقتراحات المنسدلة للبحث بالاسم والصورة تأخذ كامل عرض المساحة تحت شريط البحث من الطرف للطرف -->
